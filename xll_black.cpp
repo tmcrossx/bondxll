@@ -6,10 +6,10 @@ using namespace xll;
 using namespace tmx;
 
 AddIn xai_normal_cdf(
-	Function(XLL_DOUBLE, L"xll_normal_cdf", CATEGORY L".NORMAL.CDF")
+	Function(XLL_DOUBLE, "xll_normal_cdf", CATEGORY ".NORMAL.CDF")
 	.Arguments({
-		Arg(XLL_DOUBLE, L"x", L"is a number."),
-		Arg(XLL_DOUBLE, L"s", L"is the vol."),
+		Arg(XLL_DOUBLE, "x", "is a number."),
+		Arg(XLL_DOUBLE, "s", "is the vol."),
 		})
 		.Category(CATEGORY)
 	.FunctionHelp("Return the normal cumulative distribution function.")
@@ -21,11 +21,11 @@ double WINAPI xll_normal_cdf(double x, double s)
 }
 
 AddIn xai_black_moneyness(
-	Function(XLL_DOUBLE, L"xll_black_moneyness", CATEGORY L".BLACK.MONEYNESS")
+	Function(XLL_DOUBLE, "xll_black_moneyness", CATEGORY ".BLACK.MONEYNESS")
 	.Arguments({
-	Arg(XLL_DOUBLE, L"f", L"is the forward price."),
-	Arg(XLL_DOUBLE, L"s", L"is the vol."),
-	Arg(XLL_DOUBLE, L"k", L"is the strike."),
+	Arg(XLL_DOUBLE, "f", "is the forward price."),
+	Arg(XLL_DOUBLE, "s", "is the vol."),
+	Arg(XLL_DOUBLE, "k", "is the strike."),
 		})
 	.Category(CATEGORY)
 	.FunctionHelp("Return the Black moneyness log(k/f)/s + s/2.")
@@ -37,11 +37,11 @@ double WINAPI xll_black_moneyness(double f, double s, double k)
 }
 
 AddIn xai_black_put_value(
-	Function(XLL_DOUBLE, L"xll_black_put_value", CATEGORY L".BLACK.PUT.VALUE")
+	Function(XLL_DOUBLE, "xll_black_put_value", CATEGORY ".BLACK.PUT.VALUE")
 	.Arguments({
-	Arg(XLL_DOUBLE, L"f", L"is the forward price."),
-	Arg(XLL_DOUBLE, L"s", L"is the vol."),
-	Arg(XLL_DOUBLE, L"k", L"is the strike."),
+	Arg(XLL_DOUBLE, "f", "is the forward price."),
+	Arg(XLL_DOUBLE, "s", "is the vol."),
+	Arg(XLL_DOUBLE, "k", "is the strike."),
 		})
 		.Category(CATEGORY)
 	.FunctionHelp("Return the Black put value.")
@@ -53,11 +53,11 @@ double WINAPI xll_black_put_value(double f, double s, double k)
 }
 
 AddIn xai_black_put_delta(
-	Function(XLL_DOUBLE, L"xll_black_put_delta", CATEGORY L".BLACK.PUT.DELTA")
+	Function(XLL_DOUBLE, "xll_black_put_delta", CATEGORY ".BLACK.PUT.DELTA")
 	.Arguments({
-	Arg(XLL_DOUBLE, L"f", L"is the forward price."),
-	Arg(XLL_DOUBLE, L"s", L"is the vol."),
-	Arg(XLL_DOUBLE, L"k", L"is the strike."),
+	Arg(XLL_DOUBLE, "f", "is the forward price."),
+	Arg(XLL_DOUBLE, "s", "is the vol."),
+	Arg(XLL_DOUBLE, "k", "is the strike."),
 		})
 		.Category(CATEGORY)
 	.FunctionHelp("Return the Black put delta.")
@@ -69,11 +69,11 @@ double WINAPI xll_black_put_delta(double f, double s, double k)
 }
 
 AddIn xai_black_put_gamma(
-	Function(XLL_DOUBLE, L"xll_black_put_gamma", CATEGORY L".BLACK.GAMMA")
+	Function(XLL_DOUBLE, "xll_black_put_gamma", CATEGORY ".BLACK.GAMMA")
 	.Arguments({
-	Arg(XLL_DOUBLE, L"f", L"is the forward price."),
-	Arg(XLL_DOUBLE, L"s", L"is the vol."),
-	Arg(XLL_DOUBLE, L"k", L"is the strike."),
+	Arg(XLL_DOUBLE, "f", "is the forward price."),
+	Arg(XLL_DOUBLE, "s", "is the vol."),
+	Arg(XLL_DOUBLE, "k", "is the strike."),
 		})
 		.Category(CATEGORY)
 	.FunctionHelp("Return the Black put gamma.")
@@ -85,11 +85,11 @@ double WINAPI xll_black_put_gamma(double f, double s, double k)
 }
 
 AddIn xai_black_put_vega(
-	Function(XLL_DOUBLE, L"xll_black_put_vega", CATEGORY L".BLACK.VEGA")
+	Function(XLL_DOUBLE, "xll_black_put_vega", CATEGORY ".BLACK.VEGA")
 	.Arguments({
-	Arg(XLL_DOUBLE, L"f", L"is the forward price."),
-	Arg(XLL_DOUBLE, L"s", L"is the vol."),
-	Arg(XLL_DOUBLE, L"k", L"is the strike."),
+	Arg(XLL_DOUBLE, "f", "is the forward price."),
+	Arg(XLL_DOUBLE, "s", "is the vol."),
+	Arg(XLL_DOUBLE, "k", "is the strike."),
 		})
 		.Category(CATEGORY)
 	.FunctionHelp("Return the Black put vega.")
@@ -101,11 +101,11 @@ double WINAPI xll_black_put_vega(double f, double s, double k)
 }
 
 AddIn xai_black_call_value(
-	Function(XLL_DOUBLE, L"xll_black_call_value", CATEGORY L".BLACK.CALL.VALUE")
+	Function(XLL_DOUBLE, "xll_black_call_value", CATEGORY ".BLACK.CALL.VALUE")
 	.Arguments({
-	Arg(XLL_DOUBLE, L"f", L"is the forward price."),
-	Arg(XLL_DOUBLE, L"s", L"is the vol."),
-	Arg(XLL_DOUBLE, L"k", L"is the strike."),
+	Arg(XLL_DOUBLE, "f", "is the forward price."),
+	Arg(XLL_DOUBLE, "s", "is the vol."),
+	Arg(XLL_DOUBLE, "k", "is the strike."),
 		})
 		.Category(CATEGORY)
 	.FunctionHelp("Return the Black call value.")
@@ -117,11 +117,11 @@ double WINAPI xll_black_call_value(double f, double s, double k)
 }
 
 AddIn xai_black_call_delta(
-	Function(XLL_DOUBLE, L"xll_black_call_delta", CATEGORY L".BLACK.CALL.DELTA")
+	Function(XLL_DOUBLE, "xll_black_call_delta", CATEGORY ".BLACK.CALL.DELTA")
 	.Arguments({
-	Arg(XLL_DOUBLE, L"f", L"is the forward price."),
-	Arg(XLL_DOUBLE, L"s", L"is the vol."),
-	Arg(XLL_DOUBLE, L"k", L"is the strike."),
+	Arg(XLL_DOUBLE, "f", "is the forward price."),
+	Arg(XLL_DOUBLE, "s", "is the vol."),
+	Arg(XLL_DOUBLE, "k", "is the strike."),
 		})
 		.Category(CATEGORY)
 	.FunctionHelp("Return the Black call delta.")
@@ -133,11 +133,11 @@ double WINAPI xll_black_call_delta(double f, double s, double k)
 }
 
 AddIn xai_black_put_implied(
-	Function(XLL_DOUBLE, L"xll_black_put_implied", CATEGORY L".BLACK.PUT.IMPLIED")
+	Function(XLL_DOUBLE, "xll_black_put_implied", CATEGORY ".BLACK.PUT.IMPLIED")
 	.Arguments({
-	Arg(XLL_DOUBLE, L"f", L"is the forward price."),
-	Arg(XLL_DOUBLE, L"p", L"is the put price."),
-	Arg(XLL_DOUBLE, L"k", L"is the strike."),
+	Arg(XLL_DOUBLE, "f", "is the forward price."),
+	Arg(XLL_DOUBLE, "p", "is the put price."),
+	Arg(XLL_DOUBLE, "k", "is the strike."),
 		})
 		.Category(CATEGORY)
 	.FunctionHelp("Return the Black implied volatility repricing a put.")

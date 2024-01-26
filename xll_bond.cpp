@@ -6,12 +6,12 @@ using namespace tmx;
 using namespace xll;
 
 AddIn xai_bond_basic_(
-	Function(XLL_HANDLEX, L"xll_bond_basic_", L"\\" CATEGORY L".BOND.BASIC")
+	Function(XLL_HANDLEX, "xll_bond_basic_", "\\" CATEGORY ".BOND.BASIC")
 	.Arguments({
-		Arg(XLL_WORD, L"maturity", L"is the bond maturity in years."),
-		Arg(XLL_DOUBLE, L"coupon", L"is the bond coupon."),
-		Arg(XLL_WORD, L"frequency", L"is the yearly payment frequency from the TMX_FREQUENCY_* enumeration. Default is semiannually"),
-		Arg(XLL_HANDLEX, L"day_count", L"is the day count basis from the TMX_DAY_COUNT_* enumeration. Default is 30/360."),
+		Arg(XLL_WORD, "maturity", "is the bond maturity in years."),
+		Arg(XLL_DOUBLE, "coupon", "is the bond coupon."),
+		Arg(XLL_WORD, "frequency", "is the yearly payment frequency from the TMX_FREQUENCY_* enumeration. Default is semiannually"),
+		Arg(XLL_HANDLEX, "day_count", "is the day count basis from the TMX_DAY_COUNT_* enumeration. Default is 30/360."),
 		})
 	.Uncalced()
 	.Category(CATEGORY)
@@ -52,9 +52,9 @@ HANDLEX WINAPI xll_bond_basic_(WORD maturity, double coupon, date::frequency fre
 }
 
 AddIn xai_bond_basic(
-	Function(XLL_LPOPER, L"xll_bond_basic", CATEGORY L".BOND.BASIC")
+	Function(XLL_LPOPER, "xll_bond_basic", CATEGORY ".BOND.BASIC")
 	.Arguments({
-		Arg(XLL_HANDLEX, L"handle", L"is a handle to a basic bond."),
+		Arg(XLL_HANDLEX, "handle", "is a handle to a basic bond."),
 		})
 	.Category(CATEGORY)
 	.FunctionHelp("Return the maturity, coupon, frequency, and day count of a basic bond.")
@@ -83,10 +83,10 @@ LPOPER WINAPI xll_bond_basic(HANDLEX h)
 }
 
 AddIn xai_bond_cash_flow_(
-	Function(XLL_HANDLEX, L"xll_bond_cash_flow_", L"\\" CATEGORY L".BOND.INSTRUMENT")
+	Function(XLL_HANDLEX, "xll_bond_cash_flow_", "\\" CATEGORY ".BOND.INSTRUMENT")
 	.Arguments({
-		Arg(XLL_HANDLEX, L"bond", L"is a handle to a bond."),
-		Arg(XLL_DOUBLE, L"dated", L"is the dated date of the bond."),
+		Arg(XLL_HANDLEX, "bond", "is a handle to a bond."),
+		Arg(XLL_DOUBLE, "dated", "is the dated date of the bond."),
 		})
 	.Uncalced()
 	.Category(CATEGORY)

@@ -7,10 +7,10 @@ using namespace tmx;
 using namespace xll;
 
 AddIn xai_tmx_bootstrap_(
-	Function(XLL_HANDLEX, L"xll_tmx_bootstrap_", L"\\" CATEGORY L".BOOTSTRAP.CURVE")
+	Function(XLL_HANDLEX, "xll_tmx_bootstrap_", "\\" CATEGORY ".BOOTSTRAP.CURVE")
 	.Arguments({
-		Arg(XLL_FP, L"instruments", L"is an array of fixed income instrument handles."),
-		Arg(XLL_FP, L"prices", L"is an array of instrument prices."),
+		Arg(XLL_FP, "instruments", "is an array of fixed income instrument handles."),
+		Arg(XLL_FP, "prices", "is an array of instrument prices."),
 		})
 	.Uncalced()
 	.Category(CATEGORY)
