@@ -8,7 +8,7 @@ AddIn xai_array_sequence(
 	.Arguments({
 		Arg(XLL_DOUBLE, "start", "is the first value in the sequence."),
 		Arg(XLL_DOUBLE, "stop", "is the last value in the sequence."),
-		Arg(XLL_DOUBLE, "_incr", "is an optional value to increment by. Default is 1.")
+		Arg(XLL_DOUBLE, "_incr", "is an optional value to increment by (<10) or the number of array items. Default is 1.")
 		})
 	.FunctionHelp("Return a one column array from start to stop with specified optional increment.")
 	.Category(CATEGORY)

@@ -4,7 +4,7 @@
 
 using namespace xll;
 using namespace tmx;
-
+/*
 AddIn xai_normal_cdf(
 	Function(XLL_DOUBLE, "xll_normal_cdf", CATEGORY ".NORMAL.CDF")
 	.Arguments({
@@ -19,7 +19,7 @@ double WINAPI xll_normal_cdf(double x, double s)
 #pragma XLLEXPORT
 	return black::normal::cdf(x, s);
 }
-
+*/
 AddIn xai_black_moneyness(
 	Function(XLL_DOUBLE, "xll_black_moneyness", CATEGORY ".BLACK.MONEYNESS")
 	.Arguments({
