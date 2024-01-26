@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+/.vs/bondxll/FileContentIndex
+/.vs/bondxll/v17
+/x64/Debug
