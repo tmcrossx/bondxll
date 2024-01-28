@@ -17,7 +17,7 @@ AddIn xai_normal_cdf(
 double WINAPI xll_normal_cdf(double x, double s)
 {
 #pragma XLLEXPORT
-	return black::normal::cdf(x, s);
+	return variate::normal<>{}.cdf(x, s);
 }
 
 AddIn xai_black_moneyness(
