@@ -1,24 +1,24 @@
-#include "../bondlib/tmx_date.h"
+#include "../bondlib/tmx_date_day_count.h"
 #include "bondxll.h"
 
 using namespace tmx;
 using namespace xll;
 
-XLL_CONST(HANDLEX, TMX_DAY_COUNT_YEARS, safe_handle(date::dcf_years), "Approximate days per year.", CATEGORY " Enum", "")
-XLL_CONST(HANDLEX, TMX_DAY_COUNT_ACTUAL_ACTUAL, safe_handle(date::dcf_actual_actual), "Actual days per year.", CATEGORY " Enum", "")
-XLL_CONST(HANDLEX, TMX_DAY_COUNT_30_360, safe_handle(date::dcf_30_360), "30 days per month, 360 days per year.", CATEGORY " Enum", "")
-XLL_CONST(HANDLEX, TMX_DAY_COUNT_ACTUAL_360, safe_handle(date::dcf_actual_360), "Actual days divided by 360.", CATEGORY " Enum", "")
-XLL_CONST(HANDLEX, TMX_DAY_COUNT_ACTUAL_365, safe_handle(date::dcf_actual_365), "Actual days divided by 365.", CATEGORY " Enum", "")
+//XLL_CONST(HANDLEX, TMX_DAY_COUNT_YEARS, safe_handle(date::dcf_years), "Approximate days per year.", CATEGORY " Enum", "")
+//XLL_CONST(HANDLEX, TMX_DAY_COUNT_ACTUAL_ACTUAL, safe_handle(date::dcf_actual_actual), "Actual days per year.", CATEGORY " Enum", "")
+XLL_CONST(HANDLEX, TMX_DAY_COUNT_30_360, safe_handle(date::day_count_isma30360), "30 days per month, 360 days per year.", CATEGORY " Enum", "")
+//XLL_CONST(HANDLEX, TMX_DAY_COUNT_ACTUAL_360, safe_handle(date::dcf_actual_360), "Actual days divided by 360.", CATEGORY " Enum", "")
+//XLL_CONST(HANDLEX, TMX_DAY_COUNT_ACTUAL_365, safe_handle(date::dcf_actual_365), "Actual days divided by 365.", CATEGORY " Enum", "")
 
-XLL_CONST(WORD, TMX_FREQUENCY_ANNUALLY, tmx::date::frequency::annually, "Yearly payments.", CATEGORY " Enum", "")
-XLL_CONST(WORD, TMX_FREQUENCY_SEMIANNUALLY, tmx::date::frequency::semiannually, "2 payments per year.", CATEGORY " Enum", "")
-XLL_CONST(WORD, TMX_FREQUENCY_QUARTERLY, tmx::date::frequency::quarterly, "4 payments per year.", CATEGORY " Enum", "")
-XLL_CONST(WORD, TMX_FREQUENCY_MONTHLY, tmx::date::frequency::monthly, "12 payments per year.", CATEGORY " Enum", "")
+XLL_CONST(WORD, TMX_FREQUENCY_ANNUALLY, (WORD)tmx::date::frequency::annually, "Yearly payments.", CATEGORY " Enum", "")
+XLL_CONST(WORD, TMX_FREQUENCY_SEMIANNUALLY, (WORD)tmx::date::frequency::semiannually, "2 payments per year.", CATEGORY " Enum", "")
+XLL_CONST(WORD, TMX_FREQUENCY_QUARTERLY, (WORD)tmx::date::frequency::quarterly, "4 payments per year.", CATEGORY " Enum", "")
+XLL_CONST(WORD, TMX_FREQUENCY_MONTHLY, (WORD)tmx::date::frequency::monthly, "12 payments per year.", CATEGORY " Enum", "")
 
 AddIn xai_enum(
 	Function(XLL_LPOPER, "xll_enum", "ENUM")
 	.Arguments({
-		Arg(XLL_CSTRING12, "enum", "is the string representation of an enumeration.")
+		Arg(XLL_CSTRING, "enum", "is the string representation of an enumeration.")
 		})
 	.Category(CATEGORY)
 	.FunctionHelp("Return evaluate a string representation of an enumeration.")
@@ -41,8 +41,6 @@ LPOPER WINAPI xll_enum(const XCHAR* e)
 	return &o;
 }
 
-
-
 AddIn xai_date_add_years(
 	Function(XLL_DOUBLE, "xll_date_add_years", CATEGORY ".DATE.ADD_YEARS")
 	.Arguments({
@@ -56,9 +54,7 @@ double WINAPI xll_date_add_years(double d, double y)
 {
 #pragma XLLEXPORT
 
-	auto t = date::add_years(as_time(d), y);
-
-	return t.time_since_epoch().count()/86400.;
+	return d + y*date::days_per_year;
 }
 
 AddIn xai_date_add_ymd(
@@ -99,7 +95,7 @@ double WINAPI xll_date_sub_years(double d0, double d1)
 {
 #pragma XLLEXPORT
 
-	return date::sub_years(as_days(d0), as_days(d1));
+	return (d0 - d1)/date::days_per_year;
 }
 
 AddIn xai_date_dcf(
@@ -118,7 +114,7 @@ double WINAPI xll_date_dcf(HANDLEX dcf, double d0, double d1)
 	double result = INVALID_HANDLEX;
 
 	try {
-		date::dcf_t* _dcf = safe_pointer<date::dcf_t>(dcf);
+		date::day_count_t* _dcf = safe_pointer<date::day_count_t>(dcf);
 		if (!_dcf) {
 			XLL_ERROR(__FUNCTION__ ": invalid day count fraction");
 
@@ -133,77 +129,3 @@ double WINAPI xll_date_dcf(HANDLEX dcf, double d0, double d1)
 
 	return result;
 }
-
-AddIn xai_date_dcf_years(
-	Function(XLL_DOUBLE, "xll_date_dcf_years", CATEGORY ".DATE.DCF_YEARS")
-	.Arguments({
-		Arg(XLL_DOUBLE, "d0", "is an Excel date."),
-		Arg(XLL_DOUBLE, "d1", "is an Excel date."),
-		})
-		.Category(CATEGORY)
-	.FunctionHelp("Return time in years from d0 to d1.")
-);
-
-double WINAPI xll_date_dcf_years(double d0, double d1)
-{
-#pragma XLLEXPORT
-	return xll_date_dcf(xll_TMX_DAY_COUNT_YEARS(), d0, d1);
-}
-
-AddIn xai_date_dcf_actual_360(
-	Function(XLL_DOUBLE, "xll_date_dcf_actual_360", CATEGORY ".DATE.DCF_ACTUAL_360")
-	.Arguments({
-		Arg(XLL_DOUBLE, "d0", "is an Excel date."),
-		Arg(XLL_DOUBLE, "d1", "is an Excel date."),
-		})
-		.Category(CATEGORY)
-	.FunctionHelp("Return Actual/360 day count fraction from d0 to d1.")
-);
-double WINAPI xll_date_dcf_actual_360(double d0, double d1)
-{
-#pragma XLLEXPORT
-	return xll_date_dcf(xll_TMX_DAY_COUNT_ACTUAL_360(), d0, d1);
-}
-AddIn xai_date_dcf_actual_365(
-	Function(XLL_DOUBLE, "xll_date_dcf_actual_365", CATEGORY ".DATE.DCF_ACTUAL_365")
-	.Arguments({
-		Arg(XLL_DOUBLE, "d0", "is an Excel date."),
-		Arg(XLL_DOUBLE, "d1", "is an Excel date."),
-		})
-		.Category(CATEGORY)
-	.FunctionHelp("Return Actual/365 day count fraction from d0 to d1.")
-);
-double WINAPI xll_date_dcf_actual_365(double d0, double d1)
-{
-#pragma XLLEXPORT
-	return xll_date_dcf(xll_TMX_DAY_COUNT_ACTUAL_365(), d0, d1);
-}
-AddIn xai_date_dcf_actual_actual(
-	Function(XLL_DOUBLE, "xll_date_dcf_actual_actual", CATEGORY ".DATE.DCF_ACTUAL_ACTUAL")
-	.Arguments({
-		Arg(XLL_DOUBLE, "d0", "is an Excel date."),
-		Arg(XLL_DOUBLE, "d1", "is an Excel date."),
-		})
-		.Category(CATEGORY)
-	.FunctionHelp("Return time Actual/Actual day count fraction from d0 to d1.")
-);
-double WINAPI xll_date_dcf_actual_actual(double d0, double d1)
-{
-#pragma XLLEXPORT
-	return xll_date_dcf(xll_TMX_DAY_COUNT_ACTUAL_ACTUAL(), d0, d1);
-}
-AddIn xai_date_dcf_30_360(
-	Function(XLL_DOUBLE, "xll_date_dcf_30_360", CATEGORY ".DATE.DCF_30_360")
-	.Arguments({
-		Arg(XLL_DOUBLE, "d0", "is an Excel date."),
-		Arg(XLL_DOUBLE, "d1", "is an Excel date."),
-		})
-		.Category(CATEGORY)
-	.FunctionHelp("Return 30/360 day count fraction from d0 to d1.")
-);
-double WINAPI xll_date_dcf_30_360(double d0, double d1)
-{
-#pragma XLLEXPORT
-	return xll_date_dcf(xll_TMX_DAY_COUNT_30_360(), d0, d1);
-}
-

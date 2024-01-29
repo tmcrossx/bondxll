@@ -19,12 +19,20 @@
     <ClCompile Include="xll_bond.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="xll_bootstrap.cpp" />
+    <ClCompile Include="xll_bootstrap.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="xll_date.cpp" />
-    <ClCompile Include="xll_ho_lee.cpp" />
+    <ClCompile Include="xll_ho_lee.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="xll_instrument.cpp" />
-    <ClCompile Include="xll_pwflat.cpp" />
-    <ClCompile Include="xll_valuation.cpp" />
+    <ClCompile Include="xll_pwflat.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="xll_valuation.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
