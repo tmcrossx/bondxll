@@ -54,4 +54,8 @@ namespace xll {
 	{
 		return std::chrono::time_point_cast<std::chrono::days>(excel_clock::to_sys(as_time(d)));
 	}
+	inline std::chrono::year_month_day as_ymd(double d)
+	{
+		return std::chrono::year_month_day(as_days(d));
+	}
 }
