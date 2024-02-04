@@ -1,6 +1,7 @@
 // bondxll.h
 #pragma once
 #include <chrono>
+#include <span>
 #include "xll.h"
 
 #ifndef CATEGORY
@@ -8,6 +9,17 @@
 #endif
 
 namespace xll {
+
+	template<class X>
+	constexpr std::span<double> span(const _FP12& x)
+	{
+		return std::span{ x.array, x.rows * x.columns };
+	}
+	template<class X>
+	constexpr std::span<double> span(const _FP& x)
+	{
+		return std::span{ x.array, x.rows * x.columns };
+	}
 
 	// https://stackoverflow.com/questions/33964461/handling-julian-days-in-c11-14
 	struct excel_clock;

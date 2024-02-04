@@ -13,7 +13,7 @@ using namespace xll;
 X(ACTUAL_ACTUAL, isdaactualactual, "Actual days per year.", bbldc_basicisdaactualactual.cpp) \
 
 //XLL_CONST(HANDLEX, TMX_DAY_COUNT_ACTUAL_ACTUAL, safe_handle(date::day_count_isdaactualactual), "Actual days per year.", CATEGORY " Enum", BDE_URL "/bbldc_basicisdaactualactual.cpp")
-#define TMX_DAY_COUNT_ENUM(a, b, c, d) XLL_CONST(HANDLEX, TMX_DAY_COUNT_##a, safe_handle(&date::day_count_##b), c, CATEGORY " Enum", BDE_URL #d)
+#define TMX_DAY_COUNT_ENUM(a, b, c, d) XLL_CONST(HANDLEX, TMX_DAY_COUNT_##a, safe_handle(date::day_count_##b), c, CATEGORY " Enum", BDE_URL #d)
 TMX_DAY_COUNT(TMX_DAY_COUNT_ENUM)
 #undef TMX_DAY_COUNT_ENUM
 
@@ -82,7 +82,7 @@ double WINAPI xll_date_dcf(double d0, double d1, HANDLEX dcf)
 		if (!dcf) {
 			dcf = safe_handle(&date::day_count_isma30360);
 		}
-		date::day_count_t* _dcf = safe_pointer<date::day_count_t>(dcf);
+		date::day_count_t* _dcf = reinterpret_cast<date::day_count_t*>(safe_pointer<date::day_count_t>(dcf));
 		ensure(_dcf);
 
 		date::ymd y0 = as_ymd(d0);

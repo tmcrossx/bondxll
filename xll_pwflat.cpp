@@ -1,5 +1,5 @@
 // xll_pwflat.cpp - Piecewise flat curve view
-#include "../bondlib/tmx_pwflat_curve.h"
+#include "../bondlib/tmx_curve_pwflat.h"
 #include "bondxll.h"
 
 using namespace tmx;
@@ -8,15 +8,15 @@ using namespace xll;
 AddIn xai_pwflat_curve_(
 	Function(XLL_HANDLEX, "xll_pwflat_curve_", "\\" CATEGORY ".PWFLAT.CURVE")
 	.Arguments({
-		Arg(XLL_FPX, "t", "is an array of positive increasing times."),
-		Arg(XLL_FPX, "f", "is an array of corresponding rates."),
+		Arg(XLL_FP, "t", "is an array of positive increasing times."),
+		Arg(XLL_FP, "f", "is an array of corresponding rates."),
 		Arg(XLL_LPOPER, "_f", "is an optional extrapolation rate."),
 		})
 	.Uncalced()
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to a piecewise flat forward curve.")
 );
-HANDLEX WINAPI xll_pwflat_curve_(const _FPX* pt, const _FPX* pf, LPOPER p_f)
+HANDLEX WINAPI xll_pwflat_curve_(const _FP12* pt, const _FP12* pf, LPOPER p_f)
 {
 #pragma XLLEXPORT
 
@@ -26,16 +26,16 @@ HANDLEX WINAPI xll_pwflat_curve_(const _FPX* pt, const _FPX* pf, LPOPER p_f)
 		auto m = size(*pt);
 		ensure(m == size(*pf));
 		double _f = std::numeric_limits<double>::quiet_NaN();
-		if (*p_f) {
-			ensure(p_f->is_num());
-			_f = p_f->as_num();
+		if (!isMissing(*p_f)) {
+			ensure(isNum(*p_f));
+			_f = asNum(*p_f);
 		}
 		// lasts 2 times equal use last f to extrapolate
 		if (m >= 2 and pt->array[m-1] == pt->array[m-2]) {
 			--m;
 			_f = pf->array[m];
 		}
-		handle<curve<>> h_(new pwflat::curve(m, pt->array, pf->array, _f));
+		handle<curve::base<>> h_(new curve::pwflat(m, pt->array, pf->array, _f));
 		ensure(h_);
 		h = h_.get();
 	}
@@ -47,7 +47,7 @@ HANDLEX WINAPI xll_pwflat_curve_(const _FPX* pt, const _FPX* pf, LPOPER p_f)
 }
 
 AddIn xai_pwflat_curve(
-	Function(XLL_FPX, "xll_pwflat_curve", CATEGORY ".PWFLAT.CURVE")
+	Function(XLL_FP, "xll_pwflat_curve", CATEGORY ".PWFLAT.CURVE")
 	.Arguments({
 		Arg(XLL_HANDLEX, "curve", "is handle to a curve."),
 		})
@@ -55,20 +55,17 @@ AddIn xai_pwflat_curve(
 	.FunctionHelp("Return a two row array of times and rates. "
 	"The last time is duplicated and the last rate is the extrapolation.")
 );
-_FPX* WINAPI xll_pwflat_curve(HANDLEX c)
+_FP12* WINAPI xll_pwflat_curve(HANDLEX c)
 {
 #pragma XLLEXPORT
 	static FPX result;
 
 	try {
 		result.resize(0, 0);
-		handle<curve<>> c_(c);
+		handle<curve::base<>> c_(c);
 		ensure(c_);
 
-		auto pc = c_.as<pwflat::curve_view<>>();
-		ensure(pc);
-		
-		int m = (int)pc->size();
+		int m = (int)c_->size();
 		result.resize(2, m + 1);
 		view<double> t = pc->time();
 		view<double> f = pc->rate();
