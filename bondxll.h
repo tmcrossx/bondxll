@@ -42,7 +42,7 @@ namespace xll {
 		template <class Dur>
 		static auto from_sys(std::chrono::sys_time<Dur> const& tp) noexcept
 		{
-			return excel_time{ tp - (std::chrono::sys_days{std::chrono::year(1900) / 1 / 0}) };
+			return excel_time{ tp - (std::chrono::sys_days{std::chrono::year(1900) / 1 / 1}) };
 		}
 
 		template <class Dur>
