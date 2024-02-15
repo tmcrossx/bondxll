@@ -15,7 +15,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xll_array_sequence.cpp" />
-    <ClCompile Include="xll_black.cpp" />
+    <ClCompile Include="xll_option.cpp" />
     <ClCompile Include="xll_bond.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
