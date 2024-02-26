@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bondxll.h" />
+    <ClInclude Include="xll_enum.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xll_array_sequence.cpp" />

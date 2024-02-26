@@ -4,7 +4,7 @@
 #include "xll.h"
 
 #ifndef CATEGORY
-#define CATEGORY L"TMX"
+#define CATEGORY "TMX"
 #endif
 
 namespace xll {

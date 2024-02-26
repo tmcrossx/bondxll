@@ -51,7 +51,7 @@ const _FP12* WINAPI xll_array_sequence(double start, double stop, double incr)
 		XLL_ERROR(ex.what());
 	}
 	catch (...) {
-		XLL_ERROR("ARRAY.SEQUENCE: unknown exception");
+		XLL_ERROR(__FUNCTION__ ": unknown exception");
 	}
 
 	return a.get();

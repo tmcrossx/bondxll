@@ -5,21 +5,6 @@
 using namespace xll;
 using namespace tmx;
 
-AddIn xai_normal_cdf(
-	Function(XLL_DOUBLE, L"xll_normal_cdf", CATEGORY L".NORMAL.CDF")
-	.Arguments({
-		Arg(XLL_DOUBLE, L"x", L"is a number."),
-		Arg(XLL_DOUBLE, L"s", L"is the vol."),
-		})
-		.Category(CATEGORY)
-	.FunctionHelp("Return the normal cumulative distribution function.")
-);
-double WINAPI xll_normal_cdf(double x, double s)
-{
-#pragma XLLEXPORT
-	return variate::normal<>{}.cdf(x, s);
-}
-
 AddIn xai_black_moneyness(
 	Function(XLL_DOUBLE, L"xll_black_moneyness", CATEGORY L".BLACK.MONEYNESS")
 	.Arguments({

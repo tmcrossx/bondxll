@@ -17,31 +17,6 @@ XLL_CONST(WORD, TMX_FREQUENCY_SEMIANNUALLY, (WORD)tmx::date::frequency::semiannu
 XLL_CONST(WORD, TMX_FREQUENCY_QUARTERLY, (WORD)tmx::date::frequency::quarterly, "4 payments per year.", CATEGORY " Enum", "")
 XLL_CONST(WORD, TMX_FREQUENCY_MONTHLY, (WORD)tmx::date::frequency::monthly, "12 payments per year.", CATEGORY " Enum", "")
 
-// TODO: move elsewhere
-AddIn xai_enum(
-	Function(XLL_LPOPER, "xll_enum", "ENUM")
-	.Arguments({
-		Arg(XLL_CSTRING, "enum", "is the string representation of an enumeration.")
-		})
-	.Category(CATEGORY)
-	.FunctionHelp("Return evaluate a string representation of an enumeration.")
-);
-LPOPER WINAPI xll_enum(const XCHAR* e)
-{
-#pragma XLLEXPORT
-	static OPER o;
-
-	try {
-		o = Excel(xlfEvaluate, OPER("=") & OPER(e) & OPER("()"));
-	}
-	catch (const std::exception& ex) {
-		XLL_ERROR(ex.what());
-
-		return (LPOPER)&ErrValue;
-	}
-
-	return &o;
-}
 
 AddIn xai_date_addyears(
 	Function(XLL_DOUBLE, "xll_date_addyears", CATEGORY ".DATE.ADDYEARS")
