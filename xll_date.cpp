@@ -4,21 +4,25 @@
 using namespace tmx;
 using namespace xll;
 
-#define BDE_URL "https://github.com/bloomberg/bde/blob/main/groups/bbl/bbldc/"
+#define BDE_URL "https://github.com/bloomberg/bde/blob/main/groups/bbl/bbldc/bbldc_basic"
 
 // TODO: (Tianxin) add all the day count fraction types
 
 // TMX_DAY_COUNT, date::day_count_t, description, BDE file
 #define TMX_DAY_COUNT(X) \
-X(ACTUAL_ACTUAL, isdaactualactual, "Actual days per year.", bbldc_basicisdaactualactual.cpp) \
+X(30_360, isma30360, "Each year is assumed to have 12 months and 360 days, with each month consisting of exactly 30 days.") \
+X(30E_360, isma30360eom, "Each year is assumed to have 12 months and 360 days, with each month consisting of exactly 30 days. The end-of-month rule is applied.") \
+X(ACTUAL_ACTUAL, isdaactualactual, "Actual days per year.") \
+X(ACTUAL_360, actual360, "Actual days divided by 360.") \
+X(ACTUAL_365, actual365fixed, "Actual days divided by 365.")
 
-//XLL_CONST(HANDLEX, TMX_DAY_COUNT_ACTUAL_ACTUAL, safe_handle(date::day_count_isdaactualactual), "Actual days per year.", CATEGORY " Enum", BDE_URL "/bbldc_basicisdaactualactual.cpp")
-#define TMX_DAY_COUNT_ENUM(a, b, c, d) XLL_CONST(HANDLEX, TMX_DAY_COUNT_##a, safe_handle(date::day_count_##b), c, CATEGORY " Enum", BDE_URL #d)
+//XLL_CONST(HANDLEX, TMX_DAY_COUNT_ACTUAL_ACTUAL, safe_handle(date::day_count_isdaactualactual), "Actual days per year.", CATEGORY " Enum", BDE_URL  ".cpp")
+#define TMX_DAY_COUNT_ENUM(a, b, c) XLL_CONST(HANDLEX, TMX_DAY_COUNT_##a, safe_handle(date::day_count_##b), c, CATEGORY " Enum", BDE_URL #b ".cpp")
 TMX_DAY_COUNT(TMX_DAY_COUNT_ENUM)
 #undef TMX_DAY_COUNT_ENUM
 
 // All day count fractions as string names.
-#define TMX_DAY_COUNT_ENUM(a, b, c, d) OPER("TMX_DAY_COUNT_" #a),
+#define TMX_DAY_COUNT_ENUM(a, b, c) OPER("TMX_DAY_COUNT_" #a),
 OPER tmx_day_count_enum({
 	TMX_DAY_COUNT(TMX_DAY_COUNT_ENUM)
 });
@@ -82,13 +86,13 @@ double WINAPI xll_date_dcf(double d0, double d1, HANDLEX dcf)
 		if (!dcf) {
 			dcf = safe_handle(&date::day_count_isma30360);
 		}
-		date::day_count_t* _dcf = reinterpret_cast<date::day_count_t*>(safe_pointer<date::day_count_t>(dcf));
+		date::day_count_t _dcf = reinterpret_cast<date::day_count_t>(safe_pointer<date::day_count_t>(dcf));
 		ensure(_dcf);
 
 		date::ymd y0 = as_ymd(d0);
 		date::ymd y1 = as_ymd(d1);
 
-		result = (*_dcf)(y0, y1);
+		result = (_dcf)(y0, y1);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
