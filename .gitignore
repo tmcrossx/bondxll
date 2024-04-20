@@ -6,3 +6,5 @@
 /bondlib.xlsx
 /.vs/bondxll
 /x64/Debug
+/.vs
+/x64/Release
