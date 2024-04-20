@@ -28,3 +28,4 @@ LPXLOPER12 WINAPI xll_enum(const XCHAR* e)
 
 	return &o;
 }
+

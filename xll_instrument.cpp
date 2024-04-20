@@ -40,7 +40,7 @@ AddIn xai_instrument(
 const _FP12* WINAPI xll_instrument(HANDLEX i)
 {
 #pragma XLLEXPORT
-	static FPX result;
+	static xll::FPX result;
 
 	try {
 		result.resize(0, 0);

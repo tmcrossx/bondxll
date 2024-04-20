@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bondxll.h" />
+    <ClInclude Include="xll_enum.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xll_array_sequence.cpp" />
@@ -22,8 +23,9 @@
     <ClCompile Include="xll_bootstrap.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="xll_date.cpp" />
-    <ClCompile Include="xll_enum.cpp" />
+    <ClCompile Include="xll_date.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="xll_ho_lee.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -31,7 +33,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="xll_pwflat.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="xll_valuation.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -78,16 +81,16 @@
     <LinkIncremental>
     </LinkIncremental>
     <IntDir>$(SolutionDir)$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(APPDATA)\KALX\xll\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(APPDATA)\KALX\xll\lib\x64\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetExt>.xll</TargetExt>
     <LinkIncremental>
     </LinkIncremental>
     <IntDir>$(SolutionDir)$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(APPDATA)\KALX\xll\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(APPDATA)\KALX\xll\lib\x64\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -111,7 +114,7 @@
       </LinkTimeCodeGeneration>
       <Profile>true</Profile>
       <AdditionalOptions>/WHOLEARCHIVE:xll %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xll.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -138,7 +141,7 @@
       <TurnOffAssemblyGeneration>true</TurnOffAssemblyGeneration>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <AdditionalOptions>/WHOLEARCHIVE:xll %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xll.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
