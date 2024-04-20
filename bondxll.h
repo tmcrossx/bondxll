@@ -2,7 +2,7 @@
 #pragma once
 #include <chrono>
 #include <span>
-#include "xll.h"
+#include "xll24/xll.h"
 
 #ifndef CATEGORY
 #define CATEGORY "TMX"
@@ -62,12 +62,12 @@ namespace xll {
 	{
 		return excel_time{ excel_clock::duration{d} };
 	}
-	inline std::chrono::sys_days as_days(double d)
+	inline std::chrono::sys_days to_days(double d)
 	{
 		return std::chrono::time_point_cast<std::chrono::days>(excel_clock::to_sys(as_time(d)));
 	}
-	inline std::chrono::year_month_day as_ymd(double d)
+	inline std::chrono::year_month_day to_ymd(double d)
 	{
-		return std::chrono::year_month_day(as_days(d));
+		return std::chrono::year_month_day(to_days(d));
 	}
 }

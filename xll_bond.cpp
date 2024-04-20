@@ -103,7 +103,7 @@ HANDLEX WINAPI xll_bond_cash_flow_(HANDLEX b, double dated)
 		handle<bond::basic<>> b_(b);
 		ensure(b_);
 
-		handle<instrument<>> i_(new instrument_value<>(bond::instrument<>(*b_, as_days(dated))));
+		handle<instrument<>> i_(new instrument_value<>(bond::instrument<>(*b_, to_days(dated))));
 		ensure(i_);
 
 		result = i_.get();

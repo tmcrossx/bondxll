@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bondxll", "bondxll.vcxproj"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bondlib", "..\bondlib\bondlib.vcxproj", "{E3EC9686-83A5-400F-B10E-A398005BCEFD}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xll", "xll24\xll.vcxproj", "{7D7375AF-E7E3-42D3-A00F-D8EE22C39924}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{E3EC9686-83A5-400F-B10E-A398005BCEFD}.Release|x64.Build.0 = Release|x64
 		{E3EC9686-83A5-400F-B10E-A398005BCEFD}.Release|x86.ActiveCfg = Release|Win32
 		{E3EC9686-83A5-400F-B10E-A398005BCEFD}.Release|x86.Build.0 = Release|Win32
+		{7D7375AF-E7E3-42D3-A00F-D8EE22C39924}.Debug|x64.ActiveCfg = Debug|x64
+		{7D7375AF-E7E3-42D3-A00F-D8EE22C39924}.Debug|x64.Build.0 = Debug|x64
+		{7D7375AF-E7E3-42D3-A00F-D8EE22C39924}.Debug|x86.ActiveCfg = Debug|x64
+		{7D7375AF-E7E3-42D3-A00F-D8EE22C39924}.Debug|x86.Build.0 = Debug|x64
+		{7D7375AF-E7E3-42D3-A00F-D8EE22C39924}.Release|x64.ActiveCfg = Release|x64
+		{7D7375AF-E7E3-42D3-A00F-D8EE22C39924}.Release|x64.Build.0 = Release|x64
+		{7D7375AF-E7E3-42D3-A00F-D8EE22C39924}.Release|x86.ActiveCfg = Release|x64
+		{7D7375AF-E7E3-42D3-A00F-D8EE22C39924}.Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

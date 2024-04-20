@@ -30,7 +30,7 @@ HANDLEX WINAPI xll_curve_pwflat_(const _FP12* pt, const _FP12* pf, LPOPER p_f)
 			ensure(type(*p_f) == xltypeNum);
 			_f = p_f->val.num;
 		}
-		// lasts 2 times equal use last f to extrapolate
+		// last 2 times equal use last f to extrapolate
 		if (m >= 2 and pt->array[m-1] == pt->array[m-2]) {
 			--m;
 			_f = pf->array[m];
@@ -61,7 +61,6 @@ _FP12* WINAPI xll_curve_pwflat(HANDLEX c)
 	static FPX result;
 
 	try {
-		result.resize(0, 0);
 		handle<curve::pwflat<>> c_(c);
 		ensure(c_);
 
@@ -77,10 +76,100 @@ _FP12* WINAPI xll_curve_pwflat(HANDLEX c)
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
+
+		return nullptr;
 	}
 
 	return result.get();
 }
+
+AddIn xai_curve_pwflat_value(
+	Function(XLL_DOUBLE, "xll_curve_pwflat_value", CATEGORY ".CURVE.PWFLAT.FORWARD")
+	.Arguments({
+		Arg(XLL_HANDLEX, "c", "is a handle to a curve."),
+		Arg(XLL_DOUBLE, "t", "is the forward time."),
+		Arg(XLL_DOUBLE, "_t", "is the time at which to evaluate the forward. Default is 0."),
+		})
+	.Category(CATEGORY)
+	.FunctionHelp("Return the forward value of a piecewise flat curve.")
+);
+double WINAPI xll_curve_pwflat_value(HANDLEX c, double t, double _t)
+{
+#pragma XLLEXPORT
+
+	double v = math::NaN<double>;
+
+	try {
+		handle<curve::pwflat<>> c_(c);
+		ensure(c_);
+
+		v = c_->forward(t, _t);
+	}
+	catch (const std::exception& ex) {
+		XLL_ERROR(ex.what());
+	}
+
+	return v;
+}
+
+AddIn xai_curve_pwflat_spot(
+	Function(XLL_DOUBLE, "xll_curve_pwflat_spot", CATEGORY ".CURVE.PWFLAT.SPOT")
+	.Arguments({
+		Arg(XLL_HANDLEX, "c", "is a handle to a piecewise flat curve."),
+		Arg(XLL_DOUBLE, "t", "is the yield time."),
+		Arg(XLL_DOUBLE, "_t", "is the time at which to evaluate the yield. Default is 0."),
+		})
+	.Category(CATEGORY)
+	.FunctionHelp("Return the spot value of a piecewise flat curve.")
+);
+double WINAPI xll_curve_pwflat_spot(HANDLEX c, double t, double _t)
+{
+#pragma XLLEXPORT
+
+	double v = math::NaN<double>;
+
+	try {
+		handle<curve::pwflat<>> c_(c);
+		ensure(c_);
+
+		v = c_->spot(t, _t);
+	}
+	catch (const std::exception& ex) {
+		XLL_ERROR(ex.what());
+	}
+
+	return v;
+}
+
+AddIn xai_curve_pwflat_discount(
+	Function(XLL_DOUBLE, "xll_curve_pwflat_discount", CATEGORY ".CURVE.PWFLAT.DISCOUNT")
+	.Arguments({
+		Arg(XLL_HANDLEX, "c", "is a handle to a piecewise flat curve."),
+		Arg(XLL_DOUBLE, "t", "is the discount time."),
+		Arg(XLL_DOUBLE, "_t", "is the time at which to evaluate the discount. Default is 0."),
+		})
+	.Category(CATEGORY)
+	.FunctionHelp("Return the discount value of a piecewise flat curve.")
+);
+HANDLEX WINAPI xll_curve_pwflat_discount(HANDLEX c, double t, double _t)
+{
+#pragma XLLEXPORT
+
+	double v = math::NaN<double>;
+
+	try {
+		handle<curve::pwflat<>> c_(c);
+		ensure(c_);
+
+		v = c_->discount(t, _t);
+	}
+	catch (const std::exception& ex) {
+		XLL_ERROR(ex.what());
+	}
+
+	return v;
+}
+
 
 #if 0
 
@@ -145,90 +234,3 @@ HANDLEX WINAPI xll_curve_pwflat_translate_(HANDLEX c, double u)
 	return result;
 }
 #endif // 0
-
-AddIn xai_curve_pwflat_value(
-	Function(XLL_DOUBLE, "xll_curve_pwflat_value", CATEGORY ".CURVE.PWFLAT.FORWARD")
-	.Arguments({
-		Arg(XLL_HANDLEX, "c", "is a handle to a curve."),
-		Arg(XLL_DOUBLE, "t", "is the forward time."),
-		Arg(XLL_DOUBLE, "_t", "is the time at which to evaluate the forward. Default is 0."),
-		})
-	.Category(CATEGORY)
-	.FunctionHelp("Return the forward value of a piecewise flat curve.")
-);
-HANDLEX WINAPI xll_curve_pwflat_value(HANDLEX c, double t, double _t)
-{
-#pragma XLLEXPORT
-
-	double v = math::NaN<double>;
-
-	try {
-		handle<curve::pwflat<>> c_(c);
-		ensure(c_);
-
-		v = c_->forward(t, _t);
-	}
-	catch (const std::exception& ex) {
-		XLL_ERROR(ex.what());
-	}
-
-	return v;
-}
-
-AddIn xai_curve_pwflat_spot(
-	Function(XLL_DOUBLE, "xll_curve_pwflat_yield", CATEGORY ".CURVE.PWFLAT.SPOT")
-	.Arguments({
-		Arg(XLL_HANDLEX, "c", "is a handle to a piecewise flat curve."),
-		Arg(XLL_DOUBLE, "t", "is the yield time."),
-		Arg(XLL_DOUBLE, "_t", "is the time at which to evaluate the yield. Default is 0."),
-		})
-	.Category(CATEGORY)
-	.FunctionHelp("Return the spot value of a piecewise flat curve.")
-);
-HANDLEX WINAPI xll_curve_pwflat_spot(HANDLEX c, double t, double _t)
-{
-#pragma XLLEXPORT
-
-	double v = math::NaN<double>;
-
-	try {
-		handle<curve::pwflat<>> c_(c);
-		ensure(c_);
-
-		v = c_->spot(t, _t);
-	}
-	catch (const std::exception& ex) {
-		XLL_ERROR(ex.what());
-	}
-
-	return v;
-}
-
-AddIn xai_curve_pwflat_discount(
-	Function(XLL_DOUBLE, "xll_curve_pwflat_discount", CATEGORY ".CURVE.PWFLAT.DISCOUNT")
-	.Arguments({
-		Arg(XLL_HANDLEX, "c", "is a handle to a piecewise flat curve."),
-		Arg(XLL_DOUBLE, "t", "is the discount time."),
-		Arg(XLL_DOUBLE, "_t", "is the time at which to evaluate the discount. Default is 0."),
-		})
-	.Category(CATEGORY)
-	.FunctionHelp("Return the discount value of a piecewise flat curve.")
-);
-HANDLEX WINAPI xll_curve_pwflat_discount(HANDLEX c, double t, double _t)
-{
-#pragma XLLEXPORT
-
-	double v = math::NaN<double>;
-
-	try {
-		handle<curve::pwflat<>> c_(c);
-		ensure(c_);
-
-		v = c_->discount(t + _t, _t);
-	}
-	catch (const std::exception& ex) {
-		XLL_ERROR(ex.what());
-	}
-
-	return v;
-}

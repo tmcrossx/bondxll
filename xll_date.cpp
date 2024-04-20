@@ -30,10 +30,23 @@ OPER tmx_day_count_enum({
 
 XLL_CONST(LPOPER, TMX_DAY_COUNT_ENUM, &tmx_day_count_enum, "Day count fraction types.", CATEGORY " Enum", BDE_URL)
 
-XLL_CONST(WORD, TMX_FREQUENCY_ANNUALLY, (WORD)tmx::date::frequency::annually, "Yearly payments.", CATEGORY " Enum", "")
-XLL_CONST(WORD, TMX_FREQUENCY_SEMIANNUALLY, (WORD)tmx::date::frequency::semiannually, "2 payments per year.", CATEGORY " Enum", "")
-XLL_CONST(WORD, TMX_FREQUENCY_QUARTERLY, (WORD)tmx::date::frequency::quarterly, "4 payments per year.", CATEGORY " Enum", "")
-XLL_CONST(WORD, TMX_FREQUENCY_MONTHLY, (WORD)tmx::date::frequency::monthly, "12 payments per year.", CATEGORY " Enum", "")
+#define TMX_FREQUENCY(X) \
+X(ANNUALLY, annually, "Yearly payments.") \
+X(SEMIANNUALLY, semiannually, "2 payments per year.") \
+X(QUARTERLY, quarterly, "4 payments per year.") \
+X(MONTHLY, monthly, "12 payments per year.") \
+
+#define TMX_FREQUENCY_ENUM(a, b, c) XLL_CONST(WORD, TMX_FREQUENCY_##a, (WORD)tmx::date::frequency::b, c, CATEGORY " Enum", "")
+TMX_FREQUENCY(TMX_FREQUENCY_ENUM)
+#undef TMX_FREQUENCY_ENUM
+
+#define TMX_FREQUENCY_ENUM(a, b, c) OPER("TMX_FREQUENCY_" #a),
+OPER tmx_frequency_enum({
+	TMX_FREQUENCY(TMX_FREQUENCY_ENUM)
+	});
+#undef TMX_FREQUENCY_ENUM
+
+XLL_CONST(LPOPER, TMX_FREQUENCY_ENUM, &tmx_frequency_enum, "Payment frequencies.", CATEGORY " Enum", "https://www.investopedia.com/terms/c/compounding.asp")
 
 AddIn xai_date_addyears(
 	Function(XLL_DOUBLE, "xll_date_addyears", CATEGORY ".DATE.ADDYEARS")
@@ -89,10 +102,10 @@ double WINAPI xll_date_dcf(double d0, double d1, HANDLEX dcf)
 		date::day_count_t _dcf = reinterpret_cast<date::day_count_t>(safe_pointer<date::day_count_t>(dcf));
 		ensure(_dcf);
 
-		date::ymd y0 = as_ymd(d0);
-		date::ymd y1 = as_ymd(d1);
+		date::ymd y0 = to_ymd(d0);
+		date::ymd y1 = to_ymd(d1);
 
-		result = (_dcf)(y0, y1);
+		result = _dcf(y0, y1);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());

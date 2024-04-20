@@ -1,5 +1,5 @@
 // xll_enum.cpp
-#include "xll.h"
+#include "xll24/xll.h"
 
 using namespace xll;
 
@@ -14,11 +14,10 @@ AddIn xai_enum(
 LPXLOPER12 WINAPI xll_enum(const XCHAR* e)
 {
 #pragma XLLEXPORT
-	static OPER o;
+	static OPER o, l(L"="), r(L"()");
 
 	try {
-		auto x = OPER("=") & OPER(e) & OPER("()");
-		o = Excel(xlfEvaluate, x);
+		o = Excel(xlfEvaluate, l & OPER(e) & r);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
