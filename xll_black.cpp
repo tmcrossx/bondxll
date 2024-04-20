@@ -1,5 +1,5 @@
 // xll_black.cpp - Black forward model
-#include "../bondlib/tmx_black.h"
+#include "../bondlib/tmx_option.h"
 #include "bondxll.h"
 
 using namespace xll;
@@ -18,7 +18,7 @@ AddIn xai_black_moneyness(
 double WINAPI xll_black_moneyness(double f, double s, double k)
 {
 #pragma XLLEXPORT
-	return black::moneyness(f, s, k);
+	return option::moneyness(f, s, k);
 }
 
 AddIn xai_black_put_value(
@@ -34,7 +34,7 @@ AddIn xai_black_put_value(
 double WINAPI xll_black_put_value(double f, double s, double k)
 {
 #pragma XLLEXPORT
-	return black::put::value(f, s, k);
+	return option::put::value(f, s, k);
 }
 
 AddIn xai_black_put_delta(
@@ -50,7 +50,7 @@ AddIn xai_black_put_delta(
 double WINAPI xll_black_put_delta(double f, double s, double k)
 {
 #pragma XLLEXPORT
-	return black::put::delta(f, s, k);
+	return option::put::delta(f, s, k);
 }
 
 AddIn xai_black_put_gamma(
@@ -66,7 +66,7 @@ AddIn xai_black_put_gamma(
 double WINAPI xll_black_put_gamma(double f, double s, double k)
 {
 #pragma XLLEXPORT
-	return black::put::gamma(f, s, k);
+	return option::put::gamma(f, s, k);
 }
 
 AddIn xai_black_put_vega(
@@ -82,7 +82,7 @@ AddIn xai_black_put_vega(
 double WINAPI xll_black_put_vega(double f, double s, double k)
 {
 #pragma XLLEXPORT
-	return black::put::vega(f, s, k);
+	return option::put::vega(f, s, k);
 }
 
 AddIn xai_black_call_value(
@@ -98,7 +98,7 @@ AddIn xai_black_call_value(
 double WINAPI xll_black_call_value(double f, double s, double k)
 {
 #pragma XLLEXPORT
-	return black::call::value(f, s, k);
+	return option::call::value(f, s, k);
 }
 
 AddIn xai_black_call_delta(
@@ -114,7 +114,7 @@ AddIn xai_black_call_delta(
 double WINAPI xll_black_call_delta(double f, double s, double k)
 {
 #pragma XLLEXPORT
-	return black::call::delta(f, s, k);
+	return option::call::delta(f, s, k);
 }
 
 AddIn xai_black_put_implied(
@@ -130,5 +130,5 @@ AddIn xai_black_put_implied(
 double WINAPI xll_black_put_implied(double f, double p, double k)
 {
 #pragma XLLEXPORT
-	return black::put::implied(f, p, k);
+	return option::put::implied(f, p, k);
 }
