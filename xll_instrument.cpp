@@ -24,7 +24,7 @@ HANDLEX WINAPI xll_instrument_(const _FP12* pu, const _FP12* pc)
 		return INVALID_HANDLEX;
 	}
 
-	handle<instrument::base<>> h_(new instrument::value(size(*pu), pu->array, pc->array));
+	handle<iterable::base<cash_flow<>>> h_(new instrument::value(size(*pu), pu->array, pc->array));
 
 	return h_ ? h_.get() : INVALID_HANDLEX;
 }
