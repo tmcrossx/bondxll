@@ -3,6 +3,7 @@
 #include "bondxll.h"
 
 using namespace tmx;
+using namespace tmx::instrument;
 using namespace xll;
 
 AddIn xai_instrument_(
@@ -24,7 +25,7 @@ HANDLEX WINAPI xll_instrument_(const _FP12* pu, const _FP12* pc)
 		return INVALID_HANDLEX;
 	}
 
-	handle<iterable::base<cash_flow<>>> h_(new instrument::value(size(*pu), pu->array, pc->array));
+	handle<fms::iterable::base<instrument::cash_flow<>>> h_(new instrument::value(size(*pu), pu->array, pc->array));
 
 	return h_ ? h_.get() : INVALID_HANDLEX;
 }
@@ -43,19 +44,24 @@ const _FP12* WINAPI xll_instrument(HANDLEX i)
 	static xll::FPX result;
 
 	try {
-		result.resize(0, 0);
-		handle<instrument::base<>> i_(i);
+		handle<fms::iterable::base<cash_flow<>>> i_(i);
 		ensure(i_);
 
-		int m = (int)i_->size();
+		auto ii = i_->clone();
+		const auto cf = *(*i_);
+		/*
+		int m = (int)fms::iterable::length(*i_);
 		result.resize(2, m);
 		auto u = i_->time();
 		auto c = i_->cash();
 		std::copy(u.begin(), u.end(), array(result));
 		std::copy(c.begin(), c.end(), array(result) + m);
+		*/
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
+
+		return nullptr;
 	}
 
 	return result.get();
