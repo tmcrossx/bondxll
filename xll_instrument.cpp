@@ -1,6 +1,6 @@
 // xll_instrument.cpp - Instrument times and cash flows.
-#include "../bondlib/tmx_instrument_value.h"
 #include "bondxll.h"
+#include "../bondlib/tmx_instrument_value.h"
 
 using namespace tmx;
 using namespace tmx::instrument;
@@ -25,7 +25,7 @@ HANDLEX WINAPI xll_instrument_(const _FP12* pu, const _FP12* pc)
 		return INVALID_HANDLEX;
 	}
 
-	handle<fms::iterable::base<instrument::cash_flow<>>> h_(new instrument::value(size(*pu), pu->array, pc->array));
+	handle<instrument::interface<>> h_(new instrument::value<>(size(*pu), pu->array, pc->array));
 
 	return h_ ? h_.get() : INVALID_HANDLEX;
 }
@@ -44,19 +44,20 @@ const _FP12* WINAPI xll_instrument(HANDLEX i)
 	static xll::FPX result;
 
 	try {
-		handle<fms::iterable::base<cash_flow<>>> i_(i);
+		handle<instrument::interface<>> i_(i);
 		ensure(i_);
 
-		auto ii = i_->clone();
-		const auto cf = *(*i_);
-		/*
-		int m = (int)fms::iterable::length(*i_);
-		result.resize(2, m);
-		auto u = i_->time();
-		auto c = i_->cash();
-		std::copy(u.begin(), u.end(), array(result));
-		std::copy(c.begin(), c.end(), array(result) + m);
-		*/
+		result.resize(0, 0);
+		auto _i = i_->clone();
+		while (*_i) {
+			const auto uc = **_i;
+			result.push_back(uc.u);
+			result.push_back(uc.c);
+			++*_i;
+		}
+		_i->destroy();
+		result.resize(result.size() / 2, 2);
+
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());

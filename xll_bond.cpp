@@ -8,7 +8,8 @@ using namespace xll;
 AddIn xai_bond_basic_(
 	Function(XLL_HANDLEX, "xll_bond_basic_", "\\" CATEGORY ".BOND.BASIC")
 	.Arguments({
-		Arg(XLL_WORD, "maturity", "is the bond maturity in years."),
+		Arg(XLL_DOUBLE, "dated", "is the date at which interest begins accruing. Default is today."),
+		Arg(XLL_DOUBLE, "maturity", "is the bond maturity as date or in years."),
 		Arg(XLL_DOUBLE, "coupon", "is the bond coupon."),
 		Arg(XLL_WORD, "frequency", "is the yearly payment frequency from the TMX_FREQUENCY_* enumeration. Default is semiannually"),
 		Arg(XLL_HANDLEX, "day_count", "is the day count basis from the TMX_DAY_COUNT_* enumeration. Default is 30/360."),
@@ -17,13 +18,29 @@ AddIn xai_bond_basic_(
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to a basic bond.")
 );
-HANDLEX WINAPI xll_bond_basic_(WORD maturity, double coupon, date::frequency freq, HANDLEX dcf)
+HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, date::frequency freq, HANDLEX dcf)
 {
 #pragma XLLEXPORT
 	HANDLEX result = INVALID_HANDLEX;
 
 	try {
 		using std::chrono::years;
+
+		date::ymd dat, mat;
+
+		if (dated == 0) {
+			dat = to_ymd(Num(Excel(xlfToday)));
+		}
+		else {
+			dat = to_ymd(dated);
+		}
+
+		if (maturity < 1000) {
+			mat = dat + years(static_cast<int>(maturity));
+		}
+		else {
+			mat = to_ymd(maturity);
+		}
 
 		if (freq == 0) {
 			freq = tmx::date::frequency::semiannually;
@@ -39,7 +56,7 @@ HANDLEX WINAPI xll_bond_basic_(WORD maturity, double coupon, date::frequency fre
 			_dcf = *p;
 		}
 
-		handle<bond::basic<>> h(new bond::basic<>{ maturity, coupon, freq, *_dcf });
+		handle<bond::basic<>> h(new bond::basic<>{ dat, mat, coupon, freq, *_dcf });
 		ensure(h);
 
 		result = h.get();
@@ -57,7 +74,7 @@ AddIn xai_bond_basic(
 		Arg(XLL_HANDLEX, "handle", "is a handle to a basic bond."),
 		})
 	.Category(CATEGORY)
-	.FunctionHelp("Return the maturity, coupon, frequency, and day count of a basic bond.")
+	.FunctionHelp("Return the dated date, maturity, coupon, frequency, and day count of a basic bond.")
 );
 LPOPER WINAPI xll_bond_basic(HANDLEX h)
 {
@@ -69,11 +86,13 @@ LPOPER WINAPI xll_bond_basic(HANDLEX h)
 		handle<bond::basic<>> h_(h);
 		ensure(h_);
 
-		result.resize(4, 1);
-		result[0] = std::chrono::years(h_->maturity).count();
-		result[1] = h_->coupon;
-		result[2] = h_->frequency;
-		result[3] = to_handle(&h_->day_count);
+		result.reshape(5, 1);
+		auto xxx = std::chrono::sys_days(h_->dated);
+		result[0] = 0;
+		result[1] = 0;
+		result[2] = h_->coupon;
+		result[3] = h_->frequency;
+		result[4] = to_handle(&h_->day_count);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());

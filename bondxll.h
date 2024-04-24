@@ -4,6 +4,8 @@
 #include <span>
 #include "xll24/xll.h"
 
+#undef interface
+
 #ifndef CATEGORY
 #define CATEGORY "TMX"
 #endif
@@ -27,7 +29,7 @@ namespace xll {
 	template <class Dur>
 	using excel_time = std::chrono::time_point<excel_clock, Dur>;
 
-	// Excel clock represented as days since 1900-01-00.
+	// Excel clock represented as days since 1900-01-01.
 	struct excel_clock
 	{
 		using rep = double;
@@ -37,12 +39,17 @@ namespace xll {
 
 		static constexpr bool is_steady = false;
 
-		static time_point now() noexcept;
+		static time_point now() noexcept
+		{
+			return std::chrono::clock_cast<excel_clock>(std::chrono::system_clock::now());
+		}
 
 		template <class Dur>
 		static auto from_sys(std::chrono::sys_time<Dur> const& tp) noexcept
 		{
-			return excel_time{ tp - (std::chrono::sys_days{std::chrono::year(1900) / 1 / 1}) };
+			auto constexpr epoch = std::chrono::sys_days{ std::chrono::year(1900) / 1 / 1 };
+			
+			return excel_time{ tp - epoch };
 		}
 
 		template <class Dur>
@@ -51,12 +58,6 @@ namespace xll {
 			return std::chrono::sys_time{ tp - std::chrono::clock_cast<excel_clock>(std::chrono::sys_days{}) };
 		}
 	};
-
-	inline excel_clock::time_point excel_clock::now() noexcept
-	{
-		using namespace std::chrono;
-		return clock_cast<excel_clock>(system_clock::now());
-	}
 
 	inline auto as_time(double d)
 	{
