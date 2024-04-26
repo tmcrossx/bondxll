@@ -57,7 +57,6 @@ const _FP12* WINAPI xll_instrument(HANDLEX i)
 		}
 		_i->destroy();
 		result.resize(result.size() / 2, 2);
-
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());

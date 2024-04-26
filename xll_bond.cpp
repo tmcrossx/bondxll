@@ -42,13 +42,13 @@ HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, dat
 			mat = to_ymd(maturity);
 		}
 
-		if (freq == 0) {
+		if (freq == date::frequency::null) {
 			freq = tmx::date::frequency::semiannually;
 		}
 
-		date::day_count_t* _dcf = nullptr;
+		date::day_count_t _dcf = nullptr;
 		if (dcf == 0) {
-			_dcf = &date::day_count_isma30360;
+			_dcf = date::day_count_isma30360;
 		}
 		else {
 			date::day_count_t* p = safe_pointer<date::day_count_t>(dcf);
@@ -122,7 +122,7 @@ HANDLEX WINAPI xll_bond_cash_flow_(HANDLEX b, double dated)
 		handle<bond::basic<>> b_(b);
 		ensure(b_);
 
-		handle<instrument<>> i_(new instrument_value<>(bond::instrument<>(*b_, to_days(dated))));
+		handle<instrument::interface<>> i_(new instrument_value<>(bond::instrument<>(*b_, to_days(dated))));
 		ensure(i_);
 
 		result = i_.get();
