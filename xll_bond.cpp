@@ -1,5 +1,6 @@
 // xll_bond.cpp - Bonds
 #include "../bondlib/tmx_bond.h"
+#include "../bondlib/tmx_instrument_value.h"
 #include "bondxll.h"
 
 using namespace tmx;
@@ -88,10 +89,10 @@ LPOPER WINAPI xll_bond_basic(HANDLEX h)
 
 		result.reshape(5, 1);
 		auto xxx = std::chrono::sys_days(h_->dated);
-		result[0] = 0;
-		result[1] = 0;
+		result[0] = 0.;
+		result[1] = 0.;
 		result[2] = h_->coupon;
-		result[3] = h_->frequency;
+		result[3] = static_cast<double>(h_->frequency);
 		result[4] = to_handle(&h_->day_count);
 	}
 	catch (const std::exception& ex) {
@@ -114,6 +115,7 @@ AddIn xai_bond_cash_flow_(
 HANDLEX WINAPI xll_bond_cash_flow_(HANDLEX b, double dated)
 {
 #pragma XLLEXPORT
+	dated = dated;
 	static HANDLEX result;
 
 	try {
@@ -122,10 +124,10 @@ HANDLEX WINAPI xll_bond_cash_flow_(HANDLEX b, double dated)
 		handle<bond::basic<>> b_(b);
 		ensure(b_);
 
-		handle<instrument::interface<>> i_(new instrument_value<>(bond::instrument<>(*b_, to_days(dated))));
-		ensure(i_);
+		//handle<instrument::interface<>> i_(new instrument::value(*bond::fix(*b_, to_days(dated))));
+		//ensure(i_);
 
-		result = i_.get();
+		//result = i_.get();
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
