@@ -7,7 +7,7 @@ using namespace tmx;
 using namespace xll;
 
 AddIn xai_bond_basic_(
-	Function(XLL_HANDLEX, "xll_bond_basic_", "\\" CATEGORY ".BOND.BASIC")
+	Function(XLL_HANDLEX, "xll_bond_basic_", "\\" CATEGORY ".BOND.BASIC.INSTRUMENT")
 	.Arguments({
 		Arg(XLL_DOUBLE, "dated", "is the date at which interest begins accruing. Default is today."),
 		Arg(XLL_DOUBLE, "maturity", "is the bond maturity as date or in years."),
@@ -46,18 +46,14 @@ HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, dat
 		if (freq == date::frequency::null) {
 			freq = tmx::date::frequency::semiannually;
 		}
-
-		date::day_count_t _dcf = nullptr;
-		if (dcf == 0) {
-			_dcf = date::day_count_isma30360;
+	
+		if (!dcf) {
+			dcf = safe_handle(&date::day_count_isma30360);
 		}
-		else {
-			date::day_count_t* p = safe_pointer<date::day_count_t>(dcf);
-			ensure(p);
-			_dcf = *p;
-		}
+		date::day_count_t _dcf = reinterpret_cast<date::day_count_t>(safe_pointer<date::day_count_t>(dcf));
+		ensure(_dcf);
 
-		handle<bond::basic<>> h(new bond::basic<>{ dat, mat, coupon, freq, *_dcf });
+		handle<bond::basic<>> h(new bond::basic<>{ dat, mat, coupon, freq, _dcf });
 		ensure(h);
 
 		result = h.get();
@@ -89,7 +85,7 @@ LPOPER WINAPI xll_bond_basic(HANDLEX h)
 
 		result.reshape(5, 1);
 		auto xxx = std::chrono::sys_days(h_->dated);
-		result[0] = 0.;
+		result[0] = 0;
 		result[1] = 0.;
 		result[2] = h_->coupon;
 		result[3] = static_cast<double>(h_->frequency);
@@ -103,7 +99,7 @@ LPOPER WINAPI xll_bond_basic(HANDLEX h)
 }
 
 AddIn xai_bond_cash_flow_(
-	Function(XLL_HANDLEX, "xll_bond_cash_flow_", "\\" CATEGORY ".BOND.INSTRUMENT")
+	Function(XLL_HANDLEX, "xll_bond_basic_fix_", "\\" CATEGORY ".BOND.BASIC.FIX")
 	.Arguments({
 		Arg(XLL_HANDLEX, "bond", "is a handle to a bond."),
 		Arg(XLL_DOUBLE, "dated", "is the dated date of the bond."),
@@ -115,19 +111,17 @@ AddIn xai_bond_cash_flow_(
 HANDLEX WINAPI xll_bond_cash_flow_(HANDLEX b, double dated)
 {
 #pragma XLLEXPORT
-	dated = dated;
-	static HANDLEX result;
+	HANDLEX result = INVALID_HANDLEX;
 
 	try {
-		result = INVALID_HANDLEX;
-
 		handle<bond::basic<>> b_(b);
 		ensure(b_);
 
-		//handle<instrument::interface<>> i_(new instrument::value(*bond::fix(*b_, to_days(dated))));
-		//ensure(i_);
+		auto i = bond::fix(*b_, to_days(dated));
+		handle<instrument::interface<>> h(new instrument::value<>(i));
+		ensure(h);
 
-		//result = i_.get();
+		result = h.get();
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
