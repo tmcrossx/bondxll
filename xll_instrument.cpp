@@ -48,14 +48,13 @@ const _FP12* WINAPI xll_instrument(HANDLEX i)
 		ensure(i_);
 
 		result.resize(0, 0);
-		auto _i = i_->clone();
-		while (*_i) {
-			const auto uc = **_i;
+		while (*i_) {
+			const auto uc = **i_;
 			result.push_back(uc.u);
 			result.push_back(uc.c);
-			++*_i;
+			++*i_;
 		}
-		_i->destroy();
+
 		result.resize(result.size() / 2, 2);
 	}
 	catch (const std::exception& ex) {

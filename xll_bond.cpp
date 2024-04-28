@@ -7,19 +7,20 @@ using namespace tmx;
 using namespace xll;
 
 AddIn xai_bond_basic_(
-	Function(XLL_HANDLEX, "xll_bond_basic_", "\\" CATEGORY ".BOND.BASIC.INSTRUMENT")
+	Function(XLL_HANDLEX, "xll_bond_basic_", "\\" CATEGORY ".BOND.BASIC")
 	.Arguments({
 		Arg(XLL_DOUBLE, "dated", "is the date at which interest begins accruing. Default is today."),
 		Arg(XLL_DOUBLE, "maturity", "is the bond maturity as date or in years."),
 		Arg(XLL_DOUBLE, "coupon", "is the bond coupon."),
 		Arg(XLL_WORD, "frequency", "is the yearly payment frequency from the TMX_FREQUENCY_* enumeration. Default is semiannually"),
 		Arg(XLL_HANDLEX, "day_count", "is the day count basis from the TMX_DAY_COUNT_* enumeration. Default is 30/360."),
+		Arg(XLL_DOUBLE, "face", "is the face amount of the bond. Default is 100."),
 		})
 	.Uncalced()
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to a basic bond.")
 );
-HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, date::frequency freq, HANDLEX dcf)
+HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, date::frequency freq, HANDLEX dcf, double face)
 {
 #pragma XLLEXPORT
 	HANDLEX result = INVALID_HANDLEX;
@@ -53,7 +54,11 @@ HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, dat
 		date::day_count_t _dcf = reinterpret_cast<date::day_count_t>(safe_pointer<date::day_count_t>(dcf));
 		ensure(_dcf);
 
-		handle<bond::basic<>> h(new bond::basic<>{ dat, mat, coupon, freq, _dcf });
+		if (face == 0) {
+			face = 100;
+		}
+
+		handle<bond::basic<>> h(new bond::basic<>{ dat, mat, coupon, freq, _dcf, face });
 		ensure(h);
 
 		result = h.get();
@@ -98,8 +103,8 @@ LPOPER WINAPI xll_bond_basic(HANDLEX h)
 	return &result;
 }
 
-AddIn xai_bond_cash_flow_(
-	Function(XLL_HANDLEX, "xll_bond_basic_fix_", "\\" CATEGORY ".BOND.BASIC.FIX")
+AddIn xai_bond_basic_fix_(
+	Function(XLL_HANDLEX, "xll_bond_basic_fix_", "\\" CATEGORY ".BOND.BASIC.INSTRUMENT")
 	.Arguments({
 		Arg(XLL_HANDLEX, "bond", "is a handle to a bond."),
 		Arg(XLL_DOUBLE, "dated", "is the dated date of the bond."),
@@ -108,7 +113,7 @@ AddIn xai_bond_cash_flow_(
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to bond instrument cash flows.")
 );
-HANDLEX WINAPI xll_bond_cash_flow_(HANDLEX b, double dated)
+HANDLEX WINAPI xll_bond_basic_fix_(HANDLEX b, double dated)
 {
 #pragma XLLEXPORT
 	HANDLEX result = INVALID_HANDLEX;
@@ -118,7 +123,7 @@ HANDLEX WINAPI xll_bond_cash_flow_(HANDLEX b, double dated)
 		ensure(b_);
 
 		auto i = bond::fix(*b_, to_days(dated));
-		handle<instrument::interface<>> h(new instrument::value<>(i));
+		handle<instrument::interface<>> h(new instrument::value(i));
 		ensure(h);
 
 		result = h.get();
