@@ -85,7 +85,7 @@ LPOPER WINAPI xll_bond_basic(HANDLEX h)
 
 		result.reshape(5, 1);
 		auto xxx = std::chrono::sys_days(h_->dated);
-		result[0] = 0;
+		result[0] = 0.;
 		result[1] = 0.;
 		result[2] = h_->coupon;
 		result[3] = static_cast<double>(h_->frequency);
@@ -118,7 +118,7 @@ HANDLEX WINAPI xll_bond_cash_flow_(HANDLEX b, double dated)
 		ensure(b_);
 
 		auto i = bond::fix(*b_, to_days(dated));
-		handle<instrument::interface<>> h(new instrument::value<>(i));
+		handle<instrument::interface<>> h(new i);
 		ensure(h);
 
 		result = h.get();
