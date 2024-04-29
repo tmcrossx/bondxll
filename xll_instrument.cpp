@@ -36,7 +36,7 @@ AddIn xai_instrument(
 		Arg(XLL_HANDLEX, "instrument", "is a handle to an instrument."),
 		})
 	.Category(CATEGORY)
-	.FunctionHelp("Return two row array of times and cash flows of instrument.")
+	.FunctionHelp("Return two row array of instrument times and cash flows.")
 );
 const _FP12* WINAPI xll_instrument(HANDLEX i)
 {
@@ -56,6 +56,72 @@ const _FP12* WINAPI xll_instrument(HANDLEX i)
 		}
 
 		result.resize(result.size() / 2, 2);
+	}
+	catch (const std::exception& ex) {
+		XLL_ERROR(ex.what());
+
+		return nullptr;
+	}
+
+	return result.get();
+}
+
+AddIn xai_instrument_time(
+	Function(XLL_FP, "xll_instrument_time", CATEGORY ".INSTRUMENT.TIME")
+	.Arguments({
+		Arg(XLL_HANDLEX, "instrument", "is a handle to an instrument."),
+		})
+		.Category(CATEGORY)
+	.FunctionHelp("Return one row array of instrument times.")
+);
+const _FP12* WINAPI xll_instrument_time(HANDLEX i)
+{
+#pragma XLLEXPORT
+	static xll::FPX result;
+
+	try {
+		handle<instrument::interface<>> i_(i);
+		ensure(i_);
+
+		result.resize(0, 0);
+		while (*i_) {
+			const auto uc = **i_;
+			result.push_back(uc.u);
+			++*i_;
+		}
+	}
+	catch (const std::exception& ex) {
+		XLL_ERROR(ex.what());
+
+		return nullptr;
+	}
+
+	return result.get();
+}
+
+AddIn xai_instrument_cash(
+	Function(XLL_FP, "xll_instrument_cash", CATEGORY ".INSTRUMENT.CASH")
+	.Arguments({
+		Arg(XLL_HANDLEX, "instrument", "is a handle to an instrument."),
+		})
+		.Category(CATEGORY)
+	.FunctionHelp("Return one row array of instrument cash flows.")
+);
+const _FP12* WINAPI xll_instrument_cash(HANDLEX i)
+{
+#pragma XLLEXPORT
+	static xll::FPX result;
+
+	try {
+		handle<instrument::interface<>> i_(i);
+		ensure(i_);
+
+		result.resize(0, 0);
+		while (*i_) {
+			const auto uc = **i_;
+			result.push_back(uc.c);
+			++*i_;
+		}
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
