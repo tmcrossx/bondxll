@@ -11,7 +11,7 @@ AddIn xai_bond_basic_(
 	.Arguments({
 		Arg(XLL_DOUBLE, "dated", "is the date at which interest begins accruing. Default is today."),
 		Arg(XLL_DOUBLE, "maturity", "is the bond maturity as date or in years."),
-		Arg(XLL_DOUBLE, "coupon", "is the bond coupon."),
+		Arg(XLL_DOUBLE, "coupon", "is the bond coupon. Default is 5%."),
 		Arg(XLL_WORD, "frequency", "is the yearly payment frequency from the TMX_FREQUENCY_* enumeration. Default is semiannually"),
 		Arg(XLL_HANDLEX, "day_count", "is the day count basis from the TMX_DAY_COUNT_* enumeration. Default is 30/360."),
 		Arg(XLL_DOUBLE, "face", "is the face amount of the bond. Default is 100."),
@@ -42,6 +42,10 @@ HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, dat
 		}
 		else {
 			mat = to_ymd(maturity);
+		}
+
+		if (coupon == 0) {
+			coupon = 0.05;
 		}
 
 		if (freq == date::frequency::null) {
@@ -122,7 +126,7 @@ HANDLEX WINAPI xll_bond_basic_fix_(HANDLEX b, double dated)
 		handle<bond::basic<>> b_(b);
 		ensure(b_);
 
-		auto i = bond::fix(*b_, to_days(dated));
+		auto i = bond::instrument(*b_, to_days(dated));
 		handle<instrument::interface<>> h(new instrument::value(i));
 		ensure(h);
 

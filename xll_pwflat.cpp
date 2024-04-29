@@ -5,6 +5,33 @@
 using namespace tmx;
 using namespace xll;
 
+AddIn xai_curve_constant_(
+	Function(XLL_HANDLEX, "xll_curve_constant_", "\\" CATEGORY ".CURVE.CONSTANT")
+	.Arguments({
+		Arg(XLL_DOUBLE, "f", "is the constant forward rate."),
+		})
+		.Uncalced()
+	.Category(CATEGORY)
+	.FunctionHelp("Return a handle to a constant forward curve.")
+);
+HANDLEX WINAPI xll_curve_constant_(double f)
+{
+#pragma XLLEXPORT
+
+	HANDLEX h = INVALID_HANDLEX;
+
+	try {
+		handle<curve::pwflat<>> h_(new curve::pwflat(f));
+		ensure(h_);
+		h = h_.get();
+	}
+	catch (const std::exception& ex) {
+		XLL_ERROR(ex.what());
+	}
+
+	return h;
+}
+
 AddIn xai_curve_pwflat_(
 	Function(XLL_HANDLEX, "xll_curve_pwflat_", "\\" CATEGORY ".CURVE.PWFLAT")
 	.Arguments({
@@ -25,7 +52,7 @@ HANDLEX WINAPI xll_curve_pwflat_(const _FP12* pt, const _FP12* pf, LPOPER p_f)
 	try {
 		auto m = size(*pt);
 		ensure(m == size(*pf));
-		double _f = std::numeric_limits<double>::quiet_NaN();
+		double _f = math::NaN<double>;
 		if (type(*p_f) != xltypeMissing) {
 			ensure(type(*p_f) == xltypeNum);
 			_f = p_f->val.num;
