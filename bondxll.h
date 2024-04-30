@@ -20,11 +20,11 @@ namespace xll {
 	X(ACTUAL_365, actual365fixed, "Actual days divided by 365.") \
 
 // Enum string from handle
-#define TMX_DAY_COUNT_STRING(a, b, c) if (h == to_handle(tmx::date::day_count_##b)) return "TMX_DAY_COUNT_" #a;
+#define TMX_DAY_COUNT_STRING(a, b, c) if (h == to_handle(tmx::date::day_count_##b)) return CATEGORY "_DAY_COUNT_" #a;
 	inline const char* day_count_string(HANDLEX h)
 	{
 		TMX_DAY_COUNT(TMX_DAY_COUNT_STRING)
-		return "TMX_DAY_COUNT_INVALID";
+		return CATEGORY "_DAY_COUNT_INVALID";
 	}
 #undef TMX_DAY_COUNT_STRING
 
@@ -36,12 +36,12 @@ namespace xll {
 	X(MONTHLY, monthly, "12 payments per year.") \
 
 
-// Enum string from handle
-#define TMX_FREQUENCY_STRING(a, b, c) if (h == tmx::date::frequency::##b) return "TMX_FREQUENCY_" #a;
+// Enum string from frequency enum
+#define TMX_FREQUENCY_STRING(a, b, c) if (h == tmx::date::frequency::##b) return CATEGORY "_FREQUENCY_" #a;
 	inline const char* frequency_string(tmx::date::frequency h)
 	{
 		TMX_FREQUENCY(TMX_FREQUENCY_STRING)
-		return "TMX_FREQUENCY_INVALID";
+		return CATEGORY "_FREQUENCY_INVALID";
 	}
 #undef TMX_FREQUENCY_STRING
 
