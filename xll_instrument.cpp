@@ -3,7 +3,7 @@
 #include "../bondlib/tmx_instrument_value.h"
 
 using namespace tmx;
-using namespace tmx::instrument;
+//using namespace tmx::instrument;
 using namespace xll;
 
 AddIn xai_instrument_(

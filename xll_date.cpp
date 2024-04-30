@@ -1,12 +1,11 @@
 #include "../bondlib/tmx_date_day_count.h"
 #include "bondxll.h"
+#include "xll24/excel_clock.h"
 
 using namespace tmx;
 using namespace xll;
 
 #define BDE_URL "https://github.com/bloomberg/bde/blob/main/groups/bbl/bbldc/bbldc_basic"
-
-// TODO: (Tianxin) add all the day count fraction types
 
 // TMX_DAY_COUNT, date::day_count_t, description, BDE file
 #define TMX_DAY_COUNT(X) \
@@ -29,6 +28,15 @@ OPER tmx_day_count_enum({
 #undef TMX_DAY_COUNT_ENUM
 
 XLL_CONST(LPOPER, TMX_DAY_COUNT_ENUM, &tmx_day_count_enum, "Day count fraction types.", CATEGORY " Enum", BDE_URL)
+
+// Enum string from handle
+#define TMX_DAY_COUNT_STRING(a, b, c) if (h == to_handle(date::day_count_##b)) return "TMX_DAY_COUNT_" #a;
+inline const char* day_count_string(HANDLEX h)
+{
+	TMX_DAY_COUNT(TMX_DAY_COUNT_STRING)
+	return "TMX_DAY_COUNT_INVALID";
+}
+#undef TMX_DAY_COUNT_STRING
 
 #define TMX_FREQUENCY(X) \
 X(ANNUALLY, annually, "Yearly payments.") \
@@ -102,8 +110,8 @@ double WINAPI xll_date_dcf(double d0, double d1, HANDLEX dcf)
 		date::day_count_t _dcf = reinterpret_cast<date::day_count_t>(safe_pointer<date::day_count_t>(dcf));
 		ensure(_dcf);
 
-		date::ymd y0 = to_ymd(d0);
-		date::ymd y1 = to_ymd(d1);
+		date::ymd y0 = to_days(d0);
+		date::ymd y1 = to_days(d1);
 
 		result = _dcf(y0, y1);
 	}

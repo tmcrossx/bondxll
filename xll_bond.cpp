@@ -1,10 +1,16 @@
 // xll_bond.cpp - Bonds
-#include "../bondlib/tmx_bond.h"
+#include "../bondlib/tmx_instrument_bond.h"
 #include "../bondlib/tmx_instrument_value.h"
 #include "bondxll.h"
+#include "xll24/excel_clock.h"
 
 using namespace tmx;
 using namespace xll;
+
+inline double from_ymd(const date::ymd& d)
+{
+	return excel_clock::from_sys(std::chrono::sys_days{ d }).time_since_epoch().count();
+}
 
 AddIn xai_bond_basic_(
 	Function(XLL_HANDLEX, "xll_bond_basic_", "\\" CATEGORY ".BOND.BASIC")
@@ -31,17 +37,17 @@ HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, dat
 		date::ymd dat, mat;
 
 		if (dated == 0) {
-			dat = to_ymd(Num(Excel(xlfToday)));
+			dat = to_days(Num(Excel(xlfToday)));
 		}
 		else {
-			dat = to_ymd(dated);
+			dat = to_days(dated);
 		}
 
-		if (maturity < 1000) {
+		if (maturity < 300) {
 			mat = dat + years(static_cast<int>(maturity));
 		}
 		else {
-			mat = to_ymd(maturity);
+			mat = to_days(maturity);
 		}
 
 		if (coupon == 0) {
@@ -85,17 +91,14 @@ AddIn xai_bond_basic(
 LPOPER WINAPI xll_bond_basic(HANDLEX h)
 {
 #pragma XLLEXPORT
-	static OPER result;
+	static OPER result(5,1,nullptr);
 
 	try {
-		result = ErrNA;
 		handle<bond::basic<>> h_(h);
 		ensure(h_);
 
-		result.reshape(5, 1);
-		auto xxx = std::chrono::sys_days(h_->dated);
-		result[0] = 0.;
-		result[1] = 0.;
+		result[0] = from_ymd(h_->dated);
+		result[1] = from_ymd(h_->maturity);
 		result[2] = h_->coupon;
 		result[3] = static_cast<double>(h_->frequency);
 		result[4] = to_handle(&h_->day_count);
