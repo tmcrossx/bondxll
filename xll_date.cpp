@@ -7,14 +7,6 @@ using namespace xll;
 
 #define BDE_URL "https://github.com/bloomberg/bde/blob/main/groups/bbl/bbldc/bbldc_basic"
 
-// TMX_DAY_COUNT, date::day_count_t, description, BDE file
-#define TMX_DAY_COUNT(X) \
-X(30_360, isma30360, "Each year is assumed to have 12 months and 360 days, with each month consisting of exactly 30 days.") \
-X(30E_360, isma30360eom, "Each year is assumed to have 12 months and 360 days, with each month consisting of exactly 30 days. The end-of-month rule is applied.") \
-X(ACTUAL_ACTUAL, isdaactualactual, "Actual days per year.") \
-X(ACTUAL_360, actual360, "Actual days divided by 360.") \
-X(ACTUAL_365, actual365fixed, "Actual days divided by 365.")
-
 //XLL_CONST(HANDLEX, TMX_DAY_COUNT_ACTUAL_ACTUAL, safe_handle(date::day_count_isdaactualactual), "Actual days per year.", CATEGORY " Enum", BDE_URL  ".cpp")
 #define TMX_DAY_COUNT_ENUM(a, b, c) XLL_CONST(HANDLEX, TMX_DAY_COUNT_##a, safe_handle(date::day_count_##b), c, CATEGORY " Enum", BDE_URL #b ".cpp")
 TMX_DAY_COUNT(TMX_DAY_COUNT_ENUM)
@@ -28,21 +20,6 @@ OPER tmx_day_count_enum({
 #undef TMX_DAY_COUNT_ENUM
 
 XLL_CONST(LPOPER, TMX_DAY_COUNT_ENUM, &tmx_day_count_enum, "Day count fraction types.", CATEGORY " Enum", BDE_URL)
-
-// Enum string from handle
-#define TMX_DAY_COUNT_STRING(a, b, c) if (h == to_handle(date::day_count_##b)) return "TMX_DAY_COUNT_" #a;
-inline const char* day_count_string(HANDLEX h)
-{
-	TMX_DAY_COUNT(TMX_DAY_COUNT_STRING)
-	return "TMX_DAY_COUNT_INVALID";
-}
-#undef TMX_DAY_COUNT_STRING
-
-#define TMX_FREQUENCY(X) \
-X(ANNUALLY, annually, "Yearly payments.") \
-X(SEMIANNUALLY, semiannually, "2 payments per year.") \
-X(QUARTERLY, quarterly, "4 payments per year.") \
-X(MONTHLY, monthly, "12 payments per year.") \
 
 #define TMX_FREQUENCY_ENUM(a, b, c) XLL_CONST(WORD, TMX_FREQUENCY_##a, (WORD)tmx::date::frequency::b, c, CATEGORY " Enum", "")
 TMX_FREQUENCY(TMX_FREQUENCY_ENUM)

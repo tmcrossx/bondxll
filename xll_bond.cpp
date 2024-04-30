@@ -7,11 +7,6 @@
 using namespace tmx;
 using namespace xll;
 
-inline double from_ymd(const date::ymd& d)
-{
-	return excel_clock::from_sys(std::chrono::sys_days{ d }).time_since_epoch().count();
-}
-
 AddIn xai_bond_basic_(
 	Function(XLL_HANDLEX, "xll_bond_basic_", "\\" CATEGORY ".BOND.BASIC")
 	.Arguments({
@@ -37,10 +32,10 @@ HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, dat
 		date::ymd dat, mat;
 
 		if (dated == 0) {
-			dat = to_days(Num(Excel(xlfToday)));
+			dat = to_ymd(Num(Excel(xlfToday)));
 		}
 		else {
-			dat = to_days(dated);
+			dat = to_ymd(dated);
 		}
 
 		if (maturity < 300) {
@@ -91,7 +86,7 @@ AddIn xai_bond_basic(
 LPOPER WINAPI xll_bond_basic(HANDLEX h)
 {
 #pragma XLLEXPORT
-	static OPER result(5,1,nullptr);
+	static OPER result(6,1,nullptr);
 
 	try {
 		handle<bond::basic<>> h_(h);
@@ -100,8 +95,9 @@ LPOPER WINAPI xll_bond_basic(HANDLEX h)
 		result[0] = from_ymd(h_->dated);
 		result[1] = from_ymd(h_->maturity);
 		result[2] = h_->coupon;
-		result[3] = static_cast<double>(h_->frequency);
-		result[4] = to_handle(&h_->day_count);
+		result[3] = frequency_string(h_->frequency);
+		result[4] = day_count_string(to_handle(h_->day_count));
+		result[5] = h_->face;
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
