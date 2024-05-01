@@ -1,25 +1,11 @@
 // xll_value.h - Value functions
 #include "../bondlib/tmx_instrument_value.h"
+#include "../bondlib/tmx_curve_pwflat.h"
 #include "../bondlib/tmx_valuation.h"
 #include "bondxll.h"
 
 using namespace tmx;
 using namespace xll;
-
-// TODO: fix this
-inline instrument::value<> instrument_value(instrument::interface<> *i_)
-{
-	ensure(i_);
-
-	instrument::value<> i;
-	while (*i_) {
-		i.push_back(**i_);
-		++*i_;
-	}
-
-	return i;
-}
-
 
 AddIn xai_value_compound_yield(
 	Function(XLL_DOUBLE, "xll_value_compound_yield", CATEGORY ".VALUE.COMPOUND_YIELD")
@@ -33,7 +19,7 @@ AddIn xai_value_compound_yield(
 double WINAPI xll_value_compound_yield(double y, WORD n)
 {
 #pragma XLLEXPORT
-	double r = std::numeric_limits<double>::quiet_NaN();
+	double r = math::NaN<double>;
 
 	try {
 		r = valuation::compound_yield(y, n);
@@ -57,7 +43,7 @@ AddIn xai_value_continuous_yield(
 double WINAPI xll_value_continuous_yield(double y, WORD n)
 {
 #pragma XLLEXPORT
-	double r = std::numeric_limits<double>::quiet_NaN();
+	double r = math::NaN<double>;
 
 	try {
 		r = valuation::continuous_yield(y, n);
@@ -81,7 +67,7 @@ AddIn xai_value_present(
 double WINAPI xll_value_present(HANDLEX i, HANDLEX c, double t)
 {
 #pragma XLLEXPORT
-	double result = std::numeric_limits<double>::quiet_NaN();
+	double result = math::NaN<double>;
 
 	try {
 		handle<instrument::interface<>> i_(i);
@@ -113,7 +99,7 @@ AddIn xai_value_duration(
 double WINAPI xll_value_duration(HANDLEX i, HANDLEX c, double t)
 {
 #pragma XLLEXPORT
-	double result = std::numeric_limits<double>::quiet_NaN();
+	double result = math::NaN<double>;
 
 	try {
 		handle<instrument::interface<>> i_(i);
@@ -145,7 +131,7 @@ AddIn xai_value_convexity(
 double WINAPI xll_value_convexity(HANDLEX i, HANDLEX c, double t)
 {
 #pragma XLLEXPORT
-	double result = std::numeric_limits<double>::quiet_NaN();
+	double result = math::NaN<double>;
 
 	try {
 		handle<instrument::interface<>> i_(i);
@@ -176,7 +162,7 @@ AddIn xai_value_yield(
 double WINAPI xll_value_yield(HANDLEX i, double p)
 {
 #pragma XLLEXPORT
-	double y = std::numeric_limits<double>::quiet_NaN();
+	double y = math::NaN<double>;
 
 	try {
 		handle<instrument::interface<>> i_(i);
@@ -184,6 +170,40 @@ double WINAPI xll_value_yield(HANDLEX i, double p)
 		const auto _i = i_.as<instrument::value<>>(); 
 
 		y = valuation::yield(*_i, p);
+	}
+	catch (const std::exception& ex) {
+		XLL_ERROR(ex.what());
+	}
+
+	return y;
+}
+
+AddIn xai_value_oas(
+	Function(XLL_DOUBLE, "xll_value_oas", CATEGORY ".VALUE.OAS")
+	.Arguments({
+		Arg(XLL_HANDLEX, "instrument", "is a handle to an instrument."),
+		Arg(XLL_HANDLEX, "curve", "is a handle to a curve."),
+		Arg(XLL_DOUBLE, "price", "is the price of the instrument."),
+		})
+		.Category(CATEGORY)
+	.FunctionHelp("Return constant oas repricing the instrument.")
+);
+double WINAPI xll_value_oas(HANDLEX i, HANDLEX c, double p)
+{
+#pragma XLLEXPORT
+	double y = math::NaN<double>;
+
+	try {
+		handle<instrument::interface<>> i_(i);
+		ensure(i_);
+		const auto _i = i_.as<instrument::value<>>();
+
+		handle<curve::interface<>> c_(c);
+		ensure(c_);
+		const auto _c = c_.as<curve::pwflat<>>();
+		ensure(_c);
+
+		y = valuation::oas(*_i, *_c, p);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());

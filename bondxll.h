@@ -1,7 +1,6 @@
 // bondxll.h
 #pragma once
-#include <chrono>
-#include <span>
+#include "../bondlib/tmx_date_day_count.h"
 #include "xll24/xll.h"
 
 #undef interface
@@ -12,63 +11,38 @@
 
 namespace xll {
 
-	template<class X>
-	constexpr std::span<double> span(const _FP12& x)
+// TMX_DAY_COUNT_, date::day_count_t, description
+#define TMX_DAY_COUNT(X) \
+	X(30_360, isma30360, "Each year is assumed to have 12 months and 360 days, with each month consisting of exactly 30 days.") \
+	X(30E_360, isma30360eom, "Each year is assumed to have 12 months and 360 days, with each month consisting of exactly 30 days. The end-of-month rule is applied.") \
+	X(ACTUAL_ACTUAL, isdaactualactual, "Actual days per year.") \
+	X(ACTUAL_360, actual360, "Actual days divided by 360.") \
+	X(ACTUAL_365, actual365fixed, "Actual days divided by 365.") \
+
+// Enum string from handle
+#define TMX_DAY_COUNT_STRING(a, b, c) if (h == to_handle(tmx::date::day_count_##b)) return CATEGORY "_DAY_COUNT_" #a;
+	inline const char* day_count_string(HANDLEX h)
 	{
-		return std::span{ x.array, x.rows * x.columns };
+		TMX_DAY_COUNT(TMX_DAY_COUNT_STRING)
+		return CATEGORY "_DAY_COUNT_INVALID";
 	}
-	template<class X>
-	constexpr std::span<double> span(const _FP& x)
+#undef TMX_DAY_COUNT_STRING
+
+// TMX_FREQUENCY_, date::frequency, description
+#define TMX_FREQUENCY(X) \
+	X(ANNUALLY, annually, "Yearly payments.") \
+	X(SEMIANNUALLY, semiannually, "2 payments per year.") \
+	X(QUARTERLY, quarterly, "4 payments per year.") \
+	X(MONTHLY, monthly, "12 payments per year.") \
+
+
+// Enum string from frequency enum
+#define TMX_FREQUENCY_STRING(a, b, c) if (h == tmx::date::frequency::##b) return CATEGORY "_FREQUENCY_" #a;
+	inline const char* frequency_string(tmx::date::frequency h)
 	{
-		return std::span{ x.array, x.rows * x.columns };
+		TMX_FREQUENCY(TMX_FREQUENCY_STRING)
+		return CATEGORY "_FREQUENCY_INVALID";
 	}
+#undef TMX_FREQUENCY_STRING
 
-	// https://stackoverflow.com/questions/33964461/handling-julian-days-in-c11-14
-	struct excel_clock;
-
-	template <class Dur>
-	using excel_time = std::chrono::time_point<excel_clock, Dur>;
-
-	// Excel clock represented as days since 1900-01-01.
-	struct excel_clock
-	{
-		using rep = double;
-		using period = std::chrono::days::period;
-		using duration = std::chrono::duration<rep, period>;
-		using time_point = std::chrono::time_point<excel_clock>;
-
-		static constexpr bool is_steady = false;
-
-		static time_point now() noexcept
-		{
-			return std::chrono::clock_cast<excel_clock>(std::chrono::system_clock::now());
-		}
-
-		template <class Dur>
-		static auto from_sys(std::chrono::sys_time<Dur> const& tp) noexcept
-		{
-			auto constexpr epoch = std::chrono::sys_days{ std::chrono::year(1900) / 1 / 1 };
-			
-			return excel_time{ tp - epoch };
-		}
-
-		template <class Dur>
-		static auto to_sys(excel_time<Dur> const& tp) noexcept
-		{
-			return std::chrono::sys_time{ tp - std::chrono::clock_cast<excel_clock>(std::chrono::sys_days{}) };
-		}
-	};
-
-	inline auto as_time(double d)
-	{
-		return excel_time{ excel_clock::duration{d} };
-	}
-	inline std::chrono::sys_days to_days(double d)
-	{
-		return std::chrono::time_point_cast<std::chrono::days>(excel_clock::to_sys(as_time(d)));
-	}
-	inline std::chrono::year_month_day to_ymd(double d)
-	{
-		return std::chrono::year_month_day(to_days(d));
-	}
-}
+} // namespace xll

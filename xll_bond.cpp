@@ -1,7 +1,8 @@
 // xll_bond.cpp - Bonds
-#include "../bondlib/tmx_bond.h"
+#include "../bondlib/tmx_instrument_bond.h"
 #include "../bondlib/tmx_instrument_value.h"
 #include "bondxll.h"
+#include "xll24/excel_clock.h"
 
 using namespace tmx;
 using namespace xll;
@@ -37,11 +38,11 @@ HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, dat
 			dat = to_ymd(dated);
 		}
 
-		if (maturity < 1000) {
+		if (maturity < 300) {
 			mat = dat + years(static_cast<int>(maturity));
 		}
 		else {
-			mat = to_ymd(maturity);
+			mat = to_days(maturity);
 		}
 
 		if (coupon == 0) {
@@ -85,20 +86,18 @@ AddIn xai_bond_basic(
 LPOPER WINAPI xll_bond_basic(HANDLEX h)
 {
 #pragma XLLEXPORT
-	static OPER result;
+	static OPER result(6,1,nullptr);
 
 	try {
-		result = ErrNA;
 		handle<bond::basic<>> h_(h);
 		ensure(h_);
 
-		result.reshape(5, 1);
-		auto xxx = std::chrono::sys_days(h_->dated);
-		result[0] = 0.;
-		result[1] = 0.;
+		result[0] = from_ymd(h_->dated);
+		result[1] = from_ymd(h_->maturity);
 		result[2] = h_->coupon;
-		result[3] = static_cast<double>(h_->frequency);
-		result[4] = to_handle(&h_->day_count);
+		result[3] = frequency_string(h_->frequency);
+		result[4] = day_count_string(to_handle(h_->day_count));
+		result[5] = h_->face;
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
