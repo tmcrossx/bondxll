@@ -73,11 +73,12 @@ double WINAPI xll_value_present(HANDLEX i, HANDLEX c, double t)
 		handle<instrument::interface<>> i_(i);
 		ensure(i_);
 		const auto _i = i_.as<instrument::value<>>(); 
+		ensure(_i);
 
 		handle<curve::interface<>> c_(c);
 		ensure(c_);
 
-		result = valuation::present(*_i, *c_, t);
+		result = valuation::present(instrument::view(*_i), *c_, t);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -105,11 +106,12 @@ double WINAPI xll_value_duration(HANDLEX i, HANDLEX c, double t)
 		handle<instrument::interface<>> i_(i);
 		ensure(i_);
 		const auto _i = i_.as<instrument::value<>>(); 
+		ensure(_i);
 
 		handle<curve::interface<>> c_(c);
 		ensure(c_);
 
-		result = valuation::duration(*_i, *c_, t);
+		result = 0;// valuation::duration(instrument::view(*_i), *c_, t);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -137,11 +139,12 @@ double WINAPI xll_value_convexity(HANDLEX i, HANDLEX c, double t)
 		handle<instrument::interface<>> i_(i);
 		ensure(i_);
 		const auto _i = i_.as<instrument::value<>>(); 
+		ensure(_i);
 
 		handle<curve::interface<>> c_(c);
 		ensure(c_);
 
-		result = valuation::convexity(*_i, *c_, t);
+		result = 0;//!!! valuation::convexity(instrument::view(*_i), *c_, t);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
