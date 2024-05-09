@@ -22,7 +22,7 @@ double WINAPI xll_value_compound_yield(double y, WORD n)
 	double r = math::NaN<double>;
 
 	try {
-		r = valuation::compound_yield(y, n);
+		r = valuation::compound_rate(y, n);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -46,7 +46,7 @@ double WINAPI xll_value_continuous_yield(double y, WORD n)
 	double r = math::NaN<double>;
 
 	try {
-		r = valuation::continuous_yield(y, n);
+		r = valuation::continuous_rate(y, n);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -54,6 +54,7 @@ double WINAPI xll_value_continuous_yield(double y, WORD n)
 
 	return r;
 }
+
 AddIn xai_value_present(
 	Function(XLL_DOUBLE, "xll_value_present", CATEGORY ".VALUE.PRESENT")
 	.Arguments({
