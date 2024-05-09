@@ -21,15 +21,15 @@ OPER tmx_day_count_enum({
 
 XLL_CONST(LPOPER, TMX_DAY_COUNT_ENUM, &tmx_day_count_enum, "Day count fraction types.", CATEGORY " Enum", BDE_URL)
 
-#define TMX_FREQUENCY_ENUM(a, b, c) XLL_CONST(WORD, TMX_FREQUENCY_##a, (WORD)tmx::date::frequency::b, c, CATEGORY " Enum", "")
-TMX_FREQUENCY(TMX_FREQUENCY_ENUM)
-#undef TMX_FREQUENCY_ENUM
+#define TMX_DATE_FREQUENCY_ENUM(a, b, c, d) XLL_CONST(WORD, TMX_FREQUENCY_##a, (WORD)tmx::date::frequency::b, d, CATEGORY " Enum", "")
+TMX_DATE_FREQUENCY(TMX_DATE_FREQUENCY_ENUM)
+#undef TMX_DATE_FREQUENCY_ENUM
 
-#define TMX_FREQUENCY_ENUM(a, b, c) OPER("TMX_FREQUENCY_" #a),
+#define TMX_DATE_FREQUENCY_ENUM(a, b, c, d) OPER("TMX_FREQUENCY_" #a),
 OPER tmx_frequency_enum({
-	TMX_FREQUENCY(TMX_FREQUENCY_ENUM)
+	TMX_DATE_FREQUENCY(TMX_DATE_FREQUENCY_ENUM)
 	});
-#undef TMX_FREQUENCY_ENUM
+#undef TMX_DATE_FREQUENCY_ENUM
 
 XLL_CONST(LPOPER, TMX_FREQUENCY_ENUM, &tmx_frequency_enum, "Payment frequencies.", CATEGORY " Enum", "https://www.investopedia.com/terms/c/compounding.asp")
 

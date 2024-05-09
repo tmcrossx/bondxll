@@ -15,13 +15,16 @@ AddIn xai_bond_basic_(
 		Arg(XLL_DOUBLE, "coupon", "is the bond coupon. Default is 5%."),
 		Arg(XLL_WORD, "frequency", "is the yearly payment frequency from the TMX_FREQUENCY_* enumeration. Default is semiannually"),
 		Arg(XLL_HANDLEX, "day_count", "is the day count basis from the TMX_DAY_COUNT_* enumeration. Default is 30/360."),
+		Arg(XLL_WORD, "roll", "is business day rolling convention from the TMX_ROLL_* enumeration. Default is modified following."),
+		Arg(XLL_HANDLEX, "calendar", "is the holiday calendar from the TMX_CALENDAR_* enumeration. Default is 30/360."),
 		Arg(XLL_DOUBLE, "face", "is the face amount of the bond. Default is 100."),
 		})
 	.Uncalced()
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to a basic bond.")
 );
-HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, date::frequency freq, HANDLEX dcf, double face)
+HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, date::frequency freq, 
+	HANDLEX dcf, date::business_day::roll roll, HANDLEX cal, double face)
 {
 #pragma XLLEXPORT
 	HANDLEX result = INVALID_HANDLEX;
@@ -49,21 +52,33 @@ HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, dat
 			coupon = 0.05;
 		}
 
-		if (freq == date::frequency::null) {
+		if (freq == date::frequency::missing) {
 			freq = tmx::date::frequency::semiannually;
 		}
 	
 		if (!dcf) {
 			dcf = safe_handle(&date::day_count_isma30360);
 		}
-		date::day_count_t _dcf = reinterpret_cast<date::day_count_t>(safe_pointer<date::day_count_t>(dcf));
+		date::day_count_t _dcf 
+			= reinterpret_cast<date::day_count_t>(safe_pointer<date::day_count_t>(dcf));
 		ensure(_dcf);
+
+		if (roll == date::business_day::roll::missing) {
+			roll = date::business_day::roll::modified_following;
+		}
+
+		if (!cal) {
+			cal = safe_handle(&date::holiday::calendar::weekend);
+		}
+		date::holiday::calendar::calendar_t _cal 
+			= reinterpret_cast<date::holiday::calendar::calendar_t>(safe_pointer<date::holiday::calendar::calendar_t>(cal));
+		ensure(_cal);
 
 		if (face == 0) {
 			face = 100;
 		}
 
-		handle<bond::basic<>> h(new bond::basic<>{ dat, mat, coupon, freq, _dcf, face });
+		handle<bond::basic<>> h(new bond::basic<>{ dat, mat, coupon, freq, _dcf, roll, _cal, face });
 		ensure(h);
 
 		result = h.get();

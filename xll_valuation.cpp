@@ -59,7 +59,6 @@ AddIn xai_value_present(
 	.Arguments({
 		Arg(XLL_HANDLEX, "instrument", "is a handle to an instrument."),
 		Arg(XLL_HANDLEX, "curve", "is a handle to a curve."),
-		Arg(XLL_DOUBLE, "t", "is an optional time in years at which to compute the present value. Default is 0."),
 		})
 	.Category(CATEGORY)
 	.FunctionHelp("Return present value of instrument cash flows using curve at time t.")
@@ -78,7 +77,7 @@ double WINAPI xll_value_present(HANDLEX i, HANDLEX c, double t)
 		handle<curve::interface<>> c_(c);
 		ensure(c_);
 
-		result = valuation::present(instrument::view(*_i), *c_, t);
+		result = valuation::present(instrument::view(*_i), *c_);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -92,12 +91,11 @@ AddIn xai_value_duration(
 	.Arguments({
 		Arg(XLL_HANDLEX, "instrument", "is a handle to an instrument."),
 		Arg(XLL_HANDLEX, "curve", "is a handle to a curve."),
-		Arg(XLL_DOUBLE, "t", "is an optional time in years at which to compute the duration. Default is 0."),
 		})
 		.Category(CATEGORY)
 	.FunctionHelp("Return duration of cash flows using curve.")
 );
-double WINAPI xll_value_duration(HANDLEX i, HANDLEX c, double t)
+double WINAPI xll_value_duration(HANDLEX i, HANDLEX c)
 {
 #pragma XLLEXPORT
 	double result = math::NaN<double>;
@@ -111,7 +109,7 @@ double WINAPI xll_value_duration(HANDLEX i, HANDLEX c, double t)
 		handle<curve::interface<>> c_(c);
 		ensure(c_);
 
-		result = 0;// valuation::duration(instrument::view(*_i), *c_, t);
+		result = 0;// valuation::duration(instrument::view(*_i), *c_);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -125,12 +123,11 @@ AddIn xai_value_convexity(
 	.Arguments({
 		Arg(XLL_HANDLEX, "instrument", "is a handle to an instrument."),
 		Arg(XLL_HANDLEX, "curve", "is a handle to a curve."),
-		Arg(XLL_DOUBLE, "t", "is an optional time in years at which to compute the convexity. Default is 0."),
 		})
 		.Category(CATEGORY)
 	.FunctionHelp("Return convexity of cash flows using curve.")
 );
-double WINAPI xll_value_convexity(HANDLEX i, HANDLEX c, double t)
+double WINAPI xll_value_convexity(HANDLEX i, HANDLEX c)
 {
 #pragma XLLEXPORT
 	double result = math::NaN<double>;

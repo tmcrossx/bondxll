@@ -120,12 +120,11 @@ AddIn xai_curve_pwflat_value(
 	.Arguments({
 		Arg(XLL_HANDLEX, "c", "is a handle to a curve."),
 		Arg(XLL_DOUBLE, "t", "is the forward time."),
-		Arg(XLL_DOUBLE, "t_", "is the time at which to evaluate the forward. Default is 0."),
 		})
 	.Category(CATEGORY)
 	.FunctionHelp("Return the forward value of a piecewise flat curve.")
 );
-double WINAPI xll_curve_pwflat_value(HANDLEX c, double t, double t_)
+double WINAPI xll_curve_pwflat_value(HANDLEX c, double t)
 {
 #pragma XLLEXPORT
 
@@ -135,7 +134,7 @@ double WINAPI xll_curve_pwflat_value(HANDLEX c, double t, double t_)
 		handle<curve::interface<>> c_(c);
 		ensure(c_);
 
-		v = c_->forward(t, t_);
+		v = c_->forward(t);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -149,12 +148,11 @@ AddIn xai_curve_pwflat_spot(
 	.Arguments({
 		Arg(XLL_HANDLEX, "c", "is a handle to a piecewise flat curve."),
 		Arg(XLL_DOUBLE, "t", "is the yield time."),
-		Arg(XLL_DOUBLE, "t_", "is the time at which to evaluate the yield. Default is 0."),
 		})
 	.Category(CATEGORY)
 	.FunctionHelp("Return the spot value of a piecewise flat curve.")
 );
-double WINAPI xll_curve_pwflat_spot(HANDLEX c, double t, double t_)
+double WINAPI xll_curve_pwflat_spot(HANDLEX c, double t)
 {
 #pragma XLLEXPORT
 
@@ -164,7 +162,7 @@ double WINAPI xll_curve_pwflat_spot(HANDLEX c, double t, double t_)
 		handle<curve::interface<>> c_(c);
 		ensure(c_);
 
-		v = c_->spot(t, t_);
+		v = c_->spot(t);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -178,12 +176,11 @@ AddIn xai_curve_pwflat_discount(
 	.Arguments({
 		Arg(XLL_HANDLEX, "c", "is a handle to a piecewise flat curve."),
 		Arg(XLL_DOUBLE, "t", "is the discount time."),
-		Arg(XLL_DOUBLE, "t_", "is the time at which to evaluate the discount. Default is 0."),
 		})
 	.Category(CATEGORY)
 	.FunctionHelp("Return the discount value of a piecewise flat curve.")
 );
-HANDLEX WINAPI xll_curve_pwflat_discount(HANDLEX c, double t, double t_)
+HANDLEX WINAPI xll_curve_pwflat_discount(HANDLEX c, double t)
 {
 #pragma XLLEXPORT
 
@@ -193,7 +190,7 @@ HANDLEX WINAPI xll_curve_pwflat_discount(HANDLEX c, double t, double t_)
 		handle<curve::interface<>> c_(c);
 		ensure(c_);
 
-		v = c_->discount(t, t_);
+		v = c_->discount(t);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -232,7 +229,7 @@ HANDLEX WINAPI xll_curve_pwflat_shift_(HANDLEX c, double s)
 		XLL_ERROR(ex.what());
 	}
 
-	return result;
+	return result; 
 }
 
 AddIn xai_curve_pwflat_translate_(
