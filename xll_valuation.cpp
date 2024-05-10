@@ -64,7 +64,7 @@ AddIn xai_value_present(
 	.Category(CATEGORY)
 	.FunctionHelp("Return present value of instrument cash flows using curve at time t.")
 );
-double WINAPI xll_value_present(HANDLEX i, HANDLEX c, double t)
+double WINAPI xll_value_present(HANDLEX i, HANDLEX c)
 {
 #pragma XLLEXPORT
 	double result = math::NaN<double>;

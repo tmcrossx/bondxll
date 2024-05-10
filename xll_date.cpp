@@ -1,4 +1,5 @@
 #include "../bondlib/tmx_date_day_count.h"
+#include "../bondlib/tmx_date_holiday_calendar.h"
 #include "bondxll.h"
 #include "xll24/excel_clock.h"
 
@@ -32,6 +33,42 @@ OPER tmx_frequency_enum({
 #undef TMX_DATE_FREQUENCY_ENUM
 
 XLL_CONST(LPOPER, TMX_FREQUENCY_ENUM, &tmx_frequency_enum, "Payment frequencies.", CATEGORY " Enum", "https://www.investopedia.com/terms/c/compounding.asp")
+
+// Calendars
+#define TMX_DATE_HOLIDAY_CALENDAR_ENUM(a, b, c) XLL_CONST(HANDLEX, TMX_CALENDAR_##a, safe_handle(date::holiday::calendar::b), c, CATEGORY " Enum", BDE_URL)
+TMX_DATE_HOLIDAY_CALENDAR(TMX_DATE_HOLIDAY_CALENDAR_ENUM)
+#undef TMX_DATE_HOLIDAY_CALENDAR_ENUM
+
+AddIn xai_date_holiday_calendar(
+	Function(XLL_LPOPER, "xll_date_holiday_calendar", CATEGORY ".DATE.HOLIDAY_CALENDAR")
+	.Arguments({
+		Arg(XLL_HANDLEX, "calendar", "is a holiday calendar."),
+		Arg(XLL_DOUBLE, "date", "is an Excel date."),
+		})
+		.Category(CATEGORY)
+	.FunctionHelp("Return true if date is in the holiday calendar.")
+);
+LPOPER WINAPI xll_date_holiday_calendar(HANDLEX calendar, double d)
+{
+#pragma XLLEXPORT
+	static OPER result;
+
+	try {
+		date::holiday::calendar::calendar_t _calendar = reinterpret_cast<date::holiday::calendar::calendar_t>(safe_pointer<date::holiday::calendar::calendar_t>(calendar));
+		ensure(_calendar);
+
+		date::ymd y = to_days(d);
+
+		result = _calendar(y);
+	}
+	catch (const std::exception& ex) {
+		XLL_ERROR(ex.what());
+
+		result = ErrValue;
+	}
+
+	return &result;
+}
 
 AddIn xai_date_addyears(
 	Function(XLL_DOUBLE, "xll_date_addyears", CATEGORY ".DATE.ADDYEARS")
