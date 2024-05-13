@@ -1,5 +1,5 @@
 // xll_value.h - Value functions
-#include "../bondlib/tmx_instrument_value.h"
+#include "../bondlib/tmx_instrument.h"
 #include "../bondlib/tmx_curve_pwflat.h"
 #include "../bondlib/tmx_valuation.h"
 #include "bondxll.h"
