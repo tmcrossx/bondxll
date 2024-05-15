@@ -35,12 +35,23 @@ OPER tmx_frequency_enum({
 XLL_CONST(LPOPER, TMX_FREQUENCY_ENUM, &tmx_frequency_enum, "Payment frequencies.", CATEGORY " Enum", "https://www.investopedia.com/terms/c/compounding.asp")
 
 // Calendars
-#define TMX_DATE_HOLIDAY_CALENDAR_ENUM(a, b, c) XLL_CONST(HANDLEX, TMX_CALENDAR_##a, safe_handle(date::holiday::calendar::b), c, CATEGORY " Enum", BDE_URL)
+#define SIFMA_URL "https://www.sifma.org/resources/general/holiday-schedule/#us"
+
+#define TMX_DATE_HOLIDAY_CALENDAR_ENUM(a, b, c) XLL_CONST(HANDLEX, TMX_HOLIDAY_CALENDAR_##a, safe_handle(date::holiday::calendar::b), c, CATEGORY " Enum", SIFMA_URL)
 TMX_DATE_HOLIDAY_CALENDAR(TMX_DATE_HOLIDAY_CALENDAR_ENUM)
 #undef TMX_DATE_HOLIDAY_CALENDAR_ENUM
 
+// All calendars as string names.
+#define TMX_DATE_HOLIDAY_CALENDAR_ENUM(a, b, c) OPER("TMX_HOLIDAY_CALENDAR_" #a),
+OPER tmx_holiday_calendar_enum({
+	TMX_DATE_HOLIDAY_CALENDAR(TMX_DATE_HOLIDAY_CALENDAR_ENUM)
+	});
+#undef TMX_DATE_HOLIDAY_CALENDAR_ENUM
+
+XLL_CONST(LPOPER, TMX_HOLIDAY_CALENDAR_ENUM, &tmx_holiday_calendar_enum, "Holiday calendars.", CATEGORY " Enum", BDE_URL)
+
 AddIn xai_date_holiday_calendar(
-	Function(XLL_LPOPER, "xll_date_holiday_calendar", CATEGORY ".DATE.HOLIDAY_CALENDAR")
+	Function(XLL_LPOPER, "xll_date_holiday_calendar", CATEGORY ".DATE.HOLIDAY.CALENDAR")
 	.Arguments({
 		Arg(XLL_HANDLEX, "calendar", "is a holiday calendar."),
 		Arg(XLL_DOUBLE, "date", "is an Excel date."),

@@ -1,10 +1,15 @@
 // xll_instrument.cpp - Instrument times and cash flows.
 #include "bondxll.h"
-#include "../bondlib/tmx_instrument_value.h"
+#include "../bondlib/tmx_instrument.h"
 
 using namespace tmx;
 //using namespace tmx::instrument;
 using namespace xll;
+
+static auto make_vector(const _FP12& x)
+{
+	return fms::iterable::vector(fms::iterable::take(fms::iterable::pointer(array(x)), size(x)));
+}
 
 AddIn xai_instrument_(
 	Function(XLL_HANDLEX, "xll_instrument_", "\\" CATEGORY ".INSTRUMENT")
@@ -25,7 +30,7 @@ HANDLEX WINAPI xll_instrument_(const _FP12* pu, const _FP12* pc)
 		return INVALID_HANDLEX;
 	}
 
-	handle<instrument::interface<>> h_(new instrument::value<>(size(*pu), pu->array, pc->array));
+	handle<instrument::interface<>> h_(new instrument::iterable(make_vector(*pu), make_vector(*pc)));
 
 	return h_ ? h_.get() : INVALID_HANDLEX;
 }

@@ -22,7 +22,7 @@ double WINAPI xll_value_compound_yield(double y, WORD n)
 	double r = math::NaN<double>;
 
 	try {
-		r = valuation::compound_rate(y, n);
+		r = valuation::compound_yield(y, n);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
