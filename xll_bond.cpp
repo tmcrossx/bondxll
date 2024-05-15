@@ -1,6 +1,6 @@
 // xll_bond.cpp - Bonds
 #include "../bondlib/tmx_instrument_bond.h"
-#include "../bondlib/tmx_instrument_value.h"
+#include "../bondlib/tmx_instrument.h"
 #include "bondxll.h"
 #include "xll24/excel_clock.h"
 
