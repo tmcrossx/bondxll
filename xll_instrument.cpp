@@ -6,6 +6,11 @@ using namespace tmx;
 //using namespace tmx::instrument;
 using namespace xll;
 
+inline auto vector(const _FP12* p)
+{
+	return fms::iterable::vector(size(*p), array(*p));
+}
+
 AddIn xai_instrument_(
 	Function(XLL_HANDLEX, "xll_instrument_", "\\" CATEGORY ".INSTRUMENT")
 	.Arguments({
@@ -25,7 +30,7 @@ HANDLEX WINAPI xll_instrument_(const _FP12* pu, const _FP12* pc)
 		return INVALID_HANDLEX;
 	}
 
-	handle<instrument::interface<>> h_(new instrument::value<>(size(*pu), pu->array, pc->array));
+	handle<instrument::interface<>> h_(new instrument::iterable(vector(pu), vector(pc)));
 
 	return h_ ? h_.get() : INVALID_HANDLEX;
 }
