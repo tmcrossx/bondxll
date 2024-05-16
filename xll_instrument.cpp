@@ -6,9 +6,9 @@ using namespace tmx;
 //using namespace tmx::instrument;
 using namespace xll;
 
-static auto make_vector(const _FP12& x)
+inline auto vector(const _FP12* p)
 {
-	return fms::iterable::vector(fms::iterable::take(fms::iterable::pointer(array(x)), size(x)));
+	return fms::iterable::vector(size(*p), array(*p));
 }
 
 AddIn xai_instrument_(
@@ -30,7 +30,7 @@ HANDLEX WINAPI xll_instrument_(const _FP12* pu, const _FP12* pc)
 		return INVALID_HANDLEX;
 	}
 
-	handle<instrument::interface<>> h_(new instrument::iterable(make_vector(*pu), make_vector(*pc)));
+	handle<instrument::interface<>> h_(new instrument::iterable(vector(pu), vector(pc)));
 
 	return h_ ? h_.get() : INVALID_HANDLEX;
 }
