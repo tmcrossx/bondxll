@@ -54,9 +54,9 @@ const _FP12* WINAPI xll_instrument(HANDLEX i)
 
 		result.resize(0, 0);
 		while (*i_) {
-			const auto uc = **i_;
-			result.push_back(uc.u);
-			result.push_back(uc.c);
+			const auto [u,c] = **i_;
+			result.push_back(u);
+			result.push_back(c);
 			++*i_;
 		}
 
