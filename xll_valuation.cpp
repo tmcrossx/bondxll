@@ -7,40 +7,43 @@
 using namespace tmx;
 using namespace xll;
 
+using iterable_vector = fms::iterable::vector<double>;
+using instrument_iterable = tmx::instrument::iterable<iterable_vector, iterable_vector>;
+
 AddIn xai_value_compound_yield(
 	Function(XLL_DOUBLE, "xll_value_compound_yield", CATEGORY ".VALUE.COMPOUND_YIELD")
 	.Arguments({
-		Arg(XLL_DOUBLE, "yield", "is a continuously compounded yield."),
+		Arg(XLL_DOUBLE, "rate", "is a continuously compounded rate."),
 		Arg(XLL_WORD, "n", "is the number of times to compound per year."),
 		})
 		.Category(CATEGORY)
-	.FunctionHelp("Return the compounded yield.")
+	.FunctionHelp("Convert rate to compounded yield.")
 );
-double WINAPI xll_value_compound_yield(double y, WORD n)
+double WINAPI xll_value_compound_yield(double r, WORD n)
 {
 #pragma XLLEXPORT
-	double r = math::NaN<double>;
+	double y = math::NaN<double>;
 
 	try {
-		r = valuation::compound_yield(y, n);
+		y = valuation::compound_yield(r, n);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
 	}
 
-	return r;
+	return y;
 }
 
-AddIn xai_value_continuous_yield(
-	Function(XLL_DOUBLE, "xll_value_continuous_yield", CATEGORY ".VALUE.CONTINUOUS_YIELD")
+AddIn xai_value_continuous_rate(
+	Function(XLL_DOUBLE, "xll_value_continuous_rate", CATEGORY ".VALUE.CONTINUOUS_RATE")
 	.Arguments({
 		Arg(XLL_DOUBLE, "yield", "is compounded yield."),
 		Arg(XLL_WORD, "n", "is the number of times the yield is compounded per year."),
 		})
 		.Category(CATEGORY)
-	.FunctionHelp("Return constant continuous_yield repricing the instrument.")
+	.FunctionHelp("Convert compounded yield to rate.")
 );
-double WINAPI xll_value_continuous_yield(double y, WORD n)
+double WINAPI xll_value_continuous_rate(double y, WORD n)
 {
 #pragma XLLEXPORT
 	double r = math::NaN<double>;
@@ -70,15 +73,13 @@ double WINAPI xll_value_present(HANDLEX i, HANDLEX c)
 	double result = math::NaN<double>;
 
 	try {
-		handle<instrument::interface<>> i_(i);
+		handle<instrument_iterable> i_(i);
 		ensure(i_);
-		const auto _i = i_.as<instrument::value<>>(); 
-		ensure(_i);
 
 		handle<curve::interface<>> c_(c);
 		ensure(c_);
 
-		result = valuation::present(instrument::view(*_i), *c_);
+		result = valuation::present(*i_, *c_);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -86,7 +87,7 @@ double WINAPI xll_value_present(HANDLEX i, HANDLEX c)
 
 	return result;
 }
-
+#if 0
 AddIn xai_value_duration(
 	Function(XLL_DOUBLE, "xll_value_duration", CATEGORY ".VALUE.DURATION")
 	.Arguments({
@@ -212,3 +213,4 @@ double WINAPI xll_value_oas(HANDLEX i, HANDLEX c, double p)
 
 	return y;
 }
+#endif // 0
