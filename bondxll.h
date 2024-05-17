@@ -29,5 +29,4 @@ namespace xll {
 	}
 #undef TMX_FREQUENCY_STRING
 
-
 } // namespace xll
