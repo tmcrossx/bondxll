@@ -6,8 +6,10 @@ using namespace tmx;
 //using namespace tmx::instrument;
 using namespace xll;
 
-using iterable_vector = fms::iterable::vector<double>;
-using instrument_iterable = tmx::instrument::iterable<iterable_vector, iterable_vector>;
+inline auto vector(const _FP12* p)
+{
+	return fms::iterable::vector(size(*p), array(*p));
+}
 
 AddIn xai_instrument_(
 	Function(XLL_HANDLEX, "xll_instrument_", "\\" CATEGORY ".INSTRUMENT")
@@ -28,9 +30,7 @@ HANDLEX WINAPI xll_instrument_(const _FP12* pu, const _FP12* pc)
 		return INVALID_HANDLEX;
 	}
 
-	handle<instrument_iterable> h_(new instrument_iterable(
-		iterable_vector(size(*pu), array(*pu)), 
-		iterable_vector(size(*pc), array(*pc))));
+	handle<instrument::interface<>> h_(new instrument::iterable(vector(pu), vector(pc)));
 
 	return h_ ? h_.get() : INVALID_HANDLEX;
 }
@@ -49,12 +49,12 @@ const _FP12* WINAPI xll_instrument(HANDLEX i)
 	static xll::FPX result;
 
 	try {
-		handle<instrument_iterable> i_(i);
+		handle<instrument::interface<>> i_(i);
 		ensure(i_);
 
 		result.resize(0, 0);
 		while (*i_) {
-			const auto [u, c] = **i_;
+			const auto [u,c] = **i_;
 			result.push_back(u);
 			result.push_back(c);
 			++*i_;
