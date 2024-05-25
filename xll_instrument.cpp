@@ -2,7 +2,6 @@
 #include "bondxll.h"
 #include "../bondlib/tmx_instrument.h"
 
-using namespace fms::iterable;
 using namespace tmx;
 using namespace xll;
 
@@ -25,7 +24,7 @@ HANDLEX WINAPI xll_instrument_(const _FP12* pu, const _FP12* pc)
 		return INVALID_HANDLEX;
 	}
 
-	handle<instrument::iterable<vector<double>,vector<double>>> h_(new instrument::iterable(vector(size(*pu), array(*pu)), vector(size(*pc), array(*pc))));
+	handle<instrument::value<>> h_(new instrument::value(size(*pu), pu->array, pc->array));
 
 	return h_ ? h_.get() : INVALID_HANDLEX;
 }
@@ -44,7 +43,7 @@ const _FP12* WINAPI xll_instrument(HANDLEX i)
 	static xll::FPX result;
 
 	try {
-		handle<instrument::iterable<vector<double>, vector<double>>> i_(i);
+		handle<instrument::value<>> i_(i);
 		ensure(i_);
 
 		result.resize(0, 0);

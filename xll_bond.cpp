@@ -1,9 +1,9 @@
 // xll_bond.cpp - Bonds
 #include "../bondlib/tmx_instrument_bond.h"
-#include "../bondlib/tmx_instrument.h"
 #include "bondxll.h"
 #include "xll24/excel_clock.h"
 
+//using namespace fms::iterable;
 using namespace tmx;
 using namespace xll;
 
@@ -101,18 +101,20 @@ AddIn xai_bond_basic(
 LPOPER WINAPI xll_bond_basic(HANDLEX h)
 {
 #pragma XLLEXPORT
-	static OPER result(6,1,nullptr);
+	static OPER result(8,1,nullptr);
 
 	try {
 		handle<bond::basic<>> h_(h);
 		ensure(h_);
 
-		result[0] = from_ymd(h_->dated);
-		result[1] = from_ymd(h_->maturity);
+		result[0] = to_excel(h_->dated);
+		result[1] = to_excel(h_->maturity);
 		result[2] = h_->coupon;
 		result[3] = frequency_string(h_->frequency);
 		result[4] = day_count_string(to_handle(h_->day_count));
-		result[5] = h_->face;
+		result[5] = business_day_roll_string(h_->roll);
+		result[6] = holiday_calendar_string(to_handle(h_->cal));
+		result[7] = h_->face;
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -140,8 +142,7 @@ HANDLEX WINAPI xll_bond_basic_fix_(HANDLEX b, double dated)
 		handle<bond::basic<>> b_(b);
 		ensure(b_);
 
-		auto i = bond::instrument(*b_, to_days(dated));
-		handle<instrument::interface<>> h(new instrument::value(i));
+		handle<instrument::value<>> h(new instrument::value(bond::instrument(*b_, to_days(dated))));
 		ensure(h);
 
 		result = h.get();

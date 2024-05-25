@@ -34,6 +34,20 @@ OPER tmx_frequency_enum({
 
 XLL_CONST(LPOPER, TMX_FREQUENCY_ENUM, &tmx_frequency_enum, "Payment frequencies.", CATEGORY " Enum", "https://www.investopedia.com/terms/c/compounding.asp")
 
+// Roll conventions
+//TODO: #define SIFMA_URL "https://www.sifma.org/resources/general/holiday-schedule/#us"
+
+#define TMX_DATE_BUSINESS_DAY_ROLL_ENUM(a, b, c) XLL_CONST(WORD, TMX_BUSINESS_DAY_ROLL_##a, (WORD)date::business_day::roll::b, c, CATEGORY " Enum", "")
+TMX_DATE_BUSINESS_DAY_ROLL(TMX_DATE_BUSINESS_DAY_ROLL_ENUM)
+#undef TMX_DATE_BUSINESS_DAY_ROLL_ENUM
+
+// All roll conventions as string names.
+#define TMX_DATE_BUSINESS_DAY_ROLL_ENUM(a, b, c) OPER("TMX_BUSINESS_DAY_ROLL_" #a),
+OPER tmx_date_business_day_enum({
+	TMX_DATE_BUSINESS_DAY_ROLL(TMX_DATE_BUSINESS_DAY_ROLL_ENUM)
+	});
+#undef TMX_DATE_BUSINESS_DAY_ROLL_ENUM
+
 // Calendars
 #define SIFMA_URL "https://www.sifma.org/resources/general/holiday-schedule/#us"
 

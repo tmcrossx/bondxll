@@ -151,7 +151,7 @@ double WINAPI xll_value_convexity(HANDLEX i, HANDLEX c)
 
 	return result;
 }
-
+#endif // 0
 AddIn xai_value_yield(
 	Function(XLL_DOUBLE, "xll_value_yield", CATEGORY ".VALUE.YIELD")
 	.Arguments({
@@ -167,11 +167,10 @@ double WINAPI xll_value_yield(HANDLEX i, double p)
 	double y = math::NaN<double>;
 
 	try {
-		handle<instrument::interface<>> i_(i);
+		handle<instrument::value<>> i_(i);
 		ensure(i_);
-		const auto _i = i_.as<instrument::value<>>(); 
 
-		y = valuation::yield(*_i, p);
+		y = valuation::yield(*i_, p);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -179,7 +178,7 @@ double WINAPI xll_value_yield(HANDLEX i, double p)
 
 	return y;
 }
-
+#if 0
 AddIn xai_value_oas(
 	Function(XLL_DOUBLE, "xll_value_oas", CATEGORY ".VALUE.OAS")
 	.Arguments({
