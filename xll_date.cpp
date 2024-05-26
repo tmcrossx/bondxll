@@ -6,10 +6,11 @@
 using namespace tmx;
 using namespace xll;
 
-#define BDE_URL "https://github.com/bloomberg/bde/blob/main/groups/bbl/bbldc/bbldc_basic"
+// Day count conventions
+#define DAY_COUNT_URL "https://en.wikipedia.org/wiki/Day_count_convention"
 
 //XLL_CONST(HANDLEX, TMX_DAY_COUNT_ACTUAL_ACTUAL, safe_handle(date::day_count_isdaactualactual), "Actual days per year.", CATEGORY " Enum", BDE_URL  ".cpp")
-#define TMX_DAY_COUNT_ENUM(a, b, c) XLL_CONST(HANDLEX, TMX_DAY_COUNT_##a, safe_handle(date::day_count_##b), c, CATEGORY " Enum", BDE_URL #b ".cpp")
+#define TMX_DAY_COUNT_ENUM(a, b, c) XLL_CONST(HANDLEX, TMX_DAY_COUNT_##a, safe_handle(date::day_count_##b), c, CATEGORY " Enum", DAY_COUNT_URL)
 TMX_DAY_COUNT(TMX_DAY_COUNT_ENUM)
 #undef TMX_DAY_COUNT_ENUM
 
@@ -20,7 +21,7 @@ OPER tmx_day_count_enum({
 });
 #undef TMX_DAY_COUNT_ENUM
 
-XLL_CONST(LPOPER, TMX_DAY_COUNT_ENUM, &tmx_day_count_enum, "Day count fraction types.", CATEGORY " Enum", BDE_URL)
+XLL_CONST(LPOPER, TMX_DAY_COUNT_ENUM, &tmx_day_count_enum, "Day count fraction types.", CATEGORY " Enum", DAY_COUNT_URL)
 
 #define TMX_DATE_FREQUENCY_ENUM(a, b, c, d) XLL_CONST(WORD, TMX_FREQUENCY_##a, (WORD)tmx::date::frequency::b, d, CATEGORY " Enum", "")
 TMX_DATE_FREQUENCY(TMX_DATE_FREQUENCY_ENUM)
@@ -35,9 +36,9 @@ OPER tmx_frequency_enum({
 XLL_CONST(LPOPER, TMX_FREQUENCY_ENUM, &tmx_frequency_enum, "Payment frequencies.", CATEGORY " Enum", "https://www.investopedia.com/terms/c/compounding.asp")
 
 // Roll conventions
-//TODO: #define SIFMA_URL "https://www.sifma.org/resources/general/holiday-schedule/#us"
+#define BUSINESS_DAY_ROLL_URL "https://en.wikipedia.org/wiki/Date_rolling"
 
-#define TMX_DATE_BUSINESS_DAY_ROLL_ENUM(a, b, c) XLL_CONST(WORD, TMX_BUSINESS_DAY_ROLL_##a, (WORD)date::business_day::roll::b, c, CATEGORY " Enum", "")
+#define TMX_DATE_BUSINESS_DAY_ROLL_ENUM(a, b, c) XLL_CONST(WORD, TMX_BUSINESS_DAY_ROLL_##a, (WORD)date::business_day::roll::b, c, CATEGORY " Enum", BUSINESS_DAY_ROLL_URL)
 TMX_DATE_BUSINESS_DAY_ROLL(TMX_DATE_BUSINESS_DAY_ROLL_ENUM)
 #undef TMX_DATE_BUSINESS_DAY_ROLL_ENUM
 
@@ -48,10 +49,12 @@ OPER tmx_date_business_day_enum({
 	});
 #undef TMX_DATE_BUSINESS_DAY_ROLL_ENUM
 
-// Calendars
-#define SIFMA_URL "https://www.sifma.org/resources/general/holiday-schedule/#us"
+XLL_CONST(LPOPER, TMX_BUSINESS_DAY_ROLL_ENUM, &tmx_date_business_day_enum, "Business day roll conventions.", CATEGORY " Enum", BUSINESS_DAY_ROLL_URL)
 
-#define TMX_DATE_HOLIDAY_CALENDAR_ENUM(a, b, c) XLL_CONST(HANDLEX, TMX_HOLIDAY_CALENDAR_##a, safe_handle(date::holiday::calendar::b), c, CATEGORY " Enum", SIFMA_URL)
+// Calendars
+#define HOLIDAY_CALENDAR_URL "https://www.sifma.org/resources/general/holiday-schedule/#us"
+
+#define TMX_DATE_HOLIDAY_CALENDAR_ENUM(a, b, c) XLL_CONST(HANDLEX, TMX_HOLIDAY_CALENDAR_##a, safe_handle(date::holiday::calendar::b), c, CATEGORY " Enum", HOLIDAY_CALENDAR_URL)
 TMX_DATE_HOLIDAY_CALENDAR(TMX_DATE_HOLIDAY_CALENDAR_ENUM)
 #undef TMX_DATE_HOLIDAY_CALENDAR_ENUM
 
@@ -62,10 +65,10 @@ OPER tmx_holiday_calendar_enum({
 	});
 #undef TMX_DATE_HOLIDAY_CALENDAR_ENUM
 
-XLL_CONST(LPOPER, TMX_HOLIDAY_CALENDAR_ENUM, &tmx_holiday_calendar_enum, "Holiday calendars.", CATEGORY " Enum", BDE_URL)
+XLL_CONST(LPOPER, TMX_HOLIDAY_CALENDAR_ENUM, &tmx_holiday_calendar_enum, "Holiday calendars.", CATEGORY " Enum", HOLIDAY_CALENDAR_URL)
 
 AddIn xai_date_holiday_calendar(
-	Function(XLL_LPOPER, "xll_date_holiday_calendar", CATEGORY ".DATE.HOLIDAY.CALENDAR")
+	Function(XLL_LPOPER, "xll_date_holiday_calendar", CATEGORY ".DATE.HOLIDAY")
 	.Arguments({
 		Arg(XLL_HANDLEX, "calendar", "is a holiday calendar."),
 		Arg(XLL_DOUBLE, "date", "is an Excel date."),
@@ -102,7 +105,7 @@ AddIn xai_date_addyears(
 		Arg(XLL_DOUBLE, "years", "is the number of years to add."),
 		})
 		.Category(CATEGORY)
-	.FunctionHelp("Add years to date.")
+	.FunctionHelp("Add years to date. ADDYEARS(d0, DIFFYEARS(d1, d0)) = d1")
 );
 double WINAPI xll_date_addyears(double d, double y)
 {
@@ -118,7 +121,7 @@ AddIn xai_date_diffyears(
 		Arg(XLL_DOUBLE, "d0", "is an Excel date."),
 		})
 		.Category(CATEGORY)
-	.FunctionHelp("Return d1 - d0 in years.")
+	.FunctionHelp("Return the difference of d1 and d0 in years. DIFFYEARS(ADDYEARD(d, y), d)) = y.")
 );
 double WINAPI xll_date_diffyears(double d1, double d0)
 {
@@ -135,7 +138,7 @@ AddIn xai_date_dcf(
 		Arg(XLL_HANDLEX, "dcf", "is a day count fraction. Default is 30/360."),
 		})
 		.Category(CATEGORY)
-	.FunctionHelp("Return day count fraction from d0 to d1.")
+	.FunctionHelp("Return the day count fraction from d0 to d1.")
 );
 double WINAPI xll_date_dcf(double d0, double d1, HANDLEX dcf)
 {

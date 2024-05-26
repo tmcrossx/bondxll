@@ -170,7 +170,7 @@ double WINAPI xll_value_yield(HANDLEX i, double p)
 		handle<instrument::value<>> i_(i);
 		ensure(i_);
 
-		y = valuation::yield(*i_, p);
+		y = valuation::yield(make_iterable(*i_), p);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
