@@ -1,6 +1,10 @@
 // xll_enum.cpp
 #include "xll24/xll.h"
 
+#ifndef CATEGORY
+#define CATEGORY "XLL"
+#endif
+
 using namespace xll;
 
 AddIn xai_enum(
@@ -8,7 +12,7 @@ AddIn xai_enum(
 	.Arguments({
 		Arg(XLL_CSTRING, "enum", "is the string representation of an enumeration.")
 		})
-	.Category("XLL")
+	.Category(CATEGORY)
 	.FunctionHelp("Evaluate a string name of an enumeration.")
 );
 LPXLOPER12 WINAPI xll_enum(const XCHAR* e)

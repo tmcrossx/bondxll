@@ -1,6 +1,6 @@
 // xll_bootstrap.cpp - Bootstrap a curve from bonds
-#include "../bondlib/tmx_bootstrap.h"
-#include "../bondlib/tmx_curve_pwflat.h"
+#include "curve/tmx_bootstrap.h"
+#include "curve/tmx_curve_pwflat.h"
 #include "bondxll.h"
 
 using namespace tmx;

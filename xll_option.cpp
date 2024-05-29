@@ -1,5 +1,5 @@
 // xll_option.cpp - Generic option forward pricing
-#include "../bondlib/tmx_option.h"
+#include "valuation/tmx_option.h"
 #include "bondxll.h"
 
 using namespace xll;

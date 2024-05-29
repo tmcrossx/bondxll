@@ -1,5 +1,5 @@
 // xll_bond.cpp - Bonds
-#include "../bondlib/tmx_instrument_bond.h"
+#include "instrument/tmx_instrument_bond.h"
 #include "bondxll.h"
 #include "xll24/excel_clock.h"
 

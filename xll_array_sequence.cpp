@@ -1,7 +1,11 @@
 // xll_array_sequence.cpp - Arithmetic sequence.
-#include "bondxll.h"
+#include "xll24/xll.h"
 
 using namespace xll;
+
+#ifndef CATEGORY
+#define CATEGORY "XLL"
+#endif
 
 AddIn xai_array_sequence(
 	Function(XLL_FP, "xll_array_sequence", "ARRAY.SEQUENCE")

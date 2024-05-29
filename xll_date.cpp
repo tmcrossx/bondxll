@@ -1,5 +1,5 @@
-#include "../bondlib/tmx_date_day_count.h"
-#include "../bondlib/tmx_date_holiday_calendar.h"
+#include "date/tmx_date_day_count.h"
+#include "date/tmx_date_holiday_calendar.h"
 #include "bondxll.h"
 #include "xll24/excel_clock.h"
 

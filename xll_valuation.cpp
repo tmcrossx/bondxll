@@ -1,7 +1,7 @@
 // xll_value.h - Value functions
-#include "../bondlib/tmx_instrument.h"
-#include "../bondlib/tmx_curve_pwflat.h"
-#include "../bondlib/tmx_valuation.h"
+#include "instrument/tmx_instrument.h"
+#include "curve/tmx_curve_pwflat.h"
+#include "valuation/tmx_valuation.h"
 #include "bondxll.h"
 
 using namespace tmx;
