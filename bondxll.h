@@ -12,5 +12,4 @@
 
 namespace xll {
 
-
 } // namespace xll

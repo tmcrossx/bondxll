@@ -1,5 +1,6 @@
 #include "date/tmx_date_day_count.h"
 #include "date/tmx_date_holiday_calendar.h"
+#include "date/tmx_date_periodic.h"
 #include "bondxll.h"
 #include "xll24/excel_clock.h"
 
@@ -111,7 +112,7 @@ double WINAPI xll_date_addyears(double d, double y)
 {
 #pragma XLLEXPORT
 
-	return d + y*date::days_per_year;
+	return d + y*date::seconds_per_year/86400;
 }
 
 AddIn xai_date_diffyears(
@@ -127,7 +128,7 @@ double WINAPI xll_date_diffyears(double d1, double d0)
 {
 #pragma XLLEXPORT
 
-	return (d1 - d0)/date::days_per_year;
+	return (d1 - d0)*86400/date::seconds_per_year;
 }
 
 AddIn xai_date_dcf(

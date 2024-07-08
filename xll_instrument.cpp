@@ -18,15 +18,31 @@ AddIn xai_instrument_(
 HANDLEX WINAPI xll_instrument_(const _FP12* pu, const _FP12* pc)
 {
 #pragma XLLEXPORT
-	if (size(*pu) != size(*pc)) {
-		XLL_ERROR(__FUNCTION__ ": time and cash must have same size");
+	HANDLEX h_ = INVALID_HANDLEX;
+
+	try {
+		if (size(*pu) != size(*pc)) {
+			XLL_ERROR(__FUNCTION__ ": time and cash must have same size");
+
+			return INVALID_HANDLEX;
+		}
+
+		handle<FPX> i(new FPX{});
+		ensure(i);
+		auto n = size(*pu);
+		i->resize(2, n);
+		std::copy_n(begin(*pu), n, i->array());
+		std::copy_n(begin(*pc), n, i->array() + n);
+
+		h_ = i.get();
+	}
+	catch (const std::exception& ex) {
+		XLL_ERROR(ex.what());
 
 		return INVALID_HANDLEX;
 	}
 
-	handle<instrument::interface<>> h_(new instrument::value(size(*pu), pu->array, pc->array));
-
-	return h_ ? h_.get() : INVALID_HANDLEX;
+	return h_;
 }
 
 AddIn xai_instrument(
@@ -40,21 +56,12 @@ AddIn xai_instrument(
 const _FP12* WINAPI xll_instrument(HANDLEX i)
 {
 #pragma XLLEXPORT
-	static xll::FPX result;
+	_FP12* pi;
 
 	try {
-		handle<instrument::value<>> i_(i);
+		handle<FPX> i_(i);
 		ensure(i_);
-
-		result.resize(0, 0);
-		while (*i_) {
-			const auto [u,c] = **i_;
-			result.push_back(u);
-			result.push_back(c);
-			++*i_;
-		}
-
-		result.resize(result.size() / 2, 2);
+		pi = static_cast<_FP12*>(i_.ptr()->get());
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -62,5 +69,5 @@ const _FP12* WINAPI xll_instrument(HANDLEX i)
 		return nullptr;
 	}
 
-	return result.get();
+	return pi;
 }
