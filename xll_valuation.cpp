@@ -9,10 +9,6 @@ using namespace fms;
 using namespace tmx;
 using namespace xll;
 
-//using iterable_vector = fms::iterable::vector<double>;
-//using instrument_iterable = tmx::instrument::iterable<iterable_vector, iterable_vector>;
-
-
 AddIn xai_value_compound_yield(
 	Function(XLL_DOUBLE, "xll_value_compound_yield", CATEGORY ".VALUATION.COMPOUND_YIELD")
 	.Arguments({
@@ -61,24 +57,6 @@ double WINAPI xll_value_continuous_rate(double y, WORD n)
 	return r;
 }
 
-// 2 row array of times and cash flows.
-inline auto time(FPX& i)
-{
-	auto n = i.columns();
-
-	return iterable::counted(iterable::ptr(i.array()), n);
-}
-inline auto cash(FPX& i)
-{
-	auto n = i.columns();
-
-	return iterable::counted(iterable::ptr(i.array() + n), n);
-}
-inline auto make_iterable(FPX& i)
-{
-	return instrument::iterable(time(i), cash(i));
-}
-
 AddIn xai_value_present(
 	Function(XLL_DOUBLE, "xll_value_present", CATEGORY ".VALUATION.PRESENT")
 	.Arguments({
@@ -94,13 +72,13 @@ double WINAPI xll_value_present(HANDLEX i, HANDLEX c)
 	double result = math::NaN<double>;
 
 	try {
-		handle<FPX> i_(i);
+		handle<tmx::instrument::iterable<iterable_value, iterable_value>> i_(i);
 		ensure(i_);
 
 		handle<curve::interface<>> c_(c);
 		ensure(c_);
 
-		result = valuation::present(make_iterable(*i_), *c_);
+		result = valuation::present(*i_, *c_);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -108,7 +86,7 @@ double WINAPI xll_value_present(HANDLEX i, HANDLEX c)
 
 	return result;
 }
-
+#if 0
 AddIn xai_value_duration(
 	Function(XLL_DOUBLE, "xll_value_duration", CATEGORY ".VALUE.DURATION")
 	.Arguments({
@@ -226,3 +204,4 @@ double WINAPI xll_value_oas(HANDLEX i, HANDLEX c, double p)
 
 	return y;
 }
+#endif // 0

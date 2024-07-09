@@ -21,18 +21,10 @@ HANDLEX WINAPI xll_instrument_(const _FP12* pu, const _FP12* pc)
 	HANDLEX h_ = INVALID_HANDLEX;
 
 	try {
-		if (size(*pu) != size(*pc)) {
-			XLL_ERROR(__FUNCTION__ ": time and cash must have same size");
+		ensure(size(*pu) == size(*pc));
 
-			return INVALID_HANDLEX;
-		}
-
-		handle<FPX> i(new FPX{});
+		handle i(new tmx::instrument::iterable(iterable_value(pu), iterable_value(pc)));
 		ensure(i);
-		auto n = size(*pu);
-		i->resize(2, n);
-		std::copy_n(begin(*pu), n, i->array());
-		std::copy_n(begin(*pc), n, i->array() + n);
 
 		h_ = i.get();
 	}
@@ -56,12 +48,13 @@ AddIn xai_instrument(
 const _FP12* WINAPI xll_instrument(HANDLEX i)
 {
 #pragma XLLEXPORT
-	_FP12* pi;
+	static FPX uc;
 
 	try {
-		handle<FPX> i_(i);
+		handle<tmx::instrument::iterable<iterable_value,iterable_value>> i_(i);
 		ensure(i_);
-		pi = static_cast<_FP12*>(i_.ptr()->get());
+		
+		uc = make_fpx(*i_);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -69,5 +62,5 @@ const _FP12* WINAPI xll_instrument(HANDLEX i)
 		return nullptr;
 	}
 
-	return pi;
+	return uc.get();
 }
