@@ -38,6 +38,14 @@ namespace xll {
 		iterable_value(const _FP12* p)
 			: iterable_value(p->array, p->rows, p->columns)
 		{ }
+		template<class I>
+		iterable_value(I i_)
+		{
+			while (i_) {
+				i.push_back(*i_);
+				++i_;
+			}
+		}
 		iterable_value(const iterable_value& i_)
 			: iterable_value(i_.i.array(), i_.i.rows(), i_.i.columns())
 		{ }
@@ -57,6 +65,12 @@ namespace xll {
 			return i;
 		}
 	};
+
+	template<class IU, class IC>
+	inline tmx::instrument::iterable<iterable_value, iterable_value> make_instrument(tmx::instrument::iterable<IU, IC> i)
+	{
+
+	}
 
 	// Two row array of times and cash flows.
 	template<class IU, class IC>

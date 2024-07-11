@@ -72,7 +72,7 @@ double WINAPI xll_value_present(HANDLEX i, HANDLEX c)
 	double result = math::NaN<double>;
 
 	try {
-		handle<tmx::instrument::iterable<iterable_value, iterable_value>> i_(i);
+		handle<instrument::iterable<iterable_value, iterable_value>> i_(i);
 		ensure(i_);
 
 		handle<curve::interface<>> c_(c);
@@ -86,9 +86,9 @@ double WINAPI xll_value_present(HANDLEX i, HANDLEX c)
 
 	return result;
 }
-#if 0
+
 AddIn xai_value_duration(
-	Function(XLL_DOUBLE, "xll_value_duration", CATEGORY ".VALUE.DURATION")
+	Function(XLL_DOUBLE, "xll_value_duration", CATEGORY ".VALUATION.DURATION")
 	.Arguments({
 		Arg(XLL_HANDLEX, "instrument", "is a handle to an instrument."),
 		Arg(XLL_HANDLEX, "curve", "is a handle to a curve."),
@@ -102,13 +102,13 @@ double WINAPI xll_value_duration(HANDLEX i, HANDLEX c)
 	double result = math::NaN<double>;
 
 	try {
-		handle<FPX> i_(i);
+		handle<instrument::iterable<iterable_value, iterable_value>> i_(i);
 		ensure(i_);
 
 		handle<curve::interface<>> c_(c);
 		ensure(c_);
 
-		result = valuation::duration(make_iterable(*i_), *c_);
+		result = valuation::duration(*i_, *c_);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -118,7 +118,7 @@ double WINAPI xll_value_duration(HANDLEX i, HANDLEX c)
 }
 
 AddIn xai_value_convexity(
-	Function(XLL_DOUBLE, "xll_value_convexity", CATEGORY ".VALUE.CONVEXITY")
+	Function(XLL_DOUBLE, "xll_value_convexity", CATEGORY ".VALUATION.CONVEXITY")
 	.Arguments({
 		Arg(XLL_HANDLEX, "instrument", "is a handle to an instrument."),
 		Arg(XLL_HANDLEX, "curve", "is a handle to a curve."),
@@ -132,13 +132,13 @@ double WINAPI xll_value_convexity(HANDLEX i, HANDLEX c)
 	double result = math::NaN<double>;
 
 	try {
-		handle<FPX> i_(i);
+		handle<instrument::iterable<iterable_value, iterable_value>> i_(i);
 		ensure(i_);
 
 		handle<curve::interface<>> c_(c);
 		ensure(c_);
 
-		result = valuation::convexity(make_iterable(*i_), *c_);
+		result = valuation::convexity(*i_, *c_);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -148,7 +148,7 @@ double WINAPI xll_value_convexity(HANDLEX i, HANDLEX c)
 }
 
 AddIn xai_value_yield(
-	Function(XLL_DOUBLE, "xll_value_yield", CATEGORY ".VALUE.YIELD")
+	Function(XLL_DOUBLE, "xll_value_yield", CATEGORY ".VALUATION.YIELD")
 	.Arguments({
 		Arg(XLL_HANDLEX, "instrument", "is a handle to an instrument."),
 		Arg(XLL_DOUBLE, "price", "is the price of the instrument."),
@@ -162,10 +162,10 @@ double WINAPI xll_value_yield(HANDLEX i, double p)
 	double y = math::NaN<double>;
 
 	try {
-		handle<FPX> i_(i);
+		handle<instrument::iterable<iterable_value, iterable_value>> i_(i);
 		ensure(i_);
 
-		y = valuation::yield(make_iterable(*i_), p);
+		y = valuation::yield(*i_, p);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -174,8 +174,37 @@ double WINAPI xll_value_yield(HANDLEX i, double p)
 	return y;
 }
 
+AddIn xai_value_price(
+	Function(XLL_DOUBLE, "xll_value_price", CATEGORY ".VALUATION.PRICE")
+	.Arguments({
+		Arg(XLL_HANDLEX, "instrument", "is a handle to an instrument."),
+		Arg(XLL_DOUBLE, "yield", "is the yield."),
+		})
+		.Category(CATEGORY)
+	.FunctionHelp("Return price value of instrument cash flows using curve at time t.")
+);
+double WINAPI xll_value_price(HANDLEX i, double y)
+{
+#pragma XLLEXPORT
+	double result = math::NaN<double>;
+
+	try {
+		handle<instrument::iterable<iterable_value, iterable_value>> i_(i);
+		ensure(i_);
+
+		tmx::curve::constant c(y);
+
+		result = valuation::present(*i_, c);
+	}
+	catch (const std::exception& ex) {
+		XLL_ERROR(ex.what());
+	}
+
+	return result;
+}
+
 AddIn xai_value_oas(
-	Function(XLL_DOUBLE, "xll_value_oas", CATEGORY ".VALUE.OAS")
+	Function(XLL_DOUBLE, "xll_value_oas", CATEGORY ".VALUATION.OAS")
 	.Arguments({
 		Arg(XLL_HANDLEX, "instrument", "is a handle to an instrument."),
 		Arg(XLL_HANDLEX, "curve", "is a handle to a curve."),
@@ -190,13 +219,13 @@ double WINAPI xll_value_oas(HANDLEX i, HANDLEX c, double p)
 	double y = math::NaN<double>;
 
 	try {
-		handle<FPX> i_(i);
+		handle<instrument::iterable<iterable_value, iterable_value>> i_(i);
 		ensure(i_);
 
 		handle<curve::interface<>> c_(c);
 		ensure(c_);
 
-		y = valuation::oas(make_iterable(*i_), *c_, p);
+		y = valuation::oas(*i_, *c_, p);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -204,4 +233,3 @@ double WINAPI xll_value_oas(HANDLEX i, HANDLEX c, double p)
 
 	return y;
 }
-#endif // 0

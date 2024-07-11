@@ -158,7 +158,7 @@ LPOPER WINAPI xll_bond_basic(HANDLEX h)
 }
 
 AddIn xai_bond_basic_fix_(
-	Function(XLL_FP, "xll_bond_basic_fix_", "\\" CATEGORY ".BOND.BASIC.INSTRUMENT")
+	Function(XLL_HANDLEX, "xll_bond_basic_fix_", "\\" CATEGORY ".BOND.BASIC.INSTRUMENT")
 	.Arguments({
 		Arg(XLL_HANDLEX, "bond", "is a handle to a bond."),
 		Arg(XLL_DOUBLE, "dated", "is the dated date of the bond."),
@@ -167,21 +167,25 @@ AddIn xai_bond_basic_fix_(
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to bond instrument cash flows.")
 );
-_FP12* WINAPI xll_bond_basic_fix_(HANDLEX b, double dated)
+HANDLEX WINAPI xll_bond_basic_fix_(HANDLEX b, double dated)
 {
 #pragma XLLEXPORT
-	static FPX v;
+	HANDLEX h = INVALID_HANDLEX;
 
 	try {
 		handle<bond::basic<>> b_(b);
 		ensure(b_);
 
 		auto i = bond::instrument(*b_, to_days(dated));
-		v = make_fpx(i);
+
+		handle h_(new instrument::iterable(iterable_value(i.time()), iterable_value(i.cash())));
+		ensure(h);
+
+		h = h_.get();
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
 	}
 
-	return v.get();
+	return h;
 }

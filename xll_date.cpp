@@ -116,6 +116,44 @@ double WINAPI xll_date_addyears(double d, double y)
 	return d + y*date::seconds_per_year/86400;
 }
 
+AddIn xai_date_addyear(
+	Function(XLL_DOUBLE, "xll_date_addyear", CATEGORY ".DATE.ADDYEAR")
+	.Arguments({
+		Arg(XLL_DOUBLE, "date", "is an Excel date."),
+		Arg(XLL_INT, "years", "is the number of years to add."),
+		})
+		.Category(CATEGORY)
+	.FunctionHelp("Add years to date.")
+);
+double WINAPI xll_date_addyear(double d, int y)
+{
+#pragma XLLEXPORT
+
+	date::ymd t = to_days(d);
+	t += std::chrono::years(y);
+
+	return to_excel(t);
+}
+
+AddIn xai_date_addmonth(
+	Function(XLL_DOUBLE, "xll_date_addmonth", CATEGORY ".DATE.ADDMONTH")
+	.Arguments({
+		Arg(XLL_DOUBLE, "date", "is an Excel date."),
+		Arg(XLL_INT, "months", "is the number of months to add."),
+		})
+		.Category(CATEGORY)
+	.FunctionHelp("Add months to date.")
+);
+double WINAPI xll_date_addmonth(double d, int y)
+{
+#pragma XLLEXPORT
+
+	date::ymd t = to_days(d);
+	t += std::chrono::months(y);
+
+	return to_excel(t);
+}
+
 AddIn xai_date_diffyears(
 	Function(XLL_DOUBLE, "xll_date_diffyears", CATEGORY ".DATE.DIFFYEARS")
 	.Arguments({
@@ -135,8 +173,8 @@ double WINAPI xll_date_diffyears(double d1, double d0)
 AddIn xai_date_dcf(
 	Function(XLL_DOUBLE, "xll_date_dcf", CATEGORY ".DATE.DAY_COUNT")
 	.Arguments({
-		Arg(XLL_DOUBLE, "d0", "is an Excel date."),
-		Arg(XLL_DOUBLE, "d1", "is an Excel date."),
+		Arg(XLL_DOUBLE, "from", "is an Excel date."),
+		Arg(XLL_DOUBLE, "to", "is an Excel date."),
 		Arg(XLL_HANDLEX, "dcf", "is a day count fraction. Default is 30/360."),
 		})
 		.Category(CATEGORY)
@@ -145,7 +183,7 @@ AddIn xai_date_dcf(
 double WINAPI xll_date_dcf(double d0, double d1, HANDLEX dcf)
 {
 #pragma XLLEXPORT
-	double result = INVALID_HANDLEX;
+	double result = std::numeric_limits<double>::quiet_NaN();
 
 	try {
 		if (!dcf) {
@@ -157,7 +195,7 @@ double WINAPI xll_date_dcf(double d0, double d1, HANDLEX dcf)
 		date::ymd y0 = to_days(d0);
 		date::ymd y1 = to_days(d1);
 
-		result = _dcf(y0, y1);
+		result = _dcf(y1, y0);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());

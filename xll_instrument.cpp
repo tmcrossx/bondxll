@@ -23,7 +23,7 @@ HANDLEX WINAPI xll_instrument_(const _FP12* pu, const _FP12* pc)
 	try {
 		ensure(size(*pu) == size(*pc));
 
-		handle i(new tmx::instrument::iterable(iterable_value(pu), iterable_value(pc)));
+		handle i(new instrument::iterable(iterable_value(pu), iterable_value(pc)));
 		ensure(i);
 
 		h_ = i.get();
@@ -51,7 +51,7 @@ const _FP12* WINAPI xll_instrument(HANDLEX i)
 	static FPX uc;
 
 	try {
-		handle<tmx::instrument::iterable<iterable_value,iterable_value>> i_(i);
+		handle<instrument::iterable<iterable_value,iterable_value>> i_(i);
 		ensure(i_);
 		
 		uc = make_fpx(*i_);
