@@ -45,7 +45,7 @@ inline const char* holiday_calendar_string(HANDLEX h)
 
 
 AddIn xai_bond_basic_(
-	Function(XLL_HANDLEX, "xll_bond_basic_", "\\" CATEGORY ".BOND.BASIC")
+	Function(XLL_HANDLEX, "xll_bond_basic_", "\\" CATEGORY "INSTRUMENT.BOND")
 	.Arguments({
 		Arg(XLL_DOUBLE, "dated", "is the date at which interest begins accruing. Default is today."),
 		Arg(XLL_DOUBLE, "maturity", "is the bond maturity as date or in years."),
@@ -112,7 +112,7 @@ HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, dat
 			face = 100;
 		}
 
-		handle<bond::basic<>> h(new bond::basic<>{ dat, mat, coupon, freq, _dcf, roll, _cal, face });
+		handle<instrument::bond::basic<>> h(new instrument::bond::basic<>{ dat, mat, coupon, freq, _dcf, roll, _cal, face });
 		ensure(h);
 
 		result = h.get();
@@ -125,7 +125,7 @@ HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, dat
 }
 
 AddIn xai_bond_basic(
-	Function(XLL_LPOPER, "xll_bond_basic", CATEGORY ".BOND.BASIC")
+	Function(XLL_LPOPER, "xll_bond_basic", CATEGORY "INSTRUMENT.BOND")
 	.Arguments({
 		Arg(XLL_HANDLEX, "handle", "is a handle to a basic bond."),
 		})
@@ -138,7 +138,7 @@ LPOPER WINAPI xll_bond_basic(HANDLEX h)
 	static OPER result(8,1,nullptr);
 
 	try {
-		handle<bond::basic<>> h_(h);
+		handle<instrument::bond::basic<>> h_(h);
 		ensure(h_);
 
 		result[0] = to_excel(h_->dated);
@@ -158,7 +158,7 @@ LPOPER WINAPI xll_bond_basic(HANDLEX h)
 }
 
 AddIn xai_bond_basic_fix_(
-	Function(XLL_HANDLEX, "xll_bond_basic_fix_", "\\" CATEGORY ".BOND.BASIC.INSTRUMENT")
+	Function(XLL_HANDLEX, "xll_bond_basic_fix_", "\\" CATEGORY ".BOND.INSTRUMENT")
 	.Arguments({
 		Arg(XLL_HANDLEX, "bond", "is a handle to a bond."),
 		Arg(XLL_DOUBLE, "dated", "is the dated date of the bond."),
@@ -173,10 +173,10 @@ HANDLEX WINAPI xll_bond_basic_fix_(HANDLEX b, double dated)
 	HANDLEX h = INVALID_HANDLEX;
 
 	try {
-		handle<bond::basic<>> b_(b);
+		handle<instrument::bond::basic<>> b_(b);
 		ensure(b_);
 
-		auto i = bond::instrument(*b_, to_days(dated));
+		auto i = instrument::bond::instrument(*b_, to_days(dated));
 
 		handle h_(new instrument::iterable(iterable_value(i.time()), iterable_value(i.cash())));
 		ensure(h);
