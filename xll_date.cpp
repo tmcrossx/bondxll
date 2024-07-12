@@ -100,6 +100,47 @@ LPOPER WINAPI xll_date_holiday_calendar(HANDLEX calendar, double d)
 	return &result;
 }
 
+AddIn xai_date_periodic(
+	Function(XLL_FP, "xll_date_periodic", CATEGORY ".DATE.PERIODIC")
+	.Arguments({
+		Arg(XLL_INT, "frequency", "is a payment frequency. Default is semiannual."),
+		Arg(XLL_DOUBLE, "from", "is the date prior to first periodic date."),
+		Arg(XLL_DOUBLE, "to", "is the last date."),
+		})
+	.Category(CATEGORY)
+	.FunctionHelp("Return periodic dates after from ending at to.")
+);
+_FP12* WINAPI xll_date_periodic(date::frequency f, double d0, double d1)
+{
+#pragma XLLEXPORT
+	static xll::FPX result;
+
+	try {
+		result.resize(0, 0);
+		date::ymd y0 = to_days(d0);
+		date::ymd y1 = to_days(d1);
+
+		auto p = date::periodic(f, y0, y1);
+
+		int n = static_cast<int>(p.size());
+		if (n == 0) {
+			return nullptr;
+		}
+		result.resize(n, 1);
+		for (int i = 0; i < n; ++i) {
+			result[i] = to_excel(*p++);
+		}
+	}
+	catch (const std::exception& ex) {
+		XLL_ERROR(ex.what());
+
+		return nullptr;
+	}
+
+	return result.get();
+}
+
+
 AddIn xai_date_addyears(
 	Function(XLL_DOUBLE, "xll_date_addyears", CATEGORY ".DATE.ADDYEARS")
 	.Arguments({
@@ -114,6 +155,22 @@ double WINAPI xll_date_addyears(double d, double y)
 #pragma XLLEXPORT
 
 	return d + y*date::seconds_per_year/86400;
+}
+
+AddIn xai_date_diffyears(
+	Function(XLL_DOUBLE, "xll_date_diffyears", CATEGORY ".DATE.DIFFYEARS")
+	.Arguments({
+		Arg(XLL_DOUBLE, "d1", "is an Excel date."),
+		Arg(XLL_DOUBLE, "d0", "is an Excel date."),
+		})
+		.Category(CATEGORY)
+	.FunctionHelp("Return the difference of d1 and d0 in years. DIFFYEARS(ADDYEARS(d, y), d)) = y.")
+);
+double WINAPI xll_date_diffyears(double d1, double d0)
+{
+#pragma XLLEXPORT
+
+	return (d1 - d0)*86400/date::seconds_per_year;
 }
 
 AddIn xai_date_addyear(
@@ -152,22 +209,6 @@ double WINAPI xll_date_addmonth(double d, int y)
 	t += std::chrono::months(y);
 
 	return to_excel(t);
-}
-
-AddIn xai_date_diffyears(
-	Function(XLL_DOUBLE, "xll_date_diffyears", CATEGORY ".DATE.DIFFYEARS")
-	.Arguments({
-		Arg(XLL_DOUBLE, "d1", "is an Excel date."),
-		Arg(XLL_DOUBLE, "d0", "is an Excel date."),
-		})
-		.Category(CATEGORY)
-	.FunctionHelp("Return the difference of d1 and d0 in years. DIFFYEARS(ADDYEARD(d, y), d)) = y.")
-);
-double WINAPI xll_date_diffyears(double d1, double d0)
-{
-#pragma XLLEXPORT
-
-	return (d1 - d0)*86400/date::seconds_per_year;
 }
 
 AddIn xai_date_dcf(
