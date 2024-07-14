@@ -76,6 +76,77 @@ HANDLEX WINAPI xll_curve_pwflat_(const _FP12* pt, const _FP12* pf, LPOPER p_f)
 	return h;
 }
 
+AddIn xai_curve_pwflat_extrapolate(
+	Function(XLL_HANDLEX, "xll_curve_pwflat_extrapolate", CATEGORY ".CURVE.PWFLAT.EXTRAPOLATE")
+	.Arguments({
+		Arg(XLL_HANDLEX, "curve", "is handle to a curve."),
+		Arg(XLL_DOUBLE, "rate", "set extrapolated forward value or return current value if missing.")
+		})
+		.Category(CATEGORY)
+	.FunctionHelp("Extend curve past last point by forward value and return the curve handle. "
+		"If forward is missing return the current extrapolation value.")
+);
+HANDLEX WINAPI xll_curve_pwflat_extrapolate(HANDLEX c, double _f)
+{
+#pragma XLLEXPORT
+	HANDLEX result = INVALID_HANDLEX;
+
+	try {
+		handle<curve::interface<>> _c(c);
+		ensure(_c);
+		curve::pwflat<>* c_ = _c.as<curve::pwflat<>>();
+		ensure(c_);
+
+		if (_f) {
+			c_->extrapolate(_f);
+			result = c;
+		}
+		else {
+			result = c_->extrapolate();
+		}
+
+	}
+	catch (const std::exception& ex) {
+		XLL_ERROR(ex.what());
+
+		return INVALID_HANDLEX;
+	}
+
+	return result;
+}
+
+AddIn xai_curve_pwflat_push_back(
+	Function(XLL_HANDLEX, "xll_curve_pwflat_push_back", CATEGORY ".CURVE.PWFLAT.PUSH_BACK")
+	.Arguments({
+		Arg(XLL_HANDLEX, "curve", "is handle to a curve."),
+		Arg(XLL_DOUBLE, "time", "time value to push back."),
+		Arg(XLL_DOUBLE, "rate", "forward rate to push back.")
+		})
+	.Category(CATEGORY)
+	.FunctionHelp("Add point to end of curve.")
+);
+HANDLEX WINAPI xll_curve_pwflat_push_back(HANDLEX c, double t, double f)
+{
+#pragma XLLEXPORT
+	try {
+		handle<curve::interface<>> _c(c);
+		ensure(_c);
+		curve::pwflat<>* c_ = _c.as<curve::pwflat<>>();
+		ensure(c_);
+
+		c_->push_back(t, f);
+
+	}
+	catch (const std::exception& ex) {
+		XLL_ERROR(ex.what());
+
+		return INVALID_HANDLEX;
+	}
+
+	return c;
+}
+
+
 AddIn xai_curve_pwflat(
 	Function(XLL_FP, "xll_curve_pwflat", CATEGORY ".CURVE.PWFLAT")
 	.Arguments({

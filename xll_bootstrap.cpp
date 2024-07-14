@@ -29,10 +29,10 @@ HANDLEX WINAPI xll_tmx_bootstrap_(_FP12* pi, _FP12* pp)
 		ensure(pf);
 
 		for (size_t i = 0; i < size(*pi); ++i) {
-			handle<instrument::iterable<iterable_value, iterable_value>> ii(pi->array[i]);
+			handle<FPX> ii(pi->array[i]);
 			ensure(ii);
 			auto [_t, _f] = pf->back();
-			pf->push_back(tmx::curve::bootstrap(*ii, *f, _t, _f, pp->array[i]));
+			pf->push_back(tmx::curve::bootstrap(instrument_iterable(*ii), *f, _t, _f, pp->array[i]));
 		}
 
 		result = f.get();

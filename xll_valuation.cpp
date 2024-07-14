@@ -16,7 +16,7 @@ AddIn xai_value_compound_yield(
 		Arg(XLL_WORD, "n", "is the number of times to compound per year."),
 		})
 		.Category(CATEGORY)
-	.FunctionHelp("Convert rate to compounded yield.")
+	.FunctionHelp("Convert rate to compounded yield. (1 + y/n)^n = exp(r)")
 );
 double WINAPI xll_value_compound_yield(double r, WORD n)
 {
@@ -40,7 +40,7 @@ AddIn xai_value_continuous_rate(
 		Arg(XLL_WORD, "n", "is the number of times the yield is compounded per year."),
 		})
 		.Category(CATEGORY)
-	.FunctionHelp("Convert compounded yield to rate.")
+	.FunctionHelp("Convert compounded yield to rate. exp(r) = (1 + y/n)^n")
 );
 double WINAPI xll_value_continuous_rate(double y, WORD n)
 {
@@ -72,13 +72,13 @@ double WINAPI xll_value_present(HANDLEX i, HANDLEX c)
 	double result = math::NaN<double>;
 
 	try {
-		handle<instrument::iterable<iterable_value, iterable_value>> i_(i);
+		handle<FPX> i_(i);
 		ensure(i_);
 
 		handle<curve::interface<>> c_(c);
 		ensure(c_);
 
-		result = valuation::present(*i_, *c_);
+		result = valuation::present(instrument_iterable(*i_), *c_);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -102,13 +102,13 @@ double WINAPI xll_value_duration(HANDLEX i, HANDLEX c)
 	double result = math::NaN<double>;
 
 	try {
-		handle<instrument::iterable<iterable_value, iterable_value>> i_(i);
+		handle<FPX> i_(i);
 		ensure(i_);
 
 		handle<curve::interface<>> c_(c);
 		ensure(c_);
 
-		result = valuation::duration(*i_, *c_);
+		result = valuation::duration(instrument_iterable(*i_), *c_);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -132,13 +132,13 @@ double WINAPI xll_value_convexity(HANDLEX i, HANDLEX c)
 	double result = math::NaN<double>;
 
 	try {
-		handle<instrument::iterable<iterable_value, iterable_value>> i_(i);
+		handle<FPX> i_(i);
 		ensure(i_);
 
 		handle<curve::interface<>> c_(c);
 		ensure(c_);
 
-		result = valuation::convexity(*i_, *c_);
+		result = valuation::convexity(instrument_iterable(*i_), *c_);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -162,10 +162,10 @@ double WINAPI xll_value_yield(HANDLEX i, double p)
 	double y = math::NaN<double>;
 
 	try {
-		handle<instrument::iterable<iterable_value, iterable_value>> i_(i);
+		handle<FPX> i_(i);
 		ensure(i_);
 
-		y = valuation::yield(*i_, p);
+		y = valuation::yield(instrument_iterable(*i_), p);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -189,12 +189,12 @@ double WINAPI xll_value_price(HANDLEX i, double y)
 	double result = math::NaN<double>;
 
 	try {
-		handle<instrument::iterable<iterable_value, iterable_value>> i_(i);
+		handle<FPX> i_(i);
 		ensure(i_);
 
 		tmx::curve::constant c(y);
 
-		result = valuation::present(*i_, c);
+		result = valuation::present(instrument_iterable(*i_), c);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -219,13 +219,13 @@ double WINAPI xll_value_oas(HANDLEX i, HANDLEX c, double p)
 	double y = math::NaN<double>;
 
 	try {
-		handle<instrument::iterable<iterable_value, iterable_value>> i_(i);
+		handle<FPX> i_(i);
 		ensure(i_);
 
 		handle<curve::interface<>> c_(c);
 		ensure(c_);
 
-		y = valuation::oas(*i_, *c_, p);
+		y = valuation::oas(instrument_iterable(*i_), *c_, p);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());

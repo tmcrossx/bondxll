@@ -1,5 +1,5 @@
-// xll_bond.cpp - Bonds
-#include "instrument/tmx_instrument_bond.h"
+// xll_instrument_bond.cpp - Bonds
+#include "instrument/tmx_instrument_bond_treasury.h"
 #include "bondxll.h"
 #include "xll24/excel_clock.h"
 
@@ -43,9 +43,8 @@ inline const char* holiday_calendar_string(HANDLEX h)
 }
 #undef TMX_DATE_HOLIDAY_CALENDAR_STRING
 
-
 AddIn xai_bond_basic_(
-	Function(XLL_HANDLEX, "xll_bond_basic_", "\\" CATEGORY "INSTRUMENT.BOND")
+	Function(XLL_HANDLEX, "xll_bond_basic_", "\\" CATEGORY ".INSTRUMENT.BOND")
 	.Arguments({
 		Arg(XLL_DOUBLE, "dated", "is the date at which interest begins accruing. Default is today."),
 		Arg(XLL_DOUBLE, "maturity", "is the bond maturity as date or in years."),
@@ -125,7 +124,7 @@ HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, dat
 }
 
 AddIn xai_bond_basic(
-	Function(XLL_LPOPER, "xll_bond_basic", CATEGORY "INSTRUMENT.BOND")
+	Function(XLL_LPOPER, "xll_bond_basic", CATEGORY ".INSTRUMENT.BOND")
 	.Arguments({
 		Arg(XLL_HANDLEX, "handle", "is a handle to a basic bond."),
 		})
@@ -178,7 +177,7 @@ HANDLEX WINAPI xll_bond_basic_fix_(HANDLEX b, double dated)
 
 		auto i = instrument::bond::instrument(*b_, to_days(dated));
 
-		handle h_(new instrument::iterable(iterable_value(i.time()), iterable_value(i.cash())));
+		handle h_(new FPX(xll::instrument(i)));
 		ensure(h);
 
 		h = h_.get();
@@ -188,4 +187,57 @@ HANDLEX WINAPI xll_bond_basic_fix_(HANDLEX b, double dated)
 	}
 
 	return h;
+}
+
+AddIn xai_bond_treasury_(
+	Function(XLL_HANDLEX, "xll_bond_treasury_", "\\" CATEGORY ".INSTRUMENT.BOND.TREASURY")
+	.Arguments({
+		Arg(XLL_DOUBLE, "dated", "is the date at which interest begins accruing. Default is today."),
+		Arg(XLL_DOUBLE, "maturity", "is the bond maturity as date or in years."),
+		Arg(XLL_DOUBLE, "coupon", "is the bond coupon. Default is 5%."),
+		Arg(XLL_DOUBLE, "face", "is the face amount of the bond. Default is 100."),
+		})
+		.Uncalced()
+	.Category(CATEGORY)
+	.FunctionHelp("Return a handle to a treasury bond.")
+);
+HANDLEX WINAPI xll_bond_treasury_(double dated, double maturity, double coupon, double face)
+{
+#pragma XLLEXPORT
+	HANDLEX result = INVALID_HANDLEX;
+
+	try {
+		using std::chrono::years;
+
+
+		date::ymd dat;
+		if (dated == 0) {
+			dat = to_days(Num(Excel(xlfToday)));
+		}
+		else {
+			dat = to_days(dated);
+		}
+
+		date::ymd mat;
+		if (maturity < 300) {
+			mat = dat + years(static_cast<int>(maturity));
+		}
+		else {
+			mat = to_days(maturity);
+		}
+
+		if (face == 0) {
+			face = 100;
+		}
+
+		handle<instrument::bond::basic<>> h(new instrument::bond::treasury<>(dat, mat, coupon, face ));
+		ensure(h);
+
+		result = h.get();
+	}
+	catch (const std::exception& ex) {
+		XLL_ERROR(ex.what());
+	}
+
+	return result;
 }

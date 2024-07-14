@@ -23,7 +23,7 @@ HANDLEX WINAPI xll_instrument_(const _FP12* pu, const _FP12* pc)
 	try {
 		ensure(size(*pu) == size(*pc));
 
-		handle i(new instrument::iterable(iterable_value(pu), iterable_value(pc)));
+		handle i(new FPX(xll::instrument(*pu, *pc)));
 		ensure(i);
 
 		h_ = i.get();
@@ -48,13 +48,13 @@ AddIn xai_instrument(
 const _FP12* WINAPI xll_instrument(HANDLEX i)
 {
 #pragma XLLEXPORT
-	static FPX uc;
+	const _FP12* uc = nullptr;
 
 	try {
-		handle<instrument::iterable<iterable_value,iterable_value>> i_(i);
+		handle<FPX> i_(i);
 		ensure(i_);
 		
-		uc = make_fpx(*i_);
+		uc = i_.ptr()->get();
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -62,5 +62,5 @@ const _FP12* WINAPI xll_instrument(HANDLEX i)
 		return nullptr;
 	}
 
-	return uc.get();
+	return uc;
 }

@@ -1,7 +1,5 @@
 // bondxll.h
 #pragma once
-#include <algorithm>
-#include "fms_iterable/fms_iterable.h"
 #include "instrument/tmx_instrument.h"
 #include "xll24/xll.h"
 
@@ -13,86 +11,33 @@
 
 namespace xll {
 
-	// TODO: move to xll24???
-	template<class T>
-	using counted_iterable = fms::iterable::counted<fms::iterable::ptr<T>>;
-
-	// Used in tmx::instrument::iterable
-	class iterable_value : public counted_iterable<double> {
-		FPX i;
-		static auto make_iterable(_FP12* pi)
-		{
-			using namespace fms::iterable;
-
-			return take(ptr(xll::array(*pi)), xll::size(*pi));
-		}
-	public:
-		iterable_value()
-			: counted_iterable<double>(), i()
-		{ }
-		iterable_value(const double* p, int r, int c = 1)
-			: counted_iterable<double>(), i(r, c, p)
-		{
-			counted_iterable<double>::operator=(make_iterable(i.get()));
-		}
-		iterable_value(const _FP12* p)
-			: iterable_value(p->array, p->rows, p->columns)
-		{ }
-		template<class I>
-		iterable_value(I i_)
-		{
-			while (i_) {
-				i.push_back(*i_);
-				++i_;
-			}
-		}
-		iterable_value(const iterable_value& i_)
-			: iterable_value(i_.i.array(), i_.i.rows(), i_.i.columns())
-		{ }
-		iterable_value& operator=(const iterable_value& i_)
-		{
-			if (this != &i_) {
-				i = i_.i;
-				counted_iterable<double>::operator=(make_iterable(i.get()));
-			}
-
-			return *this;
-		}
-		~iterable_value() = default;
-
-		FPX get()
-		{
-			return i;
-		}
-	};
-
-	template<class IU, class IC>
-	inline tmx::instrument::iterable<iterable_value, iterable_value> make_instrument(tmx::instrument::iterable<IU, IC> i)
+	// Instruments are two row array of times and cash flows.
+	inline auto instrument_iterable(FPX& x)
 	{
+		ensure(x.rows() == 2);
 
+		auto time = fms::iterable::counted(fms::iterable::ptr(begin(x)), columns(x));
+		auto cash = fms::iterable::counted(fms::iterable::ptr(begin(x) + columns(x)), columns(x));
+
+		return tmx::instrument::iterable(time, cash);
 	}
-
-	// Two row array of times and cash flows.
-	template<class IU, class IC>
-	inline FPX make_fpx(const tmx::instrument::iterable<IU, IC>& i)
+	inline FPX instrument(const _FP12& time, const _FP12& cash)
 	{
-		FPX uc;
+		FPX u(time);
+		u.resize(1, size(time));
 
-		auto u = i.time();
-		while (u) {
-			uc.push_back(*u);
-			++u;
-		}
-		auto c = i.cash();
-		while (c) {
-			uc.push_back(*c);
-			++c;
-		}
-		if (uc.size()) {
-			uc.resize(2, uc.size() / 2);
-		}
+		FPX c(cash);
+		c.resize(1, size(cash));
 
-		return uc;
+		return u.vstack(c);
+	}
+	template<class I>
+	inline FPX instrument(I i)
+	{
+		FPX u(i.time());
+		FPX c(i.cash());
+
+		return u.vstack(c);
 	}
 
 } // namespace xll
