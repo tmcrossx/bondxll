@@ -1,6 +1,6 @@
 // xll_instrument_bond.cpp - Bonds
-#include "instrument/tmx_instrument_bond_treasury.h"
-#include "bondxll.h"
+#include "instrument/tmx_instrument_bond.h"
+#include "xll_instrument.h"
 #include "xll24/excel_clock.h"
 
 //using namespace fms::iterable;
@@ -188,7 +188,7 @@ HANDLEX WINAPI xll_bond_basic_fix_(HANDLEX b, double dated)
 
 	return h;
 }
-
+/*
 AddIn xai_bond_treasury_(
 	Function(XLL_HANDLEX, "xll_bond_treasury_", "\\" CATEGORY ".INSTRUMENT.BOND.TREASURY")
 	.Arguments({
@@ -241,3 +241,4 @@ HANDLEX WINAPI xll_bond_treasury_(double dated, double maturity, double coupon, 
 
 	return result;
 }
+*/

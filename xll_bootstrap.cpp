@@ -1,7 +1,7 @@
 // xll_bootstrap.cpp - Bootstrap a curve from bonds
 #include "curve/tmx_curve_bootstrap.h"
 #include "curve/tmx_curve_pwflat.h"
-#include "bondxll.h"
+#include "xll_instrument.h"
 
 using namespace tmx;
 using namespace xll;

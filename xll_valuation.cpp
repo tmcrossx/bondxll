@@ -3,7 +3,7 @@
 #include "instrument/tmx_instrument.h"
 #include "curve/tmx_curve_pwflat.h"
 #include "valuation/tmx_valuation.h"
-#include "bondxll.h"
+#include "xll_instrument.h"
 
 using namespace fms;
 using namespace tmx;

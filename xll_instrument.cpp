@@ -1,6 +1,5 @@
-// xll_instrument.cpp - Instrument times and cash flows.
-#include "instrument/tmx_instrument.h"
-#include "bondxll.h"
+// xll_instrument.cpp - Two row array of floating point instrument times and cash flows.
+#include "xll_instrument.h"
 
 using namespace tmx;
 using namespace xll;
