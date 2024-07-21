@@ -72,7 +72,7 @@ XLL_CONST(LPOPER, TMX_HOLIDAY_CALENDAR_ENUM, &tmx_holiday_calendar_enum, "Holida
 AddIn xai_date_holiday_calendar(
 	Function(XLL_LPOPER, "xll_date_holiday_calendar", CATEGORY ".DATE.HOLIDAY")
 	.Arguments({
-		Arg(XLL_HANDLEX, "calendar", "is a holiday calendar."),
+		Arg(XLL_HANDLEX, "calendar", "is a TMX_HOLIDAY_CALENDAR_* enumeration."),
 		Arg(XLL_DOUBLE, "date", "is an Excel date."),
 		})
 		.Category(CATEGORY)

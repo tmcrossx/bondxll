@@ -1,4 +1,4 @@
-// xll_instrument.h - Two row array of floating point times and cash flows.
+// xll_instrument.h - Two row array of floating point time in years and cash flows.
 #pragma once
 #include "instrument/tmx_instrument.h"
 #include "bondxll.h"
@@ -8,15 +8,17 @@
 namespace xll {
 
 	// Instruments are two row array of times and cash flows.
-	inline auto instrument_iterable(FPX& x)
+	// Assumes lifetime of x.
+	inline auto instrument_iterable(FPX& uc)
 	{
-		ensure(x.rows() == 2);
+		ensure(uc.rows() == 2);
 
-		auto time = fms::iterable::counted(fms::iterable::ptr(begin(x)), columns(x));
-		auto cash = fms::iterable::counted(fms::iterable::ptr(begin(x) + columns(x)), columns(x));
+		auto u = fms::iterable::counted(fms::iterable::ptr(begin(uc)), columns(uc));
+		auto c = fms::iterable::counted(fms::iterable::ptr(begin(uc) + columns(uc)), columns(uc));
 
-		return tmx::instrument::iterable(time, cash);
+		return tmx::instrument::iterable(u, c);
 	}
+	// Return value type.
 	inline FPX instrument(const _FP12& time, const _FP12& cash)
 	{
 		FPX u(time);
@@ -27,6 +29,7 @@ namespace xll {
 
 		return u.vstack(c);
 	}
+	// Return value type.
 	template<class IU, class IC>
 	inline FPX instrument(const tmx::instrument::iterable<IU, IC>& i)
 	{
