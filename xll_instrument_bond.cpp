@@ -230,7 +230,7 @@ HANDLEX WINAPI xll_bond_treasury_(double dated, double maturity, double coupon, 
 			face = 100;
 		}
 
-		handle<instrument::bond::basic<>> h(new instrument::bond::treasury<>(dat, mat, coupon, face ));
+		handle<instrument::bond::basic<>> h(new instrument::bond::treasury<>(dat, mat, coupon, face));
 		ensure(h);
 
 		result = h.get();
