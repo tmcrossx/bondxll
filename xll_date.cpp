@@ -3,7 +3,6 @@
 #include "date/tmx_date_holiday_calendar.h"
 #include "date/tmx_date_periodic.h"
 #include "bondxll.h"
-#include "xll24/excel_clock.h"
 
 using namespace tmx;
 using namespace xll;
@@ -72,8 +71,8 @@ XLL_CONST(LPOPER, TMX_HOLIDAY_CALENDAR_ENUM, &tmx_holiday_calendar_enum, "Holida
 AddIn xai_date_holiday_calendar(
 	Function(XLL_LPOPER, "xll_date_holiday_calendar", CATEGORY ".DATE.HOLIDAY")
 	.Arguments({
-		Arg(XLL_HANDLEX, "calendar", "is a TMX_HOLIDAY_CALENDAR_* enumeration."),
-		Arg(XLL_DOUBLE, "date", "is an Excel date."),
+		Arg(XLL_HANDLEX, "calendar", "is a TMX_HOLIDAY_CALENDAR_* enumeration.", "=ENUM(\"TMX_HOLIDAY_CALENDAR_WEEKEND\")"),
+		Arg(XLL_DOUBLE, "date", "is an Excel date.", "=TODAY()"),
 		})
 		.Category(CATEGORY)
 	.FunctionHelp("Return true if date is in the holiday calendar.")
@@ -128,7 +127,7 @@ _FP12* WINAPI xll_date_periodic(date::frequency f, double d0, double d1)
 		}
 		result.resize(n, 1);
 		for (int i = 0; i < n; ++i) {
-			result[i] = to_excel(*p++);
+			result[i] = from_days(*p++);
 		}
 	}
 	catch (const std::exception& ex) {
@@ -189,7 +188,7 @@ double WINAPI xll_date_addyear(double d, int y)
 	date::ymd t = to_days(d);
 	t += std::chrono::years(y);
 
-	return to_excel(t);
+	return from_days(t);
 }
 
 AddIn xai_date_addmonth(
@@ -208,7 +207,7 @@ double WINAPI xll_date_addmonth(double d, int y)
 	date::ymd t = to_days(d);
 	t += std::chrono::months(y);
 
-	return to_excel(t);
+	return from_days(t);
 }
 
 AddIn xai_date_dcf(

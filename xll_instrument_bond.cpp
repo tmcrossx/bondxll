@@ -1,7 +1,6 @@
 // xll_instrument_bond.cpp - Bonds
 #include "instrument/tmx_instrument_bond.h"
 #include "xll_instrument.h"
-#include "xll24/excel_clock.h"
 
 //using namespace fms::iterable;
 using namespace tmx;
@@ -71,10 +70,10 @@ HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, dat
 
 		date::ymd dat;
 		if (dated == 0) {
-			dat = to_days(Num(Excel(xlfToday)));
+			dat = to_days(to_time_t(Num(Excel(xlfToday))));
 		}
 		else {
-			dat = to_days(dated);
+			dat = to_days(to_time_t(dated));
 		}
 
 		date::ymd mat;
@@ -82,7 +81,7 @@ HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, dat
 			mat = dat + years(static_cast<int>(maturity));
 		}
 		else {
-			mat = to_days(maturity);
+			mat = to_days(to_time_t(maturity));
 		}
 
 		if (freq == date::frequency::missing) {
@@ -140,8 +139,8 @@ LPOPER WINAPI xll_bond_basic(HANDLEX h)
 		handle<instrument::bond::basic<>> h_(h);
 		ensure(h_);
 
-		result[0] = to_excel(h_->dated);
-		result[1] = to_excel(h_->maturity);
+		result[0] = from_days(h_->dated);
+		result[1] = from_days(h_->maturity);
 		result[2] = h_->coupon;
 		result[3] = frequency_string(h_->frequency);
 		result[4] = day_count_string(to_handle(h_->day_count));
