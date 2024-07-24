@@ -7,8 +7,8 @@ using namespace xll;
 AddIn xai_instrument_(
 	Function(XLL_HANDLEX, "xll_instrument_", "\\" CATEGORY ".INSTRUMENT")
 	.Arguments({
-		Arg(XLL_FP, "time", "is an array of times."),
-		Arg(XLL_FP, "cash", "is an array of cash flow amounts."),
+		Arg(XLL_FP, "time", "is an array of times.", "={1,2,3}"),
+		Arg(XLL_FP, "cash", "is an array of cash flow amounts.", "={.1,.2,.3}"),
 		})
 	.Uncalced()
 	.Category(CATEGORY)

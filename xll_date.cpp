@@ -143,8 +143,8 @@ _FP12* WINAPI xll_date_periodic(date::frequency f, double d0, double d1)
 AddIn xai_date_addyears(
 	Function(XLL_DOUBLE, "xll_date_addyears", CATEGORY ".DATE.ADDYEARS")
 	.Arguments({
-		Arg(XLL_DOUBLE, "date", "is an Excel date."),
-		Arg(XLL_DOUBLE, "years", "is the number of years to add."),
+		Arg(XLL_DOUBLE, "date", "is an Excel date.", "=TODAY()"),
+		Arg(XLL_DOUBLE, "years", "is the number of years to add.", 10),
 		})
 		.Category(CATEGORY)
 	.FunctionHelp("Add years to date. ADDYEARS(d0, DIFFYEARS(d1, d0)) = d1")
@@ -213,9 +213,9 @@ double WINAPI xll_date_addmonth(double d, int y)
 AddIn xai_date_dcf(
 	Function(XLL_DOUBLE, "xll_date_dcf", CATEGORY ".DATE.DAY_COUNT")
 	.Arguments({
-		Arg(XLL_DOUBLE, "from", "is an Excel date."),
-		Arg(XLL_DOUBLE, "to", "is an Excel date."),
-		Arg(XLL_HANDLEX, "dcf", "is a day count fraction. Default is 30/360."),
+		Arg(XLL_DOUBLE, "from", "is an Excel date.", "1/1/2024"),
+		Arg(XLL_DOUBLE, "to", "is an Excel date.", "7/1/2024"),
+		Arg(XLL_HANDLEX, "dcb", "is a day count basis. Default is 30/360.", "=ENUM(\"TMX_DAY_COUNT_30_360\")"),
 		})
 		.Category(CATEGORY)
 	.FunctionHelp("Return the day count fraction from d0 to d1.")
