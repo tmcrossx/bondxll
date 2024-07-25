@@ -45,8 +45,8 @@ inline const char* holiday_calendar_string(HANDLEX h)
 AddIn xai_bond_basic_(
 	Function(XLL_HANDLEX, "xll_bond_basic_", "\\" CATEGORY ".INSTRUMENT.BOND")
 	.Arguments({
-		Arg(XLL_DOUBLE, "dated", "is the date at which interest begins accruing. Default is today."),
-		Arg(XLL_DOUBLE, "maturity", "is the bond maturity as date or in years."),
+		Arg(XLL_DOUBLE, "dated", "is the date at which interest begins accruing. Default is today.", "=TODAY()"),
+		Arg(XLL_DOUBLE, "maturity", "is the bond maturity as date or in years.", 10),
 		Arg(XLL_DOUBLE, "coupon", "is the bond coupon. Default is 5%."),
 		Arg(XLL_WORD, "frequency", "is the yearly payment frequency from the TMX_FREQUENCY_* enumeration. Default is semiannually"),
 		Arg(XLL_HANDLEX, "day_count", "is the day count basis from the TMX_DAY_COUNT_* enumeration. Default is 30/360."),
