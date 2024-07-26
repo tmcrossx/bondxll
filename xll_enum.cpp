@@ -15,7 +15,7 @@ AddIn xai_enum(
 	.Category(CATEGORY)
 	.FunctionHelp("Evaluate a string name of an enumeration.")
 );
-LPXLOPER12 WINAPI xll_enum(const XCHAR* e)
+const XLOPER12* WINAPI xll_enum(const XCHAR* e)
 {
 #pragma XLLEXPORT
 	static OPER o, l(L"="), r(L"()");
@@ -26,7 +26,7 @@ LPXLOPER12 WINAPI xll_enum(const XCHAR* e)
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
 
-		return const_cast<LPXLOPER12>(&ErrValue);
+		return &ErrValue;
 	}
 
 	return &o;

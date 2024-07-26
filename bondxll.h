@@ -11,11 +11,18 @@
 
 namespace xll {
 
+	inline OPER Enum(const OPER& e)
+	{
+		static OPER l(L"="), r(L"()");
+
+		return Excel(xlfEvaluate, l & e & r);
+	}
+
 	inline std::chrono::sys_days to_days(time_t t)
 	{
 		using namespace std::chrono;
 
-		return floor<days>(system_clock::from_time_t(t));
+		return ceil<days>(system_clock::from_time_t(t));
 	}
 
 	// Convert Excel date to sys_days
@@ -24,11 +31,11 @@ namespace xll {
 		return to_days(to_time_t(d));
 	}
 
-	inline double from_days(const std::chrono::sys_days& d)
+	inline int from_days(const std::chrono::sys_days& d)
 	{
 		using namespace std::chrono;
 
-		return from_time_t(d.time_since_epoch().count());
+		return static_cast<int>(from_time_t(system_clock::to_time_t(d)));
 	}
 
 } // namespace xll

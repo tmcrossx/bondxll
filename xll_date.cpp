@@ -4,6 +4,8 @@
 #include "date/tmx_date_periodic.h"
 #include "bondxll.h"
 
+// TODO: Define enums as constants. Use xlfEvaluate instead of X-Macros.
+
 using namespace tmx;
 using namespace xll;
 
@@ -24,7 +26,7 @@ OPER tmx_day_count_enum({
 
 XLL_CONST(LPOPER, TMX_DAY_COUNT_ENUM, &tmx_day_count_enum, "Day count fraction types.", CATEGORY " Enum", DAY_COUNT_URL)
 
-#define TMX_DATE_FREQUENCY_ENUM(a, b, c, d) XLL_CONST(WORD, TMX_FREQUENCY_##a, (WORD)tmx::date::frequency::b, d, CATEGORY " Enum", "")
+#define TMX_DATE_FREQUENCY_ENUM(a, b, c, d) XLL_CONST(WORD, TMX_FREQUENCY_##a, (WORD)date::frequency::b, d, CATEGORY " Enum", "")
 TMX_DATE_FREQUENCY(TMX_DATE_FREQUENCY_ENUM)
 #undef TMX_DATE_FREQUENCY_ENUM
 
@@ -37,20 +39,20 @@ OPER tmx_frequency_enum({
 XLL_CONST(LPOPER, TMX_FREQUENCY_ENUM, &tmx_frequency_enum, "Payment frequencies.", CATEGORY " Enum", "https://www.investopedia.com/terms/c/compounding.asp")
 
 // Roll conventions
-#define BUSINESS_DAY_ROLL_URL "https://en.wikipedia.org/wiki/Date_rolling"
+#define BUSINESS_DAY_URL "https://en.wikipedia.org/wiki/Date_rolling"
 
-#define TMX_DATE_BUSINESS_DAY_ROLL_ENUM(a, b, c) XLL_CONST(WORD, TMX_BUSINESS_DAY_ROLL_##a, (WORD)date::business_day::roll::b, c, CATEGORY " Enum", BUSINESS_DAY_ROLL_URL)
-TMX_DATE_BUSINESS_DAY_ROLL(TMX_DATE_BUSINESS_DAY_ROLL_ENUM)
-#undef TMX_DATE_BUSINESS_DAY_ROLL_ENUM
+#define TMX_DATE_BUSINESS_DAY_ENUM(a, b, c) XLL_CONST(WORD, TMX_BUSINESS_DAY_##a, (WORD)date::business_day::roll::b, c, CATEGORY " Enum", BUSINESS_DAY_URL)
+TMX_DATE_BUSINESS_DAY(TMX_DATE_BUSINESS_DAY_ENUM)
+#undef TMX_DATE_BUSINESS_DAY_ENUM
 
 // All roll conventions as string names.
-#define TMX_DATE_BUSINESS_DAY_ROLL_ENUM(a, b, c) OPER("TMX_BUSINESS_DAY_ROLL_" #a),
+#define TMX_DATE_BUSINESS_DAY_ENUM(a, b, c) OPER("TMX_BUSINESS_DAY_" #a),
 OPER tmx_date_business_day_enum({
-	TMX_DATE_BUSINESS_DAY_ROLL(TMX_DATE_BUSINESS_DAY_ROLL_ENUM)
+	TMX_DATE_BUSINESS_DAY(TMX_DATE_BUSINESS_DAY_ENUM)
 	});
-#undef TMX_DATE_BUSINESS_DAY_ROLL_ENUM
+#undef TMX_DATE_BUSINESS_DAY_ENUM
 
-XLL_CONST(LPOPER, TMX_BUSINESS_DAY_ROLL_ENUM, &tmx_date_business_day_enum, "Business day roll conventions.", CATEGORY " Enum", BUSINESS_DAY_ROLL_URL)
+XLL_CONST(LPOPER, TMX_BUSINESS_DAY_ENUM, &tmx_date_business_day_enum, "Business day roll conventions.", CATEGORY " Enum", BUSINESS_DAY_URL)
 
 // Calendars
 #define HOLIDAY_CALENDAR_URL "https://www.sifma.org/resources/general/holiday-schedule/#us"
@@ -138,7 +140,6 @@ _FP12* WINAPI xll_date_periodic(date::frequency f, double d0, double d1)
 
 	return result.get();
 }
-
 
 AddIn xai_date_addyears(
 	Function(XLL_DOUBLE, "xll_date_addyears", CATEGORY ".DATE.ADDYEARS")
