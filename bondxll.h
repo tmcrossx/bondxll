@@ -11,11 +11,28 @@
 
 namespace xll {
 
-	inline OPER Enum(const OPER& e)
+	// Assumes e in an enumerated constant.
+	template<typename T>
+	inline T Enum(const OPER& e, T init)
 	{
 		static OPER l(L"="), r(L"()");
 
-		return Excel(xlfEvaluate, l & e & r);
+		if (isMissing(e) || isNil(e) || (isNum(e) && Num(e) == 0)) {
+			return init;
+		}
+
+		ensure(isStr(e) || isNum(e));
+
+		HANDLEX h = INVALID_HANDLEX;
+		if (isStr(e)) {
+			h = asNum(Excel(xlfEvaluate, l & e & r));
+		}
+		else if (isNum(e)) {
+			h = Num(e);
+		}
+		T* p = safe_pointer<T>(h);
+
+		return p ? reinterpret_cast<T>(*p) : init;
 	}
 
 	inline std::chrono::sys_days to_days(time_t t)

@@ -110,8 +110,8 @@ inline date::business_day::roll business_day_enum(const OPER& roll, date::busine
 }
 
 // Enum string from calendar.
-#define TMX_DATE_HOLIDAY_CALENDAR_STRING(a, b, c) if (h == to_handle(date::holiday::calendar::##b)) return CATEGORY "_HOLIDAY_CALENDAR_" #a;
-inline const char* holiday_calendar_string(HANDLEX h)
+#define TMX_DATE_HOLIDAY_CALENDAR_STRING(a, b, c) if (h == date::holiday::calendar::##b) return CATEGORY "_HOLIDAY_CALENDAR_" #a;
+inline const char* holiday_calendar_string(date::holiday::calendar::calendar_t h)
 {
 	TMX_DATE_HOLIDAY_CALENDAR(TMX_DATE_HOLIDAY_CALENDAR_STRING)
 	return nullptr;
@@ -150,7 +150,7 @@ AddIn xai_bond_basic_(
 		Arg(XLL_LPOPER, "frequency", "is the yearly payment frequency from the TMX_FREQUENCY_* enumeration. Default is semiannually"),
 		Arg(XLL_LPOPER, "day_count", "is the day count basis from the TMX_DAY_COUNT_* enumeration. Default is 30/360."),
 		Arg(XLL_LPOPER, "roll", "is business day rolling convention from the TMX_BUSINESS_DAY_* enumeration. Default is modified following."),
-		Arg(XLL_HANDLEX, "calendar", "is the holiday calendar from the TMX_CALENDAR_* enumeration. Default is 30/360."),
+		Arg(XLL_LPOPER, "calendar", "is the holiday calendar from the TMX_CALENDAR_* enumeration. Default is 30/360."),
 		Arg(XLL_DOUBLE, "face", "is the face amount of the bond. Default is 100."),
 		})
 	.Uncalced()
@@ -158,7 +158,7 @@ AddIn xai_bond_basic_(
 	.FunctionHelp("Return a handle to a basic bond.")
 );
 HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, const LPOPER pfreq, 
-	LPOPER pdcb, LPOPER proll, HANDLEX cal, double face)
+	LPOPER pdcb, LPOPER proll, LPOPER pcal, double face)
 {
 #pragma XLLEXPORT
 	HANDLEX result = INVALID_HANDLEX;
@@ -187,20 +187,15 @@ HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, con
 		// default to ISMA 30/360
 		date::day_count_t _dcf = day_count_enum(*pdcb, date::day_count_isma30360);
 		// defalut to no roll convention
-		date::business_day::roll roll = business_day_enum(view(*proll), date::business_day::roll::none);
-
-		if (!cal) {
-			cal = safe_handle(&date::holiday::calendar::none);
-		}
-		date::holiday::calendar::calendar_t _cal 
-			= reinterpret_cast<date::holiday::calendar::calendar_t>(safe_pointer<date::holiday::calendar::calendar_t>(cal));
-		ensure(_cal);
+		date::business_day::roll roll = /*business_day_enum(view(*proll),*/ date::business_day::roll::none/*)*/;
+		proll = proll;
+		date::holiday::calendar::calendar_t cal = Enum(*pcal, date::holiday::calendar::none);	
 
 		if (face == 0) {
 			face = 100;
 		}
 
-		handle<instrument::bond::basic<>> h(new instrument::bond::basic<>{ dat, mat, coupon, freq, _dcf, roll, _cal, face });
+		handle<instrument::bond::basic<>> h(new instrument::bond::basic<>{ dat, mat, coupon, freq, _dcf, roll, cal, face });
 		ensure(h);
 
 		result = h.get();
@@ -235,7 +230,7 @@ LPOPER WINAPI xll_bond_basic(HANDLEX h)
 		result[3] = frequency_string(h_->frequency);
 		result[4] = day_count_string(to_handle(h_->day_count));
 		result[5] = business_day_string(h_->roll);
-		result[6] = holiday_calendar_string(to_handle(h_->cal));
+		result[6] = holiday_calendar_string(h_->cal); // TODO: preserve type or lookup fails
 		result[7] = h_->face;
 	}
 	catch (const std::exception& ex) {
