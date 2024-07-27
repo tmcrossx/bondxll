@@ -141,8 +141,8 @@ inline date::holiday::calendar::calendar_t holiday_calendar_enum(const OPER& cal
 	return init;
 }
 
-AddIn xai_bond_basic_(
-	Function(XLL_HANDLEX, "xll_bond_basic_", "\\" CATEGORY ".INSTRUMENT.BOND")
+AddIn xai_instrument_bond_basic_(
+	Function(XLL_HANDLEX, "xll_instrument_bond_basic_", "\\" CATEGORY ".INSTRUMENT.BOND")
 	.Arguments({
 		Arg(XLL_DOUBLE, "dated", "is the date at which interest begins accruing. Default is today.", "=TODAY()"),
 		Arg(XLL_DOUBLE, "maturity", "is the bond maturity as date or in years.", 10),
@@ -157,7 +157,7 @@ AddIn xai_bond_basic_(
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to a basic bond.")
 );
-HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, const LPOPER pfreq, 
+HANDLEX WINAPI xll_instrument_bond_basic_(double dated, double maturity, double coupon, const LPOPER pfreq, 
 	LPOPER pdcb, LPOPER proll, LPOPER pcal, double face)
 {
 #pragma XLLEXPORT
@@ -186,7 +186,7 @@ HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, con
 		date::frequency freq = frequency_enum(*pfreq, date::frequency::semiannually);
 		// default to ISMA 30/360
 		date::day_count_t _dcf = day_count_enum(*pdcb, date::day_count_isma30360);
-		// defalut to no roll convention
+		// default to no roll convention
 		date::business_day::roll roll = /*business_day_enum(view(*proll),*/ date::business_day::roll::none/*)*/;
 		proll = proll;
 		date::holiday::calendar::calendar_t cal = Enum(*pcal, date::holiday::calendar::none);	
@@ -207,15 +207,15 @@ HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, con
 	return result;
 }
 
-AddIn xai_bond_basic(
-	Function(XLL_LPOPER, "xll_bond_basic", CATEGORY ".INSTRUMENT.BOND")
+AddIn xai_instrument_bond_basic(
+	Function(XLL_LPOPER, "xll_instrument_bond_basic", CATEGORY ".INSTRUMENT.BOND")
 	.Arguments({
 		Arg(XLL_HANDLEX, "handle", "is a handle to a basic bond."),
 		})
 	.Category(CATEGORY)
 	.FunctionHelp("Return the dated date, maturity, coupon, frequency, and day count of a basic bond.")
 );
-LPOPER WINAPI xll_bond_basic(HANDLEX h)
+LPOPER WINAPI xll_instrument_bond_basic(HANDLEX h)
 {
 #pragma XLLEXPORT
 	static OPER result(8,1,nullptr);
@@ -240,8 +240,8 @@ LPOPER WINAPI xll_bond_basic(HANDLEX h)
 	return &result;
 }
 
-AddIn xai_bond_basic_fix_(
-	Function(XLL_HANDLEX, "xll_bond_basic_fix_", "\\" CATEGORY ".BOND.INSTRUMENT")
+AddIn xai_bond_instrument_(
+	Function(XLL_HANDLEX, "xll_bond_instrument_", "\\" CATEGORY ".BOND.INSTRUMENT")
 	.Arguments({
 		Arg(XLL_HANDLEX, "bond", "is a handle to a bond."),
 		Arg(XLL_DOUBLE, "dated", "is the dated date of the bond."),
@@ -250,7 +250,7 @@ AddIn xai_bond_basic_fix_(
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to bond instrument cash flows.")
 );
-HANDLEX WINAPI xll_bond_basic_fix_(HANDLEX b, double dated)
+HANDLEX WINAPI xll_bond_instrument_(HANDLEX b, double dated)
 {
 #pragma XLLEXPORT
 	HANDLEX h = INVALID_HANDLEX;
