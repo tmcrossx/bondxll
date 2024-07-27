@@ -111,35 +111,12 @@ inline date::business_day::roll business_day_enum(const OPER& roll, date::busine
 
 // Enum string from calendar.
 #define TMX_DATE_HOLIDAY_CALENDAR_STRING(a, b, c) if (h == date::holiday::calendar::##b) return CATEGORY "_HOLIDAY_CALENDAR_" #a;
-inline const char* holiday_calendar_string(date::holiday::calendar::calendar_t h)
+inline const char* holiday_calendar_string(date::holiday::calendar_t h)
 {
 	TMX_DATE_HOLIDAY_CALENDAR(TMX_DATE_HOLIDAY_CALENDAR_STRING)
 	return nullptr;
 }
 #undef TMX_DATE_HOLIDAY_CALENDAR_STRING
-#define TMX_DATE_HOLIDAY_CALENDAR_ENUM(a, b, c) if (cal.ends_with(XLL_STRZ_(a))) return date::holiday::calendar::##b;
-inline date::holiday::calendar::calendar_t holiday_calendar_enum(std::wstring_view cal)
-{
-	TMX_DATE_HOLIDAY_CALENDAR(TMX_DATE_HOLIDAY_CALENDAR_ENUM)
-	return nullptr;
-}
-#undef TMX_DATE_HOLIDAY_CALENDAR_ENUM
-inline date::holiday::calendar::calendar_t holiday_calendar_enum(const OPER& cal, date::holiday::calendar::calendar_t init)
-{
-	if (isMissing(cal)) {
-		; // return init
-	}
-	else if (isStr(cal)) {
-		init = holiday_calendar_enum(view(cal));
-		ensure(init);
-	}
-	else if (isNum(cal)) {
-		init = reinterpret_cast<date::holiday::calendar::calendar_t>(safe_pointer<date::holiday::calendar::calendar_t>(Num(cal)));
-		ensure(init);
-	}
-
-	return init;
-}
 
 AddIn xai_bond_basic_(
 	Function(XLL_HANDLEX, "xll_bond_basic_", "\\" CATEGORY ".INSTRUMENT.BOND")
@@ -189,7 +166,7 @@ HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, con
 		// defalut to no roll convention
 		date::business_day::roll roll = /*business_day_enum(view(*proll),*/ date::business_day::roll::none/*)*/;
 		proll = proll;
-		date::holiday::calendar::calendar_t cal = Enum(*pcal, date::holiday::calendar::none);	
+		date::holiday::calendar_t cal = Enum(*pcal, date::holiday::calendar::none);	
 
 		if (face == 0) {
 			face = 100;
