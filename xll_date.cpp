@@ -85,7 +85,7 @@ LPOPER WINAPI xll_date_holiday_calendar(HANDLEX calendar, double d)
 	static OPER result;
 
 	try {
-		date::holiday::calendar::calendar_t _calendar = reinterpret_cast<date::holiday::calendar::calendar_t>(safe_pointer<date::holiday::calendar::calendar_t>(calendar));
+		date::holiday::calendar_t _calendar = reinterpret_cast<date::holiday::calendar_t>(safe_pointer<date::holiday::calendar_t>(calendar));
 		ensure(_calendar);
 
 		date::ymd y = to_days(d);
