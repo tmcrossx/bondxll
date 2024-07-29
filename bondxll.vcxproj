@@ -60,6 +60,9 @@
       <Project>{7d7375af-e7e3-42d3-a00f-d8ee22c39924}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -130,7 +133,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <TreatLinkerWarningAsErrors>false</TreatLinkerWarningAsErrors>
       <TurnOffAssemblyGeneration>true</TurnOffAssemblyGeneration>
       <LinkTimeCodeGeneration>
       </LinkTimeCodeGeneration>

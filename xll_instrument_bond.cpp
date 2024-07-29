@@ -18,31 +18,6 @@ constexpr const char* frequency_string(date::frequency h)
 	else return nullptr;
 }
 #undef TMX_FREQUENCY_STRING
-#define TMX_DATE_FREQUENCY_ENUM(a, b, c, d) if (str.ends_with(XLL_STRZ_(a))) return date::frequency::##b;
-constexpr date::frequency frequency_enum(std::wstring_view str)
-{
-	TMX_DATE_FREQUENCY(TMX_DATE_FREQUENCY_ENUM)
-	else return static_cast<date::frequency>(0);
-}
-#undef TMX_DATE_FREQUENCY_ENUM
-
-constexpr date::frequency frequency_enum(const OPER& freq, date::frequency init)
-{
-	if (isMissing(freq)) {
-		; // return init
-	}
-	else if (isStr(freq)) {
-		init = frequency_enum(view(freq));
-		ensure(date::is_frequency((int)init));
-	}
-	else if (isNum(freq)) {
-		int e = static_cast<int>(Num(freq));
-		ensure(date::is_frequency(e));
-		init = static_cast<date::frequency>(e);
-	}
-	
-	return init;
-}
 
 // Enum string from handle
 #define TMX_DAY_COUNT_STRING(a, b, c) if (h == to_handle(date::day_count_##b)) return CATEGORY "_DAY_COUNT_" #a;
@@ -52,63 +27,17 @@ inline const char* day_count_string(HANDLEX h)
 		return nullptr;
 }
 #undef TMX_DAY_COUNT_STRING
-#define TMX_DAY_COUNT_ENUM(a, b, c) if (dcb.ends_with(XLL_STRZ_(a))) return date::day_count_##b;
-inline date::day_count_t day_count_enum(std::wstring_view dcb)
-{
-	TMX_DAY_COUNT(TMX_DAY_COUNT_ENUM)
-	return nullptr;
-}
-#undef TMX_DAY_COUNT_ENUM
-inline date::day_count_t day_count_enum(const OPER& dcb, date::day_count_t init)
-{
-	if (isMissing(dcb)) {
-		; // return init
-	}
-	else if (isStr(dcb)) {
-		init = day_count_enum(view(dcb));
-		ensure(init);
-	}
-	else if (isNum(dcb)) {
-		init = reinterpret_cast<date::day_count_t>(safe_pointer<date::day_count_t>(Num(dcb)));
-		ensure(init);
-	}
-
-	return init;
-}
 
 // Enum string from business day roll convention.
 #define TMX_DATE_BUSINESS_DAY_STRING(a, b, c) if (h == date::business_day::roll::##b) return CATEGORY "_BUSINESS_DAY_" #a;
 inline const char* business_day_string(date::business_day::roll h)
 {
 	TMX_DATE_BUSINESS_DAY(TMX_DATE_BUSINESS_DAY_STRING)
-		return nullptr;
+	return nullptr;
 }
 #undef TMX_DATE_BUSINESS_DAY_STRING
-#define TMX_DATE_BUSINESS_DAY_ENUM(a, b, c) if (roll.ends_with(XLL_STRZ_(a))) return date::business_day::roll::##b;
-inline date::business_day::roll business_day_enum(std::wstring_view roll)
-{
-	TMX_DATE_BUSINESS_DAY(TMX_DATE_BUSINESS_DAY_ENUM)
-	return static_cast<date::business_day::roll>(-1);
-}
-#undef TMX_DATE_BUSINESS_DAY_ENUM
-inline date::business_day::roll business_day_enum(const OPER& roll, date::business_day::roll init)
-{
-	if (isMissing(roll)) {
-		; // return init
-	}
-	else if (isStr(roll)) {
-		init = business_day_enum(view(roll));
-		ensure(date::business_day::is_business_day_roll(static_cast<int>(init)));
-	}
-	else if (isNum(roll)) {
-		int e = static_cast<int>(Num(roll));
-		ensure(date::business_day::is_business_day_roll(e));
-		init = static_cast<date::business_day::roll>(e);
-	}
 
-	return init;
-}
-
+// TMX_DATE_HOLIDAY_CALENDAR(TMX_DATE_HOLIDAY_CALENDAR_STRING)
 // Enum string from calendar.
 #define TMX_DATE_HOLIDAY_CALENDAR_STRING(a, b, c) if (h == date::holiday::calendar::##b) return CATEGORY "_HOLIDAY_CALENDAR_" #a;
 inline const char* holiday_calendar_string(date::holiday::calendar_t h)
@@ -118,8 +47,8 @@ inline const char* holiday_calendar_string(date::holiday::calendar_t h)
 }
 #undef TMX_DATE_HOLIDAY_CALENDAR_STRING
 
-AddIn xai_bond_basic_(
-	Function(XLL_HANDLEX, "xll_bond_basic_", "\\" CATEGORY ".INSTRUMENT.BOND")
+AddIn xai_instrument_bond_(
+	Function(XLL_HANDLEX, "xll_instrument_bond_", "\\" CATEGORY ".INSTRUMENT.BOND")
 	.Arguments({
 		Arg(XLL_DOUBLE, "dated", "is the date at which interest begins accruing. Default is today.", "=TODAY()"),
 		Arg(XLL_DOUBLE, "maturity", "is the bond maturity as date or in years.", 10),
@@ -134,7 +63,7 @@ AddIn xai_bond_basic_(
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to a basic bond.")
 );
-HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, const LPOPER pfreq, 
+HANDLEX WINAPI xll_instrument_bond_(double dated, double maturity, double coupon, const LPOPER pfreq, 
 	LPOPER pdcb, LPOPER proll, LPOPER pcal, double face)
 {
 #pragma XLLEXPORT
@@ -160,19 +89,25 @@ HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, con
 		}
 
 		// default to semiannual
-		date::frequency freq = frequency_enum(*pfreq, date::frequency::semiannually);
+		auto freq = EnumVal(*pfreq, date::frequency::semiannually);
+		if (!freq) return INVALID_HANDLEX;
+		
 		// default to ISMA 30/360
-		date::day_count_t _dcf = day_count_enum(*pdcb, date::day_count_isma30360);
+		const auto dcf = EnumPtr(*pdcb, date::day_count_isma30360);
+		if (!dcf) return INVALID_HANDLEX;
+		
 		// defalut to no roll convention
-		date::business_day::roll roll = /*business_day_enum(view(*proll),*/ date::business_day::roll::none/*)*/;
-		proll = proll;
-		date::holiday::calendar_t cal = Enum(*pcal, date::holiday::calendar::none);	
+		const auto roll = EnumVal(*proll, date::business_day::roll::none);
+		if (!roll) return INVALID_HANDLEX;
+
+		const auto cal = EnumPtr(*pcal, date::holiday::calendar::none);	
+		if (!cal) return INVALID_HANDLEX;
 
 		if (face == 0) {
 			face = 100;
 		}
 
-		handle<instrument::bond::basic<>> h(new instrument::bond::basic<>{ dat, mat, coupon, freq, _dcf, roll, cal, face });
+		handle<instrument::bond::basic<>> h(new instrument::bond::basic<>{ dat, mat, coupon, *freq, *dcf, *roll, *cal, face });
 		ensure(h);
 
 		result = h.get();
@@ -184,15 +119,15 @@ HANDLEX WINAPI xll_bond_basic_(double dated, double maturity, double coupon, con
 	return result;
 }
 
-AddIn xai_bond_basic(
-	Function(XLL_LPOPER, "xll_bond_basic", CATEGORY ".INSTRUMENT.BOND")
+AddIn xai_instrument_bond(
+	Function(XLL_LPOPER, "xll_instrument_bond", CATEGORY ".INSTRUMENT.BOND")
 	.Arguments({
 		Arg(XLL_HANDLEX, "handle", "is a handle to a basic bond."),
 		})
 	.Category(CATEGORY)
 	.FunctionHelp("Return the dated date, maturity, coupon, frequency, and day count of a basic bond.")
 );
-LPOPER WINAPI xll_bond_basic(HANDLEX h)
+LPOPER WINAPI xll_instrument_bond(HANDLEX h)
 {
 #pragma XLLEXPORT
 	static OPER result(8,1,nullptr);
@@ -217,8 +152,8 @@ LPOPER WINAPI xll_bond_basic(HANDLEX h)
 	return &result;
 }
 
-AddIn xai_bond_basic_fix_(
-	Function(XLL_HANDLEX, "xll_bond_basic_fix_", "\\" CATEGORY ".BOND.INSTRUMENT")
+AddIn xai_bond_instrument_fix_(
+	Function(XLL_HANDLEX, "xll_bond_instrument_fix_", "\\" CATEGORY ".BOND.INSTRUMENT")
 	.Arguments({
 		Arg(XLL_HANDLEX, "bond", "is a handle to a bond."),
 		Arg(XLL_DOUBLE, "dated", "is the dated date of the bond."),
@@ -227,7 +162,7 @@ AddIn xai_bond_basic_fix_(
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to bond instrument cash flows.")
 );
-HANDLEX WINAPI xll_bond_basic_fix_(HANDLEX b, double dated)
+HANDLEX WINAPI xll_bond_instrument_fix_(HANDLEX b, double dated)
 {
 #pragma XLLEXPORT
 	HANDLEX h = INVALID_HANDLEX;

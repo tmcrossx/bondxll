@@ -73,19 +73,20 @@ XLL_CONST(LPOPER, TMX_HOLIDAY_CALENDAR_ENUM, &tmx_holiday_calendar_enum, "Holida
 AddIn xai_date_holiday_calendar(
 	Function(XLL_LPOPER, "xll_date_holiday_calendar", CATEGORY ".DATE.HOLIDAY")
 	.Arguments({
-		Arg(XLL_HANDLEX, "calendar", "is a TMX_HOLIDAY_CALENDAR_* enumeration.", "=ENUM(\"TMX_HOLIDAY_CALENDAR_WEEKEND\")"),
+		Arg(XLL_LPOPER, "calendar", "is a TMX_HOLIDAY_CALENDAR_* enumeration.", "=ENUM(\"TMX_HOLIDAY_CALENDAR_WEEKEND\")"),
 		Arg(XLL_DOUBLE, "date", "is an Excel date.", "=TODAY()"),
 		})
 		.Category(CATEGORY)
 	.FunctionHelp("Return true if date is in the holiday calendar.")
 );
-LPOPER WINAPI xll_date_holiday_calendar(HANDLEX calendar, double d)
+LPOPER WINAPI xll_date_holiday_calendar(LPOPER pcalendar, double d)
 {
 #pragma XLLEXPORT
 	static OPER result;
 
 	try {
-		date::holiday::calendar_t _calendar = reinterpret_cast<date::holiday::calendar_t>(safe_pointer<date::holiday::calendar_t>(calendar));
+		//date::holiday::calendar_t _calendar = reinterpret_cast<date::holiday::calendar_t>(safe_pointer<date::holiday::calendar_t>(calendar));
+		date::holiday::calendar_t _calendar = Enum<date::holiday::calendar_t>(*pcalendar, date::holiday::calendar::weekend);
 		ensure(_calendar);
 
 		date::ymd y = to_days(d);
