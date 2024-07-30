@@ -47,8 +47,8 @@ inline const char* holiday_calendar_string(date::holiday::calendar_t h)
 }
 #undef TMX_DATE_HOLIDAY_CALENDAR_STRING
 
-AddIn xai_instrument_bond_(
-	Function(XLL_HANDLEX, "xll_instrument_bond_", "\\" CATEGORY ".INSTRUMENT.BOND")
+AddIn xai_bond_basic_(
+	Function(XLL_HANDLEX, "xll_bond_basic_", "\\" CATEGORY ".INSTRUMENT.BOND")
 	.Arguments({
 		Arg(XLL_DOUBLE, "dated", "is the date at which interest begins accruing. Default is today.", "=TODAY()"),
 		Arg(XLL_DOUBLE, "maturity", "is the bond maturity as date or in years.", 10),
@@ -63,7 +63,7 @@ AddIn xai_instrument_bond_(
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to a basic bond.")
 );
-HANDLEX WINAPI xll_instrument_bond_(double dated, double maturity, double coupon, const LPOPER pfreq, 
+HANDLEX WINAPI xll_instrument_bond_basic_(double dated, double maturity, double coupon, const LPOPER pfreq, 
 	LPOPER pdcb, LPOPER proll, LPOPER pcal, double face)
 {
 #pragma XLLEXPORT
@@ -119,15 +119,15 @@ HANDLEX WINAPI xll_instrument_bond_(double dated, double maturity, double coupon
 	return result;
 }
 
-AddIn xai_instrument_bond(
-	Function(XLL_LPOPER, "xll_instrument_bond", CATEGORY ".INSTRUMENT.BOND")
+AddIn xai_instrument_bond_basic(
+	Function(XLL_LPOPER, "xll_instrument_bond_basic", CATEGORY ".INSTRUMENT.BOND")
 	.Arguments({
 		Arg(XLL_HANDLEX, "handle", "is a handle to a basic bond."),
 		})
 	.Category(CATEGORY)
 	.FunctionHelp("Return the dated date, maturity, coupon, frequency, and day count of a basic bond.")
 );
-LPOPER WINAPI xll_instrument_bond(HANDLEX h)
+LPOPER WINAPI xll_instrument_bond_basic(HANDLEX h)
 {
 #pragma XLLEXPORT
 	static OPER result(8,1,nullptr);
