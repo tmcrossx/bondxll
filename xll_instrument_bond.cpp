@@ -152,8 +152,8 @@ LPOPER WINAPI xll_instrument_bond(HANDLEX h)
 	return &result;
 }
 
-AddIn xai_bond_instrument_fix_(
-	Function(XLL_HANDLEX, "xll_bond_instrument_fix_", "\\" CATEGORY ".BOND.INSTRUMENT")
+AddIn xai_bond_instrument_(
+	Function(XLL_HANDLEX, "xll_bond_instrument_", "\\" CATEGORY ".BOND.INSTRUMENT")
 	.Arguments({
 		Arg(XLL_HANDLEX, "bond", "is a handle to a bond."),
 		Arg(XLL_DOUBLE, "dated", "is the dated date of the bond."),
@@ -162,7 +162,7 @@ AddIn xai_bond_instrument_fix_(
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to bond instrument cash flows.")
 );
-HANDLEX WINAPI xll_bond_instrument_fix_(HANDLEX b, double dated)
+HANDLEX WINAPI xll_bond_instrument_(HANDLEX b, double dated)
 {
 #pragma XLLEXPORT
 	HANDLEX h = INVALID_HANDLEX;

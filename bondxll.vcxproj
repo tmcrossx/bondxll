@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bondxll.h" />
+    <ClCompile Include="xll_emma.cpp" />
     <ClCompile Include="xll_enum.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -56,6 +57,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="fms_sqlite\fms_sqlite.vcxproj">
+      <Project>{0b3171f6-80c0-4f6c-8ba2-44c98f358dd9}</Project>
+    </ProjectReference>
     <ProjectReference Include="xll24\xll.vcxproj">
       <Project>{7d7375af-e7e3-42d3-a00f-d8ee22c39924}</Project>
     </ProjectReference>

@@ -12,7 +12,7 @@ using namespace xll;
 AddIn xai_value_compound_yield(
 	Function(XLL_DOUBLE, "xll_value_compound_yield", CATEGORY ".VALUATION.COMPOUND_YIELD")
 	.Arguments({
-		Arg(XLL_DOUBLE, "rate", "is a continuously compounded rate."),
+		Arg(XLL_DOUBLE, "r", "is a continuously compounded rate."),
 		Arg(XLL_WORD, "n", "is the number of times to compound per year."),
 		})
 		.Category(CATEGORY)
@@ -36,7 +36,7 @@ double WINAPI xll_value_compound_yield(double r, WORD n)
 AddIn xai_value_continuous_rate(
 	Function(XLL_DOUBLE, "xll_value_continuous_rate", CATEGORY ".VALUATION.CONTINUOUS_RATE")
 	.Arguments({
-		Arg(XLL_DOUBLE, "yield", "is compounded yield."),
+		Arg(XLL_DOUBLE, "y", "is compounded yield."),
 		Arg(XLL_WORD, "n", "is the number of times the yield is compounded per year."),
 		})
 		.Category(CATEGORY)

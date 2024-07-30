@@ -24,7 +24,7 @@ OPER tmx_day_count_enum({
 });
 #undef TMX_DAY_COUNT_ENUM
 
-XLL_CONST(LPOPER, TMX_DAY_COUNT_ENUM, &tmx_day_count_enum, "Day count fraction types.", CATEGORY " Enum", DAY_COUNT_URL)
+XLL_CONST(LPOPER, TMX_ENUM_DAY_COUNT, &tmx_day_count_enum, "Day count fraction types.", CATEGORY " Enum", DAY_COUNT_URL)
 
 #define TMX_DATE_FREQUENCY_ENUM(a, b, c, d) XLL_CONST(WORD, TMX_FREQUENCY_##a, (WORD)date::frequency::b, d, CATEGORY " Enum", "")
 TMX_DATE_FREQUENCY(TMX_DATE_FREQUENCY_ENUM)
@@ -36,7 +36,7 @@ OPER tmx_frequency_enum({
 	});
 #undef TMX_DATE_FREQUENCY_ENUM
 
-XLL_CONST(LPOPER, TMX_FREQUENCY_ENUM, &tmx_frequency_enum, "Payment frequencies.", CATEGORY " Enum", "https://www.investopedia.com/terms/c/compounding.asp")
+XLL_CONST(LPOPER, TMX_ENUM_FREQUENCY, &tmx_frequency_enum, "Payment frequencies.", CATEGORY " Enum", "https://www.investopedia.com/terms/c/compounding.asp")
 
 // Roll conventions
 #define BUSINESS_DAY_URL "https://en.wikipedia.org/wiki/Date_rolling"
@@ -52,7 +52,7 @@ OPER tmx_date_business_day_enum({
 	});
 #undef TMX_DATE_BUSINESS_DAY_ENUM
 
-XLL_CONST(LPOPER, TMX_BUSINESS_DAY_ENUM, &tmx_date_business_day_enum, "Business day roll conventions.", CATEGORY " Enum", BUSINESS_DAY_URL)
+XLL_CONST(LPOPER, TMX_ENUM_BUSINESS_DAY, &tmx_date_business_day_enum, "Business day roll conventions.", CATEGORY " Enum", BUSINESS_DAY_URL)
 
 // Calendars
 #define HOLIDAY_CALENDAR_URL "https://www.sifma.org/resources/general/holiday-schedule/#us"
@@ -68,7 +68,7 @@ OPER tmx_holiday_calendar_enum({
 	});
 #undef TMX_DATE_HOLIDAY_CALENDAR_ENUM
 
-XLL_CONST(LPOPER, TMX_HOLIDAY_CALENDAR_ENUM, &tmx_holiday_calendar_enum, "Holiday calendars.", CATEGORY " Enum", HOLIDAY_CALENDAR_URL)
+XLL_CONST(LPOPER, TMX_ENUM_HOLIDAY_CALENDAR, &tmx_holiday_calendar_enum, "Holiday calendars.", CATEGORY " Enum", HOLIDAY_CALENDAR_URL)
 
 AddIn xai_date_holiday_calendar(
 	Function(XLL_LPOPER, "xll_date_holiday_calendar", CATEGORY ".DATE.HOLIDAY")
@@ -86,12 +86,14 @@ LPOPER WINAPI xll_date_holiday_calendar(LPOPER pcalendar, double d)
 
 	try {
 		//date::holiday::calendar_t _calendar = reinterpret_cast<date::holiday::calendar_t>(safe_pointer<date::holiday::calendar_t>(calendar));
-		date::holiday::calendar_t _calendar = Enum<date::holiday::calendar_t>(*pcalendar, date::holiday::calendar::weekend);
-		ensure(_calendar);
+		
+		const auto cal = EnumPtr(*pcalendar, date::holiday::calendar::weekend);
+		ensure(cal);
+		date::holiday::calendar_t _cal = *cal;
 
 		date::ymd y = to_days(d);
 
-		result = _calendar(y);
+		result = _cal(y);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -217,27 +219,24 @@ AddIn xai_date_dcf(
 	.Arguments({
 		Arg(XLL_DOUBLE, "from", "is an Excel date.", "1/1/2024"),
 		Arg(XLL_DOUBLE, "to", "is an Excel date.", "7/1/2024"),
-		Arg(XLL_HANDLEX, "dcb", "is a day count basis. Default is 30/360.", "=ENUM(\"TMX_DAY_COUNT_30_360\")"),
+		Arg(XLL_LPOPER, "dcb", "is a day count basis. Default is 30/360.", "TMX_DAY_COUNT_30_360"),
 		})
 		.Category(CATEGORY)
 	.FunctionHelp("Return the day count fraction from d0 to d1.")
 );
-double WINAPI xll_date_dcf(double d0, double d1, HANDLEX dcf)
+double WINAPI xll_date_dcf(double d0, double d1, LPOPER pdcf)
 {
 #pragma XLLEXPORT
 	double result = std::numeric_limits<double>::quiet_NaN();
 
 	try {
-		if (!dcf) {
-			dcf = safe_handle(&date::day_count_isma30360);
-		}
-		date::day_count_t _dcf = reinterpret_cast<date::day_count_t>(safe_pointer<date::day_count_t>(dcf));
-		ensure(_dcf);
+		const auto dcf = EnumPtr(*pdcf, date::day_count_isma30360);
+		ensure(dcf);
 
 		date::ymd y0 = to_days(d0);
 		date::ymd y1 = to_days(d1);
 
-		result = _dcf(y1, y0);
+		result = (*dcf)(y1, y0);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
