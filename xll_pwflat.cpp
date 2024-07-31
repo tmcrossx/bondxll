@@ -8,7 +8,7 @@ using namespace xll;
 AddIn xai_curve_constant_(
 	Function(XLL_HANDLEX, "xll_curve_constant_", "\\" CATEGORY ".CURVE.CONSTANT")
 	.Arguments({
-		Arg(XLL_DOUBLE, "f", "is the constant forward rate."),
+		Arg(XLL_DOUBLE, "f", "is the constant forward rate.", 0),
 		})
 		.Uncalced()
 	.Category(CATEGORY)
@@ -35,8 +35,8 @@ HANDLEX WINAPI xll_curve_constant_(double f)
 AddIn xai_curve_pwflat_(
 	Function(XLL_HANDLEX, "xll_curve_pwflat_", "\\" CATEGORY ".CURVE.PWFLAT")
 	.Arguments({
-		Arg(XLL_FP, "t", "is an array of positive increasing times."),
-		Arg(XLL_FP, "f", "is an array of corresponding rates."),
+		Arg(XLL_FP, "t", "is an array of positive increasing times.", "{1, 2, 3}"),
+		Arg(XLL_FP, "f", "is an array of corresponding rates.", "{.01, .02, .03}"),
 		Arg(XLL_LPOPER, "_f", "is an optional extrapolation rate. Default is NaN."),
 		})
 	.Uncalced()
@@ -55,8 +55,8 @@ HANDLEX WINAPI xll_curve_pwflat_(const _FP12* pt, const _FP12* pf, LPOPER p_f)
 		auto m = size(*pt);
 		double _f = math::NaN<double>; 
 
-		if (type(*p_f) != xltypeMissing) {
-			ensure(type(*p_f) == xltypeNum);
+		if (!*p_f) {
+			ensure(isNum(*p_f));
 			_f = p_f->val.num;
 		}
 		// last 2 times equal use last f to extrapolate
@@ -146,7 +146,6 @@ HANDLEX WINAPI xll_curve_pwflat_push_back(HANDLEX c, double t, double f)
 	return c;
 }
 
-
 AddIn xai_curve_pwflat(
 	Function(XLL_FP, "xll_curve_pwflat", CATEGORY ".CURVE.PWFLAT")
 	.Arguments({
@@ -167,15 +166,16 @@ _FP12* WINAPI xll_curve_pwflat(HANDLEX c)
 		const curve::pwflat<>* c_ = _c.as<curve::pwflat<>>();
 		ensure(c_);
 
-		int m = (int)c_->size();
+		int m = static_cast<int>(c_->size());
 		result.resize(2, m + 1);
 		const auto t = c_->time();
 		const auto f = c_->rate();
 		std::copy(t.begin(), t.end(), result.array());
 		std::copy(f.begin(), f.end(), result.array() + m + 1);
 
-		result(0, m) = result(0, m - 1);
+		result(0, m) = result(0, m - 1); // repeat last time
 		result(1, m) = c_->extrapolate();
+		//result.transpose();
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
