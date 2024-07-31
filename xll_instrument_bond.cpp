@@ -47,8 +47,8 @@ inline const char* holiday_calendar_string(date::holiday::calendar_t h)
 }
 #undef TMX_DATE_HOLIDAY_CALENDAR_STRING
 
-AddIn xai_bond_basic_(
-	Function(XLL_HANDLEX, "xll_bond_basic_", "\\" CATEGORY ".INSTRUMENT.BOND")
+AddIn xai_instrument_bond_basic_(
+	Function(XLL_HANDLEX, "xll_instrument_bond_basic_", "\\" CATEGORY ".INSTRUMENT.BOND")
 	.Arguments({
 		Arg(XLL_DOUBLE, "dated", "is the date at which interest begins accruing. Default is today.", "=TODAY()"),
 		Arg(XLL_DOUBLE, "maturity", "is the bond maturity as date or in years.", 10),
@@ -156,7 +156,7 @@ AddIn xai_bond_instrument_(
 	Function(XLL_HANDLEX, "xll_bond_instrument_", "\\" CATEGORY ".BOND.INSTRUMENT")
 	.Arguments({
 		Arg(XLL_HANDLEX, "bond", "is a handle to a bond."),
-		Arg(XLL_DOUBLE, "dated", "is the dated date of the bond."),
+		Arg(XLL_DOUBLE, "pvdate", "is the calculation date of the bond."),
 		})
 	.Uncalced()
 	.Category(CATEGORY)

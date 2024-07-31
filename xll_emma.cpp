@@ -10,18 +10,31 @@
 
 using namespace xll;
 
+// TODO: more curves
 const OPER TreasuryDailyYieldCurve("https://emma.msrb.org/TreasuryData/GetTreasuryDailyYieldCurve?curveDate=");
 const OPER ICEDailyYieldCurve("https://emma.msrb.org/ICEData/GetICEDailyYieldCurve?curveDate=");
+
+std::map<std::string, OPER> curve_map = {
+	{"Treasury", TreasuryDailyYieldCurve},
+	{"ICE", ICEDailyYieldCurve},
+};
+
+XLL_CONST(LPOPER, EMMA_ENUM_TREASURY, (LPOPER)&TreasuryDailyYieldCurve, "US Treasury Constant Maturity Treasury rates.", "EMMA", "");
+XLL_CONST(LPOPER, EMMA_ENUM_ICE, (LPOPER)&ICEDailyYieldCurve, "EMMA ICE daily yield curve.", "EMMA", "");
 
 // in memory database
 sqlite::db db("");
 
+const char* sql_drop = "DROP TABLE IF EXISTS emma";
+const char* sql_create = "CREATE TABLE emma (curve TEXT, date FLOAT, data JSON)";
+const char* sql_insert = "INSERT INTO emma (curve, date, data) VALUES (?, ?, ?)";
+
 Auto<Open> xao_emma_db([] {
 	try {
 		sqlite::stmt stmt(::db);
-		stmt.exec("DROP TABLE IF EXISTS emma");
+		ensure(SQLITE_DONE == stmt.exec(sql_drop));
 		// curve name, Excel date, JSON data
-		stmt.exec("CREATE TABLE emma (curve TEXT, date FLOAT, data TEXT)");
+		ensure(SQLITE_DONE == stmt.exec(sql_create));
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -30,11 +43,13 @@ Auto<Open> xao_emma_db([] {
 	return 1;
 });
 
-int insert_curve_row(const char* curve, double date, std::wstring_view data)
+int insert_curve_row(const std::string_view curve, double date, std::wstring_view data)
 {
 	try {
+		ensure(curve_map.contains(std::string(curve)));
+
 		sqlite::stmt stmt(::db);
-		stmt.prepare("INSERT INTO emma (curve, date, data) VALUES (?, ?, ?)");
+		stmt.prepare(sql_insert);
 		stmt.bind(1, curve);
 		stmt.bind(2, date);
 		stmt.bind(3, data);
@@ -49,16 +64,19 @@ int insert_curve_row(const char* curve, double date, std::wstring_view data)
 	return 1;
 }
 
-int insert_curve_date(const OPER& curve, double date)
+int insert_curve_date(const std::string_view name, double date)
 {
 	try {
-		OPER c(curve);
-		OPER d(date);
-		c &= Excel(xlfText, date, L"mm/dd/yyyy");
-		OPER data = Excel(xlfWebservice, c);
+		const auto i = curve_map.find(std::string(name));
+		ensure(i != curve_map.end());
+		const OPER& url = i->second;
+		OPER data = Excel(xlfWebservice, url & Excel(xlfText, date, L"mm/dd/yyyy"));
 		// {"Series":[{"Points":[{"X":"1","Y":"2.903"},...]]
+		if (!data || view(data).starts_with(L"{\"Series\":[]")) {
+			return 0; // no data
+		}
 
-		insert_curve_row("ICE", date, view(data));
+		insert_curve_row(name, date, view(data));
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -69,23 +87,72 @@ int insert_curve_date(const OPER& curve, double date)
 	return 1;
 }
 
+// {"Series":[{"Points":[{"X":"1","Y":"2.896"},...,{"X":"30","Y":"3.660"}]}]}
+constexpr const char* sql_select 
+	= "SELECT json_extract(value, '$.X'), json_extract(value, '$.Y') "
+	  "FROM emma, json_each(json_extract(data, '$.Series[0].Points')) "
+	  "WHERE curve = ? AND date = ?";
+
+inline FPX get_curve_points(const char* name, double date)
+{
+	FPX result;
+
+	try {
+		sqlite::stmt stmt(::db);
+		stmt.prepare(sql_select);
+		stmt.bind(1, name);
+		stmt.bind(2, date);
+
+		while (SQLITE_ROW == stmt.step()) {
+			result.vstack(FPX({ stmt[0].as_float(), stmt[1].as_float()/100 }));
+		}
+	}
+	catch (const std::exception& ex) {
+		XLL_ERROR(ex.what());
+	}
+
+	return result;
+}
+
+inline FPX get_insert_curve_points(const char* name, double date)
+{
+	FPX result;
+
+	try {
+		result = get_curve_points(name, date);
+		if (!result.size()) {
+			if (insert_curve_date(name, date)) {
+				result = get_curve_points(name, date);
+			}
+		}
+	}
+	catch (const std::exception& ex) {
+		XLL_ERROR(ex.what());
+	}
+
+	return result;
+}
+
 AddIn xai_emma_curve(
-	Function(XLL_FP, "xll_emma_curve", "XLL.EMMA.CURVE")
+	Function(XLL_FP, "xll_emma_curve", "EMMA")
 	.Arguments({
-		Arg(XLL_DOUBLE, "date", "is the date of the curve."),
+		Arg(XLL_CSTRING4, "name", "is either \"Treasury\" or \"ICE\"."),
+		Arg(XLL_DOUBLE, "date", "is the date of the curve. Default is previous business day."),
 		})
 	.Category(CATEGORY)
-	.FunctionHelp("Return a handle to the curve data.")
+	.FunctionHelp("ICE US Municipal AAA Yield Curve as two row array of years and par coupon rates.")
 );
-_FP12* WINAPI xll_emma_curve(double date)
+_FP12* WINAPI xll_emma_curve(const char* name, double date)
 {
 #pragma XLLEXPORT
 	static FPX result;
+
 	try {
-		sqlite::stmt stmt(::db);
-		stmt.prepare("SELECT data FROM emma WHERE date = ?");
-		stmt.bind(1, date);
-		// if not in database, insert and return xll_emma_curve(date)
+		if (!date) {
+			date = asNum(Excel(xlfWorkday, Excel(xlfToday), -1));
+		}
+
+		result = get_insert_curve_points(name, date);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
