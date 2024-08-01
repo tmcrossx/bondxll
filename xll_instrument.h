@@ -19,7 +19,7 @@ namespace xll {
 		return tmx::instrument::iterable(u, c);
 	}
 	// Return value type.
-	inline FPX instrument(const _FP12& time, const _FP12& cash)
+	inline FPX instrument(const FP12& time, const FP12& cash)
 	{
 		FPX u(time);
 		u.resize(1, size(time));

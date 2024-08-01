@@ -114,7 +114,7 @@ AddIn xai_date_periodic(
 	.Category(CATEGORY)
 	.FunctionHelp("Return periodic dates after from ending at to.")
 );
-_FP12* WINAPI xll_date_periodic(date::frequency f, double d0, double d1)
+FP12* WINAPI xll_date_periodic(date::frequency f, double d0, double d1)
 {
 #pragma XLLEXPORT
 	static xll::FPX result;

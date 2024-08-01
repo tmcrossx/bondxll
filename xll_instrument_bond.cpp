@@ -1,4 +1,5 @@
 // xll_instrument_bond.cpp - Bonds
+#include "instrument/tmx_instrument_treasury.h"
 #include "instrument/tmx_instrument_bond.h"
 #include "xll_instrument.h"
 
@@ -48,7 +49,7 @@ inline const char* holiday_calendar_string(date::holiday::calendar_t h)
 #undef TMX_DATE_HOLIDAY_CALENDAR_STRING
 
 AddIn xai_instrument_bond_basic_(
-	Function(XLL_HANDLEX, "xll_instrument_bond_basic_", "\\" CATEGORY ".INSTRUMENT.BOND")
+	Function(XLL_HANDLEX, "xll_instrument_bond_basic_", "\\" CATEGORY ".SECURITY.BOND")
 	.Arguments({
 		Arg(XLL_DOUBLE, "dated", "is the date at which interest begins accruing. Default is today.", "=TODAY()"),
 		Arg(XLL_DOUBLE, "maturity", "is the bond maturity as date or in years.", 10),
@@ -120,7 +121,7 @@ HANDLEX WINAPI xll_instrument_bond_basic_(double dated, double maturity, double 
 }
 
 AddIn xai_instrument_bond_basic(
-	Function(XLL_LPOPER, "xll_instrument_bond_basic", CATEGORY ".INSTRUMENT.BOND")
+	Function(XLL_LPOPER, "xll_instrument_bond_basic", CATEGORY ".SECURITY.BOND")
 	.Arguments({
 		Arg(XLL_HANDLEX, "handle", "is a handle to a basic bond."),
 		})
@@ -184,9 +185,9 @@ HANDLEX WINAPI xll_bond_instrument_(HANDLEX b, double dated)
 
 	return h;
 }
-/*
+
 AddIn xai_bond_treasury_(
-	Function(XLL_HANDLEX, "xll_bond_treasury_", "\\" CATEGORY ".INSTRUMENT.BOND.TREASURY")
+	Function(XLL_HANDLEX, "xll_bond_treasury_", "\\" CATEGORY ".SECURITY.TREASURY")
 	.Arguments({
 		Arg(XLL_DOUBLE, "dated", "is the date at which interest begins accruing. Default is today."),
 		Arg(XLL_DOUBLE, "maturity", "is the bond maturity as date or in years."),
@@ -237,4 +238,3 @@ HANDLEX WINAPI xll_bond_treasury_(double dated, double maturity, double coupon, 
 
 	return result;
 }
-*/

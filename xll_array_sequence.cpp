@@ -25,7 +25,7 @@ from <code>start</code> to <code>stop</code>
 )")
 */
 );
-const _FP12* WINAPI xll_array_sequence(double start, double stop, double incr, BOOL trans)
+const FP12* WINAPI xll_array_sequence(double start, double stop, double incr, BOOL trans)
 {
 #pragma XLLEXPORT
 	static xll::FPX a;

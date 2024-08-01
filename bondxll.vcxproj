@@ -105,8 +105,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetExt>.xll</TargetExt>
-    <LinkIncremental>
-    </LinkIncremental>
+    <LinkIncremental>true</LinkIncremental>
     <IntDir>$(SolutionDir)$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>..\bondlib;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
@@ -141,7 +140,7 @@
       <TurnOffAssemblyGeneration>true</TurnOffAssemblyGeneration>
       <LinkTimeCodeGeneration>
       </LinkTimeCodeGeneration>
-      <Profile>true</Profile>
+      <Profile>false</Profile>
       <AdditionalOptions>/WHOLEARCHIVE:xll %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>

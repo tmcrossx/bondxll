@@ -16,7 +16,7 @@ AddIn xai_tmx_bootstrap_(
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to a curve repricing instruments.")
 );
-HANDLEX WINAPI xll_tmx_bootstrap_(_FP12* pi, _FP12* pp)
+HANDLEX WINAPI xll_tmx_bootstrap_(FP12* pi, FP12* pp)
 {
 #pragma XLLEXPORT
 	HANDLEX result = INVALID_HANDLEX;

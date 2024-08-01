@@ -140,9 +140,9 @@ AddIn xai_emma_curve(
 		Arg(XLL_DOUBLE, "date", "is the date of the curve. Default is previous business day."),
 		})
 	.Category(CATEGORY)
-	.FunctionHelp("ICE US Municipal AAA Yield Curve as two row array of years and par coupon rates.")
+	.FunctionHelp("EMMA curves as two row array of years and par coupon rates.")
 );
-_FP12* WINAPI xll_emma_curve(const char* name, double date)
+FP12* WINAPI xll_emma_curve(const char* name, double date)
 {
 #pragma XLLEXPORT
 	static FPX result;

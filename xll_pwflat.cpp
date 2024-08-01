@@ -43,7 +43,7 @@ AddIn xai_curve_pwflat_(
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to a piecewise flat forward curve.")
 );
-HANDLEX WINAPI xll_curve_pwflat_(const _FP12* pt, const _FP12* pf, LPOPER p_f)
+HANDLEX WINAPI xll_curve_pwflat_(const FP12* pt, const FP12* pf, LPOPER p_f)
 {
 #pragma XLLEXPORT
 
@@ -55,11 +55,13 @@ HANDLEX WINAPI xll_curve_pwflat_(const _FP12* pt, const _FP12* pf, LPOPER p_f)
 		auto m = size(*pt);
 		double _f = math::NaN<double>; 
 
-		if (!*p_f) {
-			ensure(isNum(*p_f));
-			_f = p_f->val.num;
+		if (*p_f) {
+			_f = asNum(*p_f);
 		}
-		// last 2 times equal use last f to extrapolate
+		else {
+			_f = std::numeric_limits<double>::quiet_NaN();
+		}
+		// If last 2 times equal use last f to extrapolate
 		if (m >= 2 and pt->array[m-1] == pt->array[m-2]) {
 			--m;
 			_f = pf->array[m];
@@ -155,7 +157,7 @@ AddIn xai_curve_pwflat(
 	.FunctionHelp("Return a two row array of times and rates. "
 	"The last time is duplicated and the last rate is the extrapolation.")
 );
-_FP12* WINAPI xll_curve_pwflat(HANDLEX c)
+FP12* WINAPI xll_curve_pwflat(HANDLEX c)
 {
 #pragma XLLEXPORT
 	static FPX result;
@@ -195,7 +197,7 @@ AddIn xai_curve_pwflat_value(
 	.Category(CATEGORY)
 	.FunctionHelp("Return the forward value of a piecewise flat curve.")
 );
-_FP12* WINAPI xll_curve_pwflat_value(HANDLEX c, _FP12* pt)
+FP12* WINAPI xll_curve_pwflat_value(HANDLEX c, FP12* pt)
 {
 #pragma XLLEXPORT
 
@@ -223,7 +225,7 @@ AddIn xai_curve_pwflat_spot(
 	.Category(CATEGORY)
 	.FunctionHelp("Return the spot value of a piecewise flat curve.")
 );
-_FP12* WINAPI xll_curve_pwflat_spot(HANDLEX c, _FP12* pt)
+FP12* WINAPI xll_curve_pwflat_spot(HANDLEX c, FP12* pt)
 {
 #pragma XLLEXPORT
 
@@ -251,7 +253,7 @@ AddIn xai_curve_pwflat_discount(
 	.Category(CATEGORY)
 	.FunctionHelp("Return the discount value of a piecewise flat curve.")
 );
-_FP12* WINAPI xll_curve_pwflat_discount(HANDLEX c, _FP12* pt)
+FP12* WINAPI xll_curve_pwflat_discount(HANDLEX c, FP12* pt)
 {
 #pragma XLLEXPORT
 
