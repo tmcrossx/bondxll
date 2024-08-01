@@ -1,6 +1,6 @@
 # bondxll
 
-Excel add-in for bondlib.
+Excel add-in for [bondlib](https://github.com/tmcrossx/bondlib/).
 
 C++ objects are made available in Excel via _handles_.
 A handle is a pointer to the underlying C++ object
