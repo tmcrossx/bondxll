@@ -26,6 +26,7 @@ XLL_CONST(LPOPER, EMMA_ENUM_ICE, (LPOPER)&ICEDailyYieldCurve, "EMMA ICE daily yi
 sqlite::db db("");
 
 const char* sql_drop = "DROP TABLE IF EXISTS emma";
+// curve name, Excel date, JSON data
 const char* sql_create = "CREATE TABLE emma (curve TEXT, date FLOAT, data JSON)";
 const char* sql_insert = "INSERT INTO emma (curve, date, data) VALUES (?, ?, ?)";
 
@@ -33,7 +34,6 @@ Auto<Open> xao_emma_db([] {
 	try {
 		sqlite::stmt stmt(::db);
 		ensure(SQLITE_DONE == stmt.exec(sql_drop));
-		// curve name, Excel date, JSON data
 		ensure(SQLITE_DONE == stmt.exec(sql_create));
 	}
 	catch (const std::exception& ex) {
