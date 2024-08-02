@@ -153,39 +153,6 @@ LPOPER WINAPI xll_instrument_bond_basic(HANDLEX h)
 	return &result;
 }
 
-AddIn xai_bond_instrument_(
-	Function(XLL_HANDLEX, "xll_bond_instrument_", "\\" CATEGORY ".BOND.INSTRUMENT")
-	.Arguments({
-		Arg(XLL_HANDLEX, "bond", "is a handle to a bond."),
-		Arg(XLL_DOUBLE, "pvdate", "is the calculation date of the bond."),
-		})
-	.Uncalced()
-	.Category(CATEGORY)
-	.FunctionHelp("Return a handle to bond instrument cash flows.")
-);
-HANDLEX WINAPI xll_bond_instrument_(HANDLEX b, double dated)
-{
-#pragma XLLEXPORT
-	HANDLEX h = INVALID_HANDLEX;
-
-	try {
-		handle<instrument::bond::basic<>> b_(b);
-		ensure(b_);
-
-		auto i = instrument::bond::instrument(*b_, to_days(dated));
-
-		handle h_(new FPX(xll::instrument(i)));
-		ensure(h);
-
-		h = h_.get();
-	}
-	catch (const std::exception& ex) {
-		XLL_ERROR(ex.what());
-	}
-
-	return h;
-}
-
 AddIn xai_bond_treasury_(
 	Function(XLL_HANDLEX, "xll_bond_treasury_", "\\" CATEGORY ".SECURITY.TREASURY")
 	.Arguments({
@@ -237,4 +204,37 @@ HANDLEX WINAPI xll_bond_treasury_(double dated, double maturity, double coupon, 
 	}
 
 	return result;
+}
+
+AddIn xai_bond_instrument_(
+	Function(XLL_HANDLEX, "xll_bond_instrument_", "\\" CATEGORY ".SECURITY.INSTRUMENT")
+	.Arguments({
+		Arg(XLL_HANDLEX, "bond", "is a handle to a bond."),
+		Arg(XLL_DOUBLE, "pvdate", "is the calculation date of the bond."),
+		})
+		.Uncalced()
+	.Category(CATEGORY)
+	.FunctionHelp("Return a handle to bond instrument cash flows.")
+);
+HANDLEX WINAPI xll_bond_instrument_(HANDLEX b, double dated)
+{
+#pragma XLLEXPORT
+	HANDLEX h = INVALID_HANDLEX;
+
+	try {
+		handle<instrument::bond::basic<>> b_(b);
+		ensure(b_);
+
+		auto i = instrument::bond::instrument(*b_, to_days(dated));
+
+		handle h_(new FPX(xll::instrument(i)));
+		ensure(h);
+
+		h = h_.get();
+	}
+	catch (const std::exception& ex) {
+		XLL_ERROR(ex.what());
+	}
+
+	return h;
 }
