@@ -42,6 +42,12 @@ Auto<Open> xao_emma_db([] {
 
 	return 1;
 });
+Auto<Close> xac_emma_db([] {
+	//::db.close();
+
+	return 1;
+
+});
 
 int insert_curve_row(const std::string_view curve, double date, std::wstring_view data)
 {
