@@ -55,7 +55,7 @@ HANDLEX WINAPI xll_curve_pwflat_(const FP12* pt, const FP12* pf, LPOPER p_f)
 		auto m = size(*pt);
 		double _f = math::NaN<double>; 
 
-		if (*p_f) {
+		if (isNum(*p_f) || *p_f) {
 			_f = asNum(*p_f);
 		}
 		else {
