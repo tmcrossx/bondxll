@@ -21,7 +21,7 @@ HANDLEX WINAPI xll_curve_constant_(double f)
 	HANDLEX h = INVALID_HANDLEX;
 
 	try {
-		handle<curve::interface<>> h_(new curve::pwflat(f));
+		handle<curve::interface<>> h_(new curve::constant<>(f));
 		ensure(h_);
 		h = h_.get();
 	}
@@ -37,13 +37,12 @@ AddIn xai_curve_pwflat_(
 	.Arguments({
 		Arg(XLL_FP, "t", "is an array of positive increasing times.", "{1, 2, 3}"),
 		Arg(XLL_FP, "f", "is an array of corresponding rates.", "{.01, .02, .03}"),
-		Arg(XLL_LPOPER, "_f", "is an optional extrapolation rate. Default is NaN."),
 		})
 	.Uncalced()
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to a piecewise flat forward curve.")
 );
-HANDLEX WINAPI xll_curve_pwflat_(const FP12* pt, const FP12* pf, LPOPER p_f)
+HANDLEX WINAPI xll_curve_pwflat_(const FP12* pt, const FP12* pf)
 {
 #pragma XLLEXPORT
 
@@ -52,22 +51,7 @@ HANDLEX WINAPI xll_curve_pwflat_(const FP12* pt, const FP12* pf, LPOPER p_f)
 	try {
 		ensure(size(*pt) == size(*pf));
 
-		auto m = size(*pt);
-		double _f = math::NaN<double>; 
-
-		if (isNum(*p_f) || *p_f) {
-			_f = asNum(*p_f);
-		}
-		else {
-			_f = std::numeric_limits<double>::quiet_NaN();
-		}
-		// If last 2 times equal use last f to extrapolate
-		if (m >= 2 and pt->array[m-1] == pt->array[m-2]) {
-			--m;
-			_f = pf->array[m];
-		}
-
-		handle<curve::interface<>> h_(new curve::pwflat(m, pt->array, pf->array, _f));
+		handle<curve::interface<>> h_(new curve::pwflat(size(*pt), pt->array, pf->array));
 		ensure(h_);
 		h = h_.get();
 	}
@@ -78,56 +62,17 @@ HANDLEX WINAPI xll_curve_pwflat_(const FP12* pt, const FP12* pf, LPOPER p_f)
 	return h;
 }
 
-AddIn xai_curve_pwflat_extrapolate(
-	Function(XLL_HANDLEX, "xll_curve_pwflat_extrapolate", CATEGORY ".CURVE.PWFLAT.EXTRAPOLATE")
-	.Arguments({
-		Arg(XLL_HANDLEX, "curve", "is handle to a curve."),
-		Arg(XLL_DOUBLE, "rate", "set extrapolated forward value or return current value if missing.")
-		})
-		.Category(CATEGORY)
-	.FunctionHelp("Extend curve past last point by forward value and return the curve handle. "
-		"If forward is missing return the current extrapolation value.")
-);
-HANDLEX WINAPI xll_curve_pwflat_extrapolate(HANDLEX c, double _f)
-{
-#pragma XLLEXPORT
-	HANDLEX result = INVALID_HANDLEX;
-
-	try {
-		handle<curve::interface<>> _c(c);
-		ensure(_c);
-		curve::pwflat<>* c_ = _c.as<curve::pwflat<>>();
-		ensure(c_);
-
-		if (_f) {
-			c_->extrapolate(_f);
-			result = c;
-		}
-		else {
-			result = c_->extrapolate();
-		}
-
-	}
-	catch (const std::exception& ex) {
-		XLL_ERROR(ex.what());
-
-		return INVALID_HANDLEX;
-	}
-
-	return result;
-}
-
 AddIn xai_curve_pwflat_push_back(
 	Function(XLL_HANDLEX, "xll_curve_pwflat_push_back", CATEGORY ".CURVE.PWFLAT.PUSH_BACK")
 	.Arguments({
 		Arg(XLL_HANDLEX, "curve", "is handle to a curve."),
-		Arg(XLL_DOUBLE, "time", "time value to push back."),
+		Arg(XLL_FP, "time", "time value to push back."),
 		Arg(XLL_DOUBLE, "rate", "forward rate to push back.")
 		})
 	.Category(CATEGORY)
 	.FunctionHelp("Add point to end of curve.")
 );
-HANDLEX WINAPI xll_curve_pwflat_push_back(HANDLEX c, double t, double f)
+HANDLEX WINAPI xll_curve_pwflat_push_back(HANDLEX c, const FP12* pt, double f)
 {
 #pragma XLLEXPORT
 	try {
@@ -135,9 +80,13 @@ HANDLEX WINAPI xll_curve_pwflat_push_back(HANDLEX c, double t, double f)
 		ensure(_c);
 		curve::pwflat<>* c_ = _c.as<curve::pwflat<>>();
 		ensure(c_);
+		
+		double t = pt->array[0];
+		if (size(*pt) > 1) {
+			f = pt->array[1];
+		}
 
 		c_->push_back(t, f);
-
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -169,14 +118,12 @@ FP12* WINAPI xll_curve_pwflat(HANDLEX c)
 		ensure(c_);
 
 		int m = static_cast<int>(c_->size());
-		result.resize(2, m + 1);
+		result.resize(2, m);
 		const auto t = c_->time();
 		const auto f = c_->rate();
 		std::copy(t.begin(), t.end(), result.array());
-		std::copy(f.begin(), f.end(), result.array() + m + 1);
+		std::copy(f.begin(), f.end(), result.array() + m);
 
-		result(0, m) = result(0, m - 1); // repeat last time
-		result(1, m) = c_->extrapolate();
 		//result.transpose();
 	}
 	catch (const std::exception& ex) {
@@ -205,9 +152,7 @@ FP12* WINAPI xll_curve_pwflat_value(HANDLEX c, FP12* pt)
 		handle<curve::interface<>> c_(c);
 		ensure(c_);
 
-		for (int i = 0; i < size(*pt); ++i) {
-			pt->array[i] = c_->forward(pt->array[i]);
-		}
+		std::transform(begin(*pt), end(*pt), begin(*pt), [&c_](double t) { return c_->forward(t); });
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());

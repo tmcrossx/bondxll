@@ -134,17 +134,29 @@ LPOPER WINAPI xll_instrument_bond_basic(HANDLEX h)
 	static OPER result(8,1,nullptr);
 
 	try {
-		handle<instrument::bond::basic<>> h_(h);
-		ensure(h_);
+		if (h == 0) {
+			const Args* pargs = AddIn::find(OPER("\\" CATEGORY ".SECURITY.BOND"));
+			if (pargs) {
+				result = pargs->argumentName;
+				result.reshape(size(result), 1);
+			}
+			else {
+				result = ErrValue;
+			}
+		}
+		else {
+			handle<instrument::bond::basic<>> h_(h);
+			ensure(h_);
 
-		result[0] = from_days(h_->dated);
-		result[1] = from_days(h_->maturity);
-		result[2] = h_->coupon;
-		result[3] = frequency_string(h_->frequency);
-		result[4] = day_count_string(to_handle(h_->day_count));
-		result[5] = business_day_string(h_->roll);
-		result[6] = holiday_calendar_string(h_->cal); // TODO: preserve type or lookup fails
-		result[7] = h_->face;
+			result[0] = from_days(h_->dated);
+			result[1] = from_days(h_->maturity);
+			result[2] = h_->coupon;
+			result[3] = frequency_string(h_->frequency);
+			result[4] = day_count_string(to_handle(h_->day_count));
+			result[5] = business_day_string(h_->roll);
+			result[6] = holiday_calendar_string(h_->cal); // TODO: preserve type or lookup fails
+			result[7] = h_->face;
+		}
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
