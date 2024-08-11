@@ -130,7 +130,7 @@ FP12* WINAPI xll_date_periodic(date::frequency f, double d0, double d1)
 		if (n == 0) {
 			return nullptr;
 		}
-		result.resize(n, 1);
+		result.resize(1, n);
 		for (int i = 0; i < n; ++i) {
 			result[i] = from_days(*p++);
 		}

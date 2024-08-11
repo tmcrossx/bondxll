@@ -21,6 +21,7 @@ HANDLEX WINAPI xll_instrument_(const FP12* pu, const FP12* pc)
 
 	try {
 		ensure(size(*pu) == size(*pc));
+		ensure(std::is_sorted(begin(*pu), end(*pu), std::less<double>{}));
 
 		handle i(new FPX(xll::instrument(*pu, *pc)));
 		ensure(i);

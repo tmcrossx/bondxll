@@ -1,6 +1,7 @@
 // xll_instrument.h - Two row array of floating point time in years and cash flows.
 #pragma once
 #include "instrument/tmx_instrument.h"
+#include "curve/tmx_curve_pwflat.h"
 #include "bondxll.h"
 
 #undef interface

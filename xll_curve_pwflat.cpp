@@ -5,6 +5,14 @@
 using namespace tmx;
 using namespace xll;
 
+inline FPX pwflat(const tmx::curve::pwflat<>& c)
+{
+	FPX t(c.time());
+	FPX f(c.rate());
+
+	return t.vstack(f);
+}
+
 AddIn xai_curve_constant_(
 	Function(XLL_HANDLEX, "xll_curve_constant_", "\\" CATEGORY ".CURVE.CONSTANT")
 	.Arguments({
@@ -51,9 +59,16 @@ HANDLEX WINAPI xll_curve_pwflat_(const FP12* pt, const FP12* pf)
 	try {
 		ensure(size(*pt) == size(*pf));
 
-		handle<curve::interface<>> h_(new curve::pwflat(size(*pt), pt->array, pf->array));
-		ensure(h_);
-		h = h_.get();
+		if (size(*pt) == 1 and pt->array[0] == 0 and pf->array[0] == 0) {
+			handle<curve::interface<>> h_(new curve::pwflat{});
+			ensure(h_);
+			h = h_.get();
+		}
+		else {
+			handle<curve::interface<>> h_(new curve::pwflat(size(*pt), pt->array, pf->array));
+			ensure(h_);
+			h = h_.get();
+		}
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -65,28 +80,28 @@ HANDLEX WINAPI xll_curve_pwflat_(const FP12* pt, const FP12* pf)
 AddIn xai_curve_pwflat_push_back(
 	Function(XLL_HANDLEX, "xll_curve_pwflat_push_back", CATEGORY ".CURVE.PWFLAT.PUSH_BACK")
 	.Arguments({
-		Arg(XLL_HANDLEX, "curve", "is handle to a curve."),
-		Arg(XLL_FP, "time", "time value to push back."),
-		Arg(XLL_DOUBLE, "rate", "forward rate to push back.")
+		Arg(XLL_HANDLEX, "curve", "is handle to a piecewise flat curve."),
+		Arg(XLL_FP, "time", "time value to add."),
+		Arg(XLL_DOUBLE, "rate", "forward rate add.")
 		})
+	.Uncalced()
 	.Category(CATEGORY)
-	.FunctionHelp("Add point to end of curve.")
+	.FunctionHelp("Return curve with extrapolated point at end of curve.")
 );
 HANDLEX WINAPI xll_curve_pwflat_push_back(HANDLEX c, const FP12* pt, double f)
 {
 #pragma XLLEXPORT
 	try {
-		handle<curve::interface<>> _c(c);
-		ensure(_c);
-		curve::pwflat<>* c_ = _c.as<curve::pwflat<>>();
+		handle<curve::interface<>> c_(c);
 		ensure(c_);
-		
+		curve::pwflat<>* pc = c_.as<curve::pwflat<>>();
+		ensure(pc);
+
 		double t = pt->array[0];
 		if (size(*pt) > 1) {
 			f = pt->array[1];
 		}
-
-		c_->push_back(t, f);
+		pc->push_back(t, f);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -103,8 +118,7 @@ AddIn xai_curve_pwflat(
 		Arg(XLL_HANDLEX, "curve", "is handle to a curve."),
 		})
 	.Category(CATEGORY)
-	.FunctionHelp("Return a two row array of times and rates. "
-	"The last time is duplicated and the last rate is the extrapolation.")
+	.FunctionHelp("Return a two row array of times and rates.")
 );
 FP12* WINAPI xll_curve_pwflat(HANDLEX c)
 {
@@ -114,17 +128,10 @@ FP12* WINAPI xll_curve_pwflat(HANDLEX c)
 	try {
 		handle<curve::interface<>> _c(c);
 		ensure(_c);
-		const curve::pwflat<>* c_ = _c.as<curve::pwflat<>>();
+		curve::pwflat<>* c_ = _c.as<curve::pwflat<>>();
 		ensure(c_);
 
-		int m = static_cast<int>(c_->size());
-		result.resize(2, m);
-		const auto t = c_->time();
-		const auto f = c_->rate();
-		std::copy(t.begin(), t.end(), result.array());
-		std::copy(f.begin(), f.end(), result.array() + m);
-
-		//result.transpose();
+		result = ::pwflat(*c_);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -152,7 +159,7 @@ FP12* WINAPI xll_curve_pwflat_value(HANDLEX c, FP12* pt)
 		handle<curve::interface<>> c_(c);
 		ensure(c_);
 
-		std::transform(begin(*pt), end(*pt), begin(*pt), [&c_](double t) { return c_->forward(t); });
+		std::transform(begin(*pt), end(*pt), begin(*pt), [&c_](double t) { return c_->value(t); });
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -178,9 +185,7 @@ FP12* WINAPI xll_curve_pwflat_spot(HANDLEX c, FP12* pt)
 		handle<curve::interface<>> c_(c);
 		ensure(c_);
 
-		for (int i = 0; i < size(*pt); ++i) {
-			pt->array[i] = c_->spot(pt->array[i]);
-		}
+		std::transform(begin(*pt), end(*pt), begin(*pt), [&c_](double t) { return c_->spot(t); });
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -206,9 +211,7 @@ FP12* WINAPI xll_curve_pwflat_discount(HANDLEX c, FP12* pt)
 		handle<curve::interface<>> c_(c);
 		ensure(c_);
 
-		for (int i = 0; i < size(*pt); ++i) {
-			pt->array[i] = c_->discount(pt->array[i]);
-		}
+		std::transform(begin(*pt), end(*pt), begin(*pt), [&c_](double t) { return c_->discount(t); });
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());

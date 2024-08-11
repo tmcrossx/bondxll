@@ -1,6 +1,6 @@
-// xll_instrument_bond.cpp - Bonds
-#include "instrument/tmx_instrument_treasury.h"
-#include "instrument/tmx_instrument_bond.h"
+// xll_security.cpp - Bonds
+#include "security/tmx_treasury.h"
+#include "security/tmx_bond.h"
 #include "xll_instrument.h"
 
 //using namespace fms::iterable;
@@ -12,7 +12,7 @@ using namespace xll;
 
 // Enum string from frequency enum
 #define TMX_DATE_FREQUENCY_STRING(a, b, c, d) \
-	if (h == date::frequency::##b) return CATEGORY "_FREQUENCY_" #a;
+	if (h == date::frequency::b) return CATEGORY "_FREQUENCY_" #a;
 constexpr const char* frequency_string(date::frequency h)
 {
 	TMX_DATE_FREQUENCY(TMX_DATE_FREQUENCY_STRING)
@@ -30,7 +30,7 @@ inline const char* day_count_string(HANDLEX h)
 #undef TMX_DAY_COUNT_STRING
 
 // Enum string from business day roll convention.
-#define TMX_DATE_BUSINESS_DAY_STRING(a, b, c) if (h == date::business_day::roll::##b) return CATEGORY "_BUSINESS_DAY_" #a;
+#define TMX_DATE_BUSINESS_DAY_STRING(a, b, c) if (h == date::business_day::roll::b) return CATEGORY "_BUSINESS_DAY_" #a;
 inline const char* business_day_string(date::business_day::roll h)
 {
 	TMX_DATE_BUSINESS_DAY(TMX_DATE_BUSINESS_DAY_STRING)
@@ -40,7 +40,7 @@ inline const char* business_day_string(date::business_day::roll h)
 
 // TMX_DATE_HOLIDAY_CALENDAR(TMX_DATE_HOLIDAY_CALENDAR_STRING)
 // Enum string from calendar.
-#define TMX_DATE_HOLIDAY_CALENDAR_STRING(a, b, c) if (h == date::holiday::calendar::##b) return CATEGORY "_HOLIDAY_CALENDAR_" #a;
+#define TMX_DATE_HOLIDAY_CALENDAR_STRING(a, b, c) if (h == date::holiday::calendar::b) return CATEGORY "_HOLIDAY_CALENDAR_" #a;
 inline const char* holiday_calendar_string(date::holiday::calendar_t h)
 {
 	TMX_DATE_HOLIDAY_CALENDAR(TMX_DATE_HOLIDAY_CALENDAR_STRING)
@@ -48,8 +48,8 @@ inline const char* holiday_calendar_string(date::holiday::calendar_t h)
 }
 #undef TMX_DATE_HOLIDAY_CALENDAR_STRING
 
-AddIn xai_instrument_bond_basic_(
-	Function(XLL_HANDLEX, "xll_instrument_bond_basic_", "\\" CATEGORY ".SECURITY.BOND")
+AddIn xai_security_bond_(
+	Function(XLL_HANDLEX, "xll_security_bond_", "\\" CATEGORY ".SECURITY.BOND")
 	.Arguments({
 		Arg(XLL_DOUBLE, "dated", "is the date at which interest begins accruing. Default is today.", "=TODAY()"),
 		Arg(XLL_DOUBLE, "maturity", "is the bond maturity as date or in years.", 10),
@@ -64,7 +64,7 @@ AddIn xai_instrument_bond_basic_(
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to a basic bond.")
 );
-HANDLEX WINAPI xll_instrument_bond_basic_(double dated, double maturity, double coupon, const LPOPER pfreq, 
+HANDLEX WINAPI xll_security_bond_(double dated, double maturity, double coupon, const LPOPER pfreq, 
 	LPOPER pdcb, LPOPER proll, LPOPER pcal, double face)
 {
 #pragma XLLEXPORT
@@ -97,7 +97,7 @@ HANDLEX WINAPI xll_instrument_bond_basic_(double dated, double maturity, double 
 		const auto dcf = EnumPtr(*pdcb, date::day_count_isma30360);
 		if (!dcf) return INVALID_HANDLEX;
 		
-		// defalut to no roll convention
+		// default to no roll convention
 		const auto roll = EnumVal(*proll, date::business_day::roll::none);
 		if (!roll) return INVALID_HANDLEX;
 
@@ -108,7 +108,7 @@ HANDLEX WINAPI xll_instrument_bond_basic_(double dated, double maturity, double 
 			face = 100;
 		}
 
-		handle<instrument::bond::basic<>> h(new instrument::bond::basic<>{ dat, mat, coupon, *freq, *dcf, *roll, *cal, face });
+		handle<security::bond<>> h(new security::bond<>{ dat, mat, coupon, *freq, *dcf, *roll, *cal, face });
 		ensure(h);
 
 		result = h.get();
@@ -120,32 +120,26 @@ HANDLEX WINAPI xll_instrument_bond_basic_(double dated, double maturity, double 
 	return result;
 }
 
-AddIn xai_instrument_bond_basic(
-	Function(XLL_LPOPER, "xll_instrument_bond_basic", CATEGORY ".SECURITY.BOND")
+AddIn xai_security_bond(
+	Function(XLL_LPOPER, "xll_security_bond", CATEGORY ".SECURITY.BOND")
 	.Arguments({
 		Arg(XLL_HANDLEX, "handle", "is a handle to a basic bond."),
 		})
 	.Category(CATEGORY)
-	.FunctionHelp("Return the dated date, maturity, coupon, frequency, and day count of a basic bond.")
+	.FunctionHelp("Return the dated date, maturity, coupon, frequency, day count, roll convention, holiday calendar, and face of a bond.")
 );
-LPOPER WINAPI xll_instrument_bond_basic(HANDLEX h)
+LPOPER WINAPI xll_security_bond(HANDLEX h)
 {
 #pragma XLLEXPORT
 	static OPER result(8,1,nullptr);
 
 	try {
 		if (h == 0) {
-			const Args* pargs = AddIn::find(OPER("\\" CATEGORY ".SECURITY.BOND"));
-			if (pargs) {
-				result = pargs->argumentName;
-				result.reshape(size(result), 1);
-			}
-			else {
-				result = ErrValue;
-			}
+			result = ArgumentNames(OPER("\\" CATEGORY ".SECURITY.BOND"));
+			std::swap(result.val.array.rows, result.val.array.columns);
 		}
 		else {
-			handle<instrument::bond::basic<>> h_(h);
+			handle<security::bond<>> h_(h);
 			ensure(h_);
 
 			result[0] = from_days(h_->dated);
@@ -165,8 +159,8 @@ LPOPER WINAPI xll_instrument_bond_basic(HANDLEX h)
 	return &result;
 }
 
-AddIn xai_bond_treasury_(
-	Function(XLL_HANDLEX, "xll_bond_treasury_", "\\" CATEGORY ".SECURITY.TREASURY")
+AddIn xai_security_treasury_(
+	Function(XLL_HANDLEX, "xll_security_treasury_", "\\" CATEGORY ".SECURITY.TREASURY")
 	.Arguments({
 		Arg(XLL_DOUBLE, "dated", "is the date at which interest begins accruing. Default is today."),
 		Arg(XLL_DOUBLE, "maturity", "is the bond maturity as date or in years."),
@@ -177,7 +171,7 @@ AddIn xai_bond_treasury_(
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to a treasury bond.")
 );
-HANDLEX WINAPI xll_bond_treasury_(double dated, double maturity, double coupon, double face)
+HANDLEX WINAPI xll_security_treasury_(double dated, double maturity, double coupon, double face)
 {
 #pragma XLLEXPORT
 	HANDLEX result = INVALID_HANDLEX;
@@ -206,7 +200,7 @@ HANDLEX WINAPI xll_bond_treasury_(double dated, double maturity, double coupon, 
 			face = 100;
 		}
 
-		handle<instrument::bond::basic<>> h(new instrument::bond::treasury<>(dat, mat, coupon, face));
+		handle<security::bond<>> h(new security::treasury<>(dat, mat, coupon, face));
 		ensure(h);
 
 		result = h.get();
@@ -218,26 +212,26 @@ HANDLEX WINAPI xll_bond_treasury_(double dated, double maturity, double coupon, 
 	return result;
 }
 
-AddIn xai_bond_instrument_(
-	Function(XLL_HANDLEX, "xll_bond_instrument_", "\\" CATEGORY ".SECURITY.INSTRUMENT")
+AddIn xai_security_instrument_(
+	Function(XLL_HANDLEX, "xll_security_instrument_", "\\" CATEGORY ".SECURITY.INSTRUMENT")
 	.Arguments({
 		Arg(XLL_HANDLEX, "bond", "is a handle to a bond."),
 		Arg(XLL_DOUBLE, "pvdate", "is the calculation date of the bond."),
 		})
 		.Uncalced()
 	.Category(CATEGORY)
-	.FunctionHelp("Return a handle to bond instrument cash flows.")
+	.FunctionHelp("Return a handle to instrument cash flows determined by present value date.")
 );
-HANDLEX WINAPI xll_bond_instrument_(HANDLEX b, double dated)
+HANDLEX WINAPI xll_security_instrument_(HANDLEX b, double dated)
 {
 #pragma XLLEXPORT
 	HANDLEX h = INVALID_HANDLEX;
 
 	try {
-		handle<instrument::bond::basic<>> b_(b);
+		handle<security::bond<>> b_(b);
 		ensure(b_);
 
-		auto i = instrument::bond::instrument(*b_, to_days(dated));
+		auto i = security::instrument(*b_, to_days(dated));
 
 		handle h_(new FPX(xll::instrument(i)));
 		ensure(h);

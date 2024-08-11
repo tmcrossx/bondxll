@@ -12,6 +12,13 @@
 
 namespace xll {
 
+	// Array of argument names given add-in name. 
+	inline OPER ArgumentNames(const OPER& o)
+	{
+		const Args* pargs = AddIn::find(o);
+
+		return pargs ? pargs->argumentName : ErrValue;
+	}
 
 	inline std::chrono::sys_days to_days(time_t t)
 	{
@@ -32,5 +39,6 @@ namespace xll {
 
 		return static_cast<int>(from_time_t(system_clock::to_time_t(d)));
 	}
+
 
 } // namespace xll

@@ -29,10 +29,10 @@
     <ClCompile Include="xll_option.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="xll_instrument_bond.cpp">
+    <ClCompile Include="xll_security.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="xll_bootstrap.cpp">
+    <ClCompile Include="xll_curve_bootstrap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="xll_date.cpp">
@@ -44,7 +44,7 @@
     <ClCompile Include="xll_instrument.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="xll_pwflat.cpp">
+    <ClCompile Include="xll_curve_pwflat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="xll_valuation.cpp">
