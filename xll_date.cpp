@@ -215,16 +215,16 @@ double WINAPI xll_date_addmonth(double d, int y)
 }
 
 AddIn xai_date_dcf(
-	Function(XLL_DOUBLE, "xll_date_dcf", CATEGORY ".DATE.DAY_COUNT")
+	Function(XLL_DOUBLE, "xll_date_day_count", CATEGORY ".DATE.DAY_COUNT")
 	.Arguments({
 		Arg(XLL_DOUBLE, "from", "is an Excel date.", "1/1/2024"),
 		Arg(XLL_DOUBLE, "to", "is an Excel date.", "7/1/2024"),
-		Arg(XLL_LPOPER, "dcb", "is a day count basis. Default is 30/360.", "TMX_DAY_COUNT_30_360"),
+		Arg(XLL_LPOPER, "day_count", "is a day count basis. Default is 30/360.", "TMX_DAY_COUNT_30_360"),
 		})
 		.Category(CATEGORY)
 	.FunctionHelp("Return the day count fraction from d0 to d1.")
 );
-double WINAPI xll_date_dcf(double d0, double d1, LPOPER pdcf)
+double WINAPI xll_date_day_count(double d0, double d1, LPOPER pdcf)
 {
 #pragma XLLEXPORT
 	double result = std::numeric_limits<double>::quiet_NaN();

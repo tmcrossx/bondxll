@@ -1,5 +1,5 @@
 // xll_enum.cpp
-#include "xll24/xll.h"
+#include "xll24/include/xll.h"
 
 #ifndef CATEGORY
 #define CATEGORY "XLL"

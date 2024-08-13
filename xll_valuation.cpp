@@ -75,10 +75,14 @@ double WINAPI xll_value_present(HANDLEX i, HANDLEX c)
 		handle<FPX> i_(i);
 		ensure(i_);
 
+		curve::constant cc(c);
+		curve::interface<>* _c = &cc;
 		handle<curve::interface<>> c_(c);
-		ensure(c_);
+		if (c_) {
+			_c = c_.ptr();
+		}	
 
-		result = valuation::present(instrument_iterable(*i_), *c_);
+		result = valuation::present(instrument_iterable(*i_), *_c);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -105,10 +109,14 @@ double WINAPI xll_value_duration(HANDLEX i, HANDLEX c)
 		handle<FPX> i_(i);
 		ensure(i_);
 
+		curve::constant cc(c);
+		curve::interface<>* _c = &cc;
 		handle<curve::interface<>> c_(c);
-		ensure(c_);
+		if (c_) {
+			_c = c_.ptr();
+		}
 
-		result = valuation::duration(instrument_iterable(*i_), *c_);
+		result = valuation::duration(instrument_iterable(*i_), *_c);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -135,10 +143,14 @@ double WINAPI xll_value_convexity(HANDLEX i, HANDLEX c)
 		handle<FPX> i_(i);
 		ensure(i_);
 
+		curve::constant cc(c);
+		curve::interface<>* _c = &cc;
 		handle<curve::interface<>> c_(c);
-		ensure(c_);
+		if (c_) {
+			_c = c_.ptr();
+		}
 
-		result = valuation::convexity(instrument_iterable(*i_), *c_);
+		result = valuation::convexity(instrument_iterable(*i_), *_c);
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -154,7 +166,7 @@ AddIn xai_value_yield(
 		Arg(XLL_DOUBLE, "price", "is the price of the instrument."),
 		})
 		.Category(CATEGORY)
-	.FunctionHelp("Return constant yield repricing the instrument.")
+	.FunctionHelp("Return the continuously compounded yield repricing the instrument.")
 );
 double WINAPI xll_value_yield(HANDLEX i, double p)
 {
@@ -181,7 +193,7 @@ AddIn xai_value_price(
 		Arg(XLL_DOUBLE, "yield", "is the yield."),
 		})
 		.Category(CATEGORY)
-	.FunctionHelp("Return price value of instrument cash flows using curve at time t.")
+	.FunctionHelp("Return the price of instrument given the continuously compounded yield.")
 );
 double WINAPI xll_value_price(HANDLEX i, double y)
 {

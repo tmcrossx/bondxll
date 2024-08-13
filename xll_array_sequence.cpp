@@ -1,5 +1,5 @@
 // xll_array_sequence.cpp - Arithmetic sequence.
-#include "xll24/xll.h"
+#include "xll24/include/xll.h"
 
 using namespace xll;
 

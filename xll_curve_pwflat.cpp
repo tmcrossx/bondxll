@@ -5,6 +5,7 @@
 using namespace tmx;
 using namespace xll;
 
+// 2 row array of times and rates.
 inline FPX pwflat(const tmx::curve::pwflat<>& c)
 {
 	FPX t(c.time());
@@ -18,7 +19,7 @@ AddIn xai_curve_constant_(
 	.Arguments({
 		Arg(XLL_DOUBLE, "f", "is the constant forward rate.", 0),
 		})
-		.Uncalced()
+	.Uncalced()
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to a constant forward curve.")
 );
@@ -30,6 +31,35 @@ HANDLEX WINAPI xll_curve_constant_(double f)
 
 	try {
 		handle<curve::interface<>> h_(new curve::constant<>(f));
+		ensure(h_);
+		h = h_.get();
+	}
+	catch (const std::exception& ex) {
+		XLL_ERROR(ex.what());
+	}
+
+	return h;
+}
+
+AddIn xai_curve_bump_(
+	Function(XLL_HANDLEX, "xll_curve_bump_", "\\" CATEGORY ".CURVE.BUMP")
+	.Arguments({
+		Arg(XLL_DOUBLE, "s", "is the amount to bump the forward rate.", 0),
+		Arg(XLL_DOUBLE, "t0", "is the time to start the bump.", 0),
+		Arg(XLL_DOUBLE, "t1", "is the time to end the bump.", 0)
+		})
+	.Uncalced()
+	.Category(CATEGORY)
+	.FunctionHelp("Return a handle to a bump forward curve.")
+);
+HANDLEX WINAPI xll_curve_bump_(double s, double t0, double t1)
+{
+#pragma XLLEXPORT
+
+	HANDLEX h = INVALID_HANDLEX;
+
+	try {
+		handle<curve::interface<>> h_(new curve::bump<>(s, t0, t1));
 		ensure(h_);
 		h = h_.get();
 	}
@@ -57,14 +87,21 @@ HANDLEX WINAPI xll_curve_pwflat_(const FP12* pt, const FP12* pf)
 	HANDLEX h = INVALID_HANDLEX;
 
 	try {
-		ensure(size(*pt) == size(*pf));
-
 		if (size(*pt) == 1 and pt->array[0] == 0 and pf->array[0] == 0) {
 			handle<curve::interface<>> h_(new curve::pwflat{});
 			ensure(h_);
 			h = h_.get();
 		}
+		else if (rows(*pt) == 2) {
+			ensure(size(*pf) == 1 and pf->array[0] == 0);
+			int n = columns(*pt);
+			handle<curve::interface<>> h_(new curve::pwflat(n, pt->array, pt->array + n));
+			ensure(h_);
+			h = h_.get();
+		}
 		else {
+			ensure(size(*pt) == size(*pf) || !"times and rates must be the same size");
+
 			handle<curve::interface<>> h_(new curve::pwflat(size(*pt), pt->array, pf->array));
 			ensure(h_);
 			h = h_.get();
