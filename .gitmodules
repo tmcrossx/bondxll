@@ -1,6 +1,3 @@
 [submodule "xll24"]
 	path = xll24
 	url = https://github.com/xlladdins/xll24.git
-[submodule "fms_sqlite"]
-	path = fms_sqlite
-	url = https://github.com/keithalewis/fms_sqlite
