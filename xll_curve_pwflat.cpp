@@ -73,8 +73,8 @@ HANDLEX WINAPI xll_curve_bump_(double s, double t0, double t1)
 AddIn xai_curve_pwflat_(
 	Function(XLL_HANDLEX, "xll_curve_pwflat_", "\\" CATEGORY ".CURVE.PWFLAT")
 	.Arguments({
-		Arg(XLL_FP, "t", "is an array of positive increasing times.", "{1, 2, 3}"),
-		Arg(XLL_FP, "f", "is an array of corresponding rates.", "{.01, .02, .03}"),
+		Arg(XLL_FP, "t", "is an array of positive increasing times.", "={1, 2, 3}"),
+		Arg(XLL_FP, "f", "is an array of corresponding rates.", "={.01, .02, .03}"),
 		})
 	.Uncalced()
 	.Category(CATEGORY)
