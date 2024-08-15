@@ -22,22 +22,23 @@ namespace xll {
 	// Return value type.
 	inline FPX instrument(const FP12& time, const FP12& cash)
 	{
-		FPX u(time);
-		u.resize(1, size(time));
+		ensure(size(time) == size(cash));
+		FPX uc(2, size(time));
+		std::copy(begin(time), end(time), uc.array());
+		std::copy(begin(cash), end(cash), uc.array() + size(time));
 
-		FPX c(cash);
-		c.resize(1, size(cash));
-
-		return u.vstack(c);
+		return uc;
 	}
 	// Return value type.
 	template<class IU, class IC>
 	inline FPX instrument(const tmx::instrument::iterable<IU, IC>& i)
 	{
-		FPX u(i.time());
-		FPX c(i.cash());
+		int n = static_cast<int>(size(i));
+		FPX uc(2, n);	
+		copy(i.time(), uc.array());
+		copy(i.cash(), uc.array() + n);
 
-		return u.vstack(c);
+		return uc;
 	}
 
 } // namespace xll

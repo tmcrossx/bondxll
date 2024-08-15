@@ -8,10 +8,14 @@ using namespace xll;
 // 2 row array of times and rates.
 inline FPX pwflat(const tmx::curve::pwflat<>& c)
 {
-	FPX t(c.time());
-	FPX f(c.rate());
+	int n = static_cast<int>(c.size());
+	FPX tf(2, n);
+	if (n) {
+		copy(c.time(), tf.array());
+		copy(c.rate(), tf.array() + n);
+	}
 
-	return t.vstack(f);
+	return tf;
 }
 
 AddIn xai_curve_constant_(
