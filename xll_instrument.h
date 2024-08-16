@@ -50,6 +50,7 @@ namespace xll {
 #undef TMX_DATE_HOLIDAY_CALENDAR_STRING
 
 
+
 	// Instruments are two row array of times and cash flows.
 	// Assumes lifetime of x.
 	inline auto instrument_iterable(FPX& uc)
