@@ -200,7 +200,7 @@ HANDLEX WINAPI xll_security_treasury_(double dated, double maturity, double coup
 			face = 100;
 		}
 
-		handle<security::bond<>> h(new security::treasury<>(dat, mat, coupon, face));
+		handle<security::bond<>> h(new security::treasury::bond<>(dat, mat, coupon, face));
 		ensure(h);
 
 		result = h.get();
