@@ -180,46 +180,46 @@ HANDLEX WINAPI xll_tmx_curve_bootstrap_treasury_(FP12* ptf)
 
 		// bills
 		double _t = 0;
-		double _f = (*pf)(0, 1); // first rate
+		double _f = index(*ptf, 0, 1); // first rate
 		int i = 0;
 		while (i < rows(*ptf)) {
-			double ti = ptf->array[2 * i];
+			double ti = index(*ptf, i, 0);
 			if (ti > 1) {
 				break;
 			}
-			const auto ii = instrument::zero_coupon_bond(ptf->array[2 * i]);
+			const auto ii = instrument::zero_coupon_bond(index(*ptf, i, 1));
 			if (pf->size() > 0) {
 				std::tie(_t, _f) = pf->back();
 			}
-			double fi = ptf->array[2 * i + 1];
+			double fi = index(*ptf, i, 1);
 			pf->push_back(tmx::curve::bootstrap0(ii, *f, _t, _f, 1 - fi * ti));
 			++i;
 		}
 		// notes
 		while (i < rows(*ptf)) {
-			int ti = static_cast<int>(ptf->array[2 * i]);
+			int ti = static_cast<int>(index(*ptf, i, 0));
 			if (ti > 10) {
 				break;
 			}
-			double fi = ptf->array[2 * i + 1]; // coupon
+			double fi = index(*ptf, i, 1); // coupon
 			const auto ni = security::treasury::note(dated, dated + years(ti), fi, 1.);
 			const auto ii = security::instrument(ni, dated);
 			if (pf->size() > 0) {
 				std::tie(_t, _f) = pf->back();
 			}
-			pf->push_back(tmx::curve::bootstrap0(ii, *f, _t, _f, 1.));
+			pf->push_back(tmx::curve::bootstrap0(ii, *f, _t, _f, ni.face));
 			++i;
 		}
 		// bonds
 		while (i < rows(*ptf)) {
-			int ti = static_cast<int>(ptf->array[2 * i]);
-			double fi = ptf->array[2 * i + 1];
+			int ti = static_cast<int>(index(*ptf, i, 0));
+			double fi = index(*ptf, i, 1);
 			const auto bi = security::treasury::bond(dated, dated + years(ti), fi, 1.);
 			const auto ii = security::instrument(bi, dated);
 			if (pf->size() > 0) {
 				std::tie(_t, _f) = pf->back();
 			}
-			pf->push_back(tmx::curve::bootstrap0(ii, *f, _t, _f, 1.));
+			pf->push_back(tmx::curve::bootstrap0(ii, *f, _t, _f, bi.face));
 			++i;
 		}
 

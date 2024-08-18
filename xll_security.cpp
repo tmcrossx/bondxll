@@ -7,8 +7,8 @@
 using namespace tmx;
 using namespace xll;
 
-AddIn xai_security_instrument_(
-	Function(XLL_HANDLEX, "xll_security_instrument_", "\\" CATEGORY ".SECURITY.INSTRUMENT")
+AddIn xai_instrument_security_(
+	Function(XLL_HANDLEX, "xll_instrument_security_", "\\" CATEGORY ".INSTRUMENT.SECURITY")
 	.Arguments({
 		Arg(XLL_HANDLEX, "bond", "is a handle to a bond."),
 		Arg(XLL_DOUBLE, "pvdate", "is the calculation date of the bond."),
@@ -17,7 +17,7 @@ AddIn xai_security_instrument_(
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to instrument cash flows determined by present value date.")
 );
-HANDLEX WINAPI xll_security_instrument_(HANDLEX b, double dated)
+HANDLEX WINAPI xll_instrument_security_(HANDLEX b, double dated)
 {
 #pragma XLLEXPORT
 	HANDLEX h = INVALID_HANDLEX;

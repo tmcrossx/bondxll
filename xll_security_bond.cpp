@@ -1,5 +1,7 @@
 // xll_security_bond.cpp - Bonds
 #include "security/tmx_bond.h"
+#include "curve/tmx_curve_bootstrap.h"
+#include "valuation/tmx_valuation.h"
 #include "xll_instrument.h"
 
 //using namespace fms::iterable;
@@ -33,10 +35,10 @@ HANDLEX WINAPI xll_security_bond_(double dated, double maturity, double coupon, 
 
 		date::ymd dat;
 		if (dated == 0) {
-			dat = to_days(Num(Excel(xlfToday)));
+			dat = to_ymd(Num(Excel(xlfToday)));
 		}
 		else {
-			dat = to_days(dated);
+			dat = to_ymd(dated);
 		}
 
 		date::ymd mat;
@@ -44,7 +46,7 @@ HANDLEX WINAPI xll_security_bond_(double dated, double maturity, double coupon, 
 			mat = dat + years(static_cast<int>(maturity));
 		}
 		else {
-			mat = to_days(to_time_t(maturity));
+			mat = to_ymd(maturity);
 		}
 
 		// default to semiannual
@@ -100,8 +102,8 @@ LPOPER WINAPI xll_security_bond(HANDLEX h)
 			handle<security::bond<>> h_(h);
 			ensure(h_);
 
-			result[0] = from_days(h_->dated);
-			result[1] = from_days(h_->maturity);
+			result[0] = from_ymd(h_->dated);
+			result[1] = from_ymd(h_->maturity);
 			result[2] = h_->coupon;
 			result[3] = frequency_string(h_->frequency);
 			result[4] = day_count_string(to_handle(h_->day_count));
@@ -115,4 +117,96 @@ LPOPER WINAPI xll_security_bond(HANDLEX h)
 	}
 
 	return &result;
+}
+
+AddIn xai_tmx_curve_bootstrap_bond_(
+	Function(XLL_HANDLEX, "xll_tmx_curve_bootstrap_bond_", "\\" CATEGORY ".CURVE.BOOTSTRAP.BOND")
+	.Arguments({
+		Arg(XLL_FP, "curve", "is two column array of time in years to maturity and par coupon rates."),
+		})
+		.Uncalced()
+	.Category(CATEGORY)
+	.FunctionHelp("Return a handle to a curve repricing instruments.")
+);
+HANDLEX WINAPI xll_tmx_curve_bootstrap_bond_(FP12* ptf)
+{
+#pragma XLLEXPORT
+	HANDLEX result = INVALID_HANDLEX;
+
+	try {
+		using std::chrono::years;
+
+		const date::ymd dated = to_ymd(asNum(Excel(xlfToday)));
+		handle<curve::interface<>> f(new curve::pwflat{});
+		curve::pwflat<>* pf = f.as<curve::pwflat<>>();
+		ensure(pf);
+
+		double _t = 0;
+		double _f = index(*ptf, 0, 1); // first rate
+		int i = 0;
+		while (i < rows(*ptf)) {
+			int ti = static_cast<int>(index(*ptf, i, 0));
+			double fi = index(*ptf, i, 1); // par coupon
+			const auto bi = security::bond{ dated, dated + years(ti), fi };
+			const auto ii = security::instrument(bi, dated);
+			if (pf->size() > 0) {
+				std::tie(_t, _f) = pf->back();
+			}
+			pf->push_back(tmx::curve::bootstrap0(ii, *f, _t, _f, bi.face));
+			++i;
+		}
+		result = f.get();
+	}
+	catch (const std::exception& ex) {
+		XLL_ERROR(ex.what());
+	}
+
+	return result;
+}
+
+AddIn xai_tmx_curve_bootstrap_muni_(
+	Function(XLL_HANDLEX, "xll_tmx_curve_bootstrap_muni_", "\\" CATEGORY ".CURVE.BOOTSTRAP.MUNI")
+	.Arguments({
+		Arg(XLL_FP, "curve", "is municipal bond curve of time in years to maturity and coupon rates."),
+		})
+		.Uncalced()
+	.Category(CATEGORY)
+	.FunctionHelp("Return a handle to a curve repricing instruments.")
+);
+HANDLEX WINAPI xll_tmx_curve_bootstrap_muni_(FP12* ptf)
+{
+#pragma XLLEXPORT
+	HANDLEX result = INVALID_HANDLEX;
+
+	try {
+		using std::chrono::years;
+
+		const date::ymd dated = to_ymd(asNum(Excel(xlfToday)));
+		handle<curve::interface<>> f(new curve::pwflat{});
+		curve::pwflat<>* pf = f.as<curve::pwflat<>>();
+		ensure(pf);
+
+		double _t = 0;
+		double _f = index(*ptf, 0, 1); // first rate
+		int i = 0;
+		while (i < rows(*ptf)) {
+			int ti = static_cast<int>(index(*ptf, i, 0));
+			double fi = index(*ptf, i, 1); // par coupon
+			const auto bi = security::bond{ dated, dated + years(ti), 0.05 };
+			const auto ii = security::instrument(bi, dated);
+			const auto y = valuation::continuous_rate(fi, bi.frequency);
+			const auto pi = valuation::price(ii, y);
+			if (pf->size() > 0) {
+				std::tie(_t, _f) = pf->back();
+			}
+			pf->push_back(tmx::curve::bootstrap0(ii, *f, _t, _f, pi));
+			++i;
+		}
+		result = f.get();
+	}
+	catch (const std::exception& ex) {
+		XLL_ERROR(ex.what());
+	}
+
+	return result;
 }

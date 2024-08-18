@@ -262,27 +262,25 @@ FP12* WINAPI xll_curve_pwflat_discount(HANDLEX c, FP12* pt)
 }
 
 
-#if 0
-
-AddIn xai_curve_pwflat_shift_(
-	Function(XLL_HANDLEX, "xll_curve_pwflat_shift_", "\\" CATEGORY ".CURVE.SHIFT")
+AddIn xai_curve_pwflat_spread_(
+	Function(XLL_HANDLEX, "xll_curve_pwflat_spread_", "\\" CATEGORY ".CURVE.SPREAD")
 	.Arguments({
 		Arg(XLL_HANDLEX, "curve", "is handle to a curve."),
 		Arg(XLL_DOUBLE, "spread", "is the spread.")
 		})
 	.Uncalced()
 	.Category(CATEGORY)
-	.FunctionHelp("Return a curve shifted by spread.")
+	.FunctionHelp("Return a curve incremented by spread.")
 );
-HANDLEX WINAPI xll_curve_pwflat_shift_(HANDLEX c, double s)
+HANDLEX WINAPI xll_curve_pwflat_spread_(HANDLEX c, double s)
 {
 #pragma XLLEXPORT
 	double result = INVALID_HANDLEX;
 
 	try {
-		handle<curve::pwflat<>> c_(c);
+		handle<curve::interface<>> c_(c);
 		ensure(c_);
-		handle<curve::pwflat<>> _c(new pwflat::curve(*c_ + s));
+		handle<curve::interface<>> _c(new curve::spread(*c_, s));
 		ensure(_c);
 
 		result = _c.get();
@@ -294,8 +292,8 @@ HANDLEX WINAPI xll_curve_pwflat_shift_(HANDLEX c, double s)
 	return result; 
 }
 
-AddIn xai_curve_pwflat_translate_(
-	Function(XLL_HANDLEX, "xll_curve_pwflat_translate_", "\\" CATEGORY ".PWFLAT.CURVE.TRANSLATE")
+AddIn xai_curve_translate_(
+	Function(XLL_HANDLEX, "xll_curve_translate_", "\\" CATEGORY ".CURVE.TRANSLATE")
 	.Arguments({
 		Arg(XLL_HANDLEX, "curve", "is handle to a curve."),
 		Arg(XLL_DOUBLE, "time", "is the time in years to translate the curve.")
@@ -304,17 +302,16 @@ AddIn xai_curve_pwflat_translate_(
 	.Category(CATEGORY)
 	.FunctionHelp("Return a two row array of times and rates.")
 );
-HANDLEX WINAPI xll_curve_pwflat_translate_(HANDLEX c, double u)
+HANDLEX WINAPI xll_curve_translate_(HANDLEX c, double u)
 {
 #pragma XLLEXPORT
 	double result = std::numeric_limits<double>::quiet_NaN();
 
 	try {
-		handle<pwflat::curve_view<>> c_(c);
+		handle<curve::interface<>> c_(c);
 		ensure(c_);
-		handle<pwflat::curve_view<>> _c(new pwflat::curve_value(*c_));
+		handle<curve::interface<>> _c(new curve::translate(*c_, u));
 		ensure(_c);
-		_c->translate(u);
 
 		result = _c.get();
 	}
@@ -324,4 +321,3 @@ HANDLEX WINAPI xll_curve_pwflat_translate_(HANDLEX c, double u)
 
 	return result;
 }
-#endif // 0
