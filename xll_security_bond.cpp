@@ -1,7 +1,7 @@
 // xll_security_bond.cpp - Bonds
 #include "security/tmx_bond.h"
 #include "curve/tmx_curve_bootstrap.h"
-#include "valuation/tmx_valuation.h"
+#include "value/tmx_valuation.h"
 #include "xll_instrument.h"
 
 //using namespace fms::iterable;
@@ -194,8 +194,8 @@ HANDLEX WINAPI xll_tmx_curve_bootstrap_muni_(FP12* ptf)
 			double fi = index(*ptf, i, 1); // par coupon
 			const auto bi = security::bond{ dated, dated + years(ti), 0.05 };
 			const auto ii = security::instrument(bi, dated);
-			const auto y = valuation::continuous_rate(fi, bi.frequency);
-			const auto pi = valuation::price(ii, y);
+			const auto y = value::continuous_rate(fi, bi.frequency);
+			const auto pi = value::price(ii, y);
 			if (pf->size() > 0) {
 				std::tie(_t, _f) = pf->back();
 			}
