@@ -11,18 +11,31 @@ using namespace xll;
 AddIn xai_security_bond_(
 	Function(XLL_HANDLEX, "xll_security_bond_", "\\" CATEGORY ".SECURITY.BOND")
 	.Arguments({
-		Arg(XLL_DOUBLE, "dated", "is the date at which interest begins accruing. Default is today.", "=TODAY()"),
-		Arg(XLL_DOUBLE, "maturity", "is the bond maturity as date or in years.", 10),
-		Arg(XLL_DOUBLE, "coupon", "is the bond coupon. Default is 5%.", 0.05),
-		Arg(XLL_LPOPER, "frequency", "is the yearly payment frequency from the TMX_FREQUENCY_* enumeration. Default is semiannually"),
-		Arg(XLL_LPOPER, "day_count", "is the day count basis from the TMX_DAY_COUNT_* enumeration. Default is 30/360."),
-		Arg(XLL_LPOPER, "roll", "is business day rolling convention from the TMX_BUSINESS_DAY_* enumeration. Default is modified following."),
-		Arg(XLL_LPOPER, "calendar", "is the holiday calendar from the TMX_CALENDAR_* enumeration. Default is 30/360."),
-		Arg(XLL_DOUBLE, "face", "is the face amount of the bond. Default is 100."),
+		Arg(XLL_DOUBLE, "dated", 
+			"is the date at which interest begins accruing. Default is today.",
+			"=TODAY()"),
+		Arg(XLL_DOUBLE, "maturity", 
+			"is the bond maturity as date or in years.", 10),
+		Arg(XLL_DOUBLE, "coupon", 
+			"is the bond coupon. Default is 5%.", 0.05),
+		Arg(XLL_LPOPER, "frequency", 
+			"is the yearly payment frequency from the TMX_FREQUENCY_* enumeration. Default is semiannually",
+			"TMX_FREQUENCY_SEMIANNUALLY"),
+		Arg(XLL_LPOPER, "day_count", "is the day count basis from the TMX_DAY_COUNT_* enumeration. Default is 30/360.",
+			"TMX_DAY_COUNT_30_360"),
+		Arg(XLL_LPOPER, "roll", 
+			"is business day rolling convention from the TMX_BUSINESS_DAY_* enumeration. Default is modified following.",
+			"TMX_BUSINESS_DAY_NONE"),
+		Arg(XLL_LPOPER, "calendar", 
+			"is the holiday calendar from the TMX_CALENDAR_* enumeration. Default is 30/360.",
+			"TMX_HOLIDAY_CALENDAR_NONE"),
+		Arg(XLL_DOUBLE, "face", 
+			"is the face amount of the bond. Default is 100.", 100),
 		})
-		.Uncalced()
+	.Uncalced()
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to a bond security.")
+	.HelpTopic(TMX_LIB_URL "/security/tmx_bond.h#:~:text=struct%20bond")
 );
 HANDLEX WINAPI xll_security_bond_(double dated, double maturity, double coupon, const LPOPER pfreq,
 	LPOPER pdcb, LPOPER proll, LPOPER pcal, double face)
@@ -83,10 +96,11 @@ HANDLEX WINAPI xll_security_bond_(double dated, double maturity, double coupon, 
 AddIn xai_security_bond(
 	Function(XLL_LPOPER, "xll_security_bond", CATEGORY ".SECURITY.BOND")
 	.Arguments({
-		Arg(XLL_HANDLEX, "handle", "is a handle to a basic bond."),
+		Arg(XLL_HANDLEX, "handle", "is a handle to a bond security."),
 		})
 		.Category(CATEGORY)
 	.FunctionHelp("Return the dated date, maturity, coupon, frequency, day count, roll convention, holiday calendar, and face of a bond.")
+	.HelpTopic(TMX_LIB_URL "/security/tmx_bond.h#:~:text=struct%20bond")
 );
 LPOPER WINAPI xll_security_bond(HANDLEX h)
 {
@@ -127,6 +141,7 @@ AddIn xai_tmx_curve_bootstrap_bond_(
 		.Uncalced()
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to a curve repricing instruments.")
+	.HelpTopic(TMX_LIB_URL "#:~:text=struct%20bond")
 );
 HANDLEX WINAPI xll_tmx_curve_bootstrap_bond_(FP12* ptf)
 {

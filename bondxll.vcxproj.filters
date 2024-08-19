@@ -47,7 +47,7 @@
     <ClCompile Include="xll_curve_pwflat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="xll_valuation.cpp">
+    <ClCompile Include="xll_value.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="xll_enum.cpp">

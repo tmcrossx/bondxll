@@ -8,16 +8,17 @@ using namespace tmx;
 using namespace xll;
 
 AddIn xai_security_treasury_bill_(
-	Function(XLL_HANDLEX, "xll_security_treasury_bill_", "\\" CATEGORY ".SECURITY.TREASURY.BILL")
+	Function(XLL_HANDLEX, "xll_security_treasury_bill_", "\\" CATEGORY ".SECURITY.BOND.TREASURY.BILL")
 	.Arguments({
 		Arg(XLL_DOUBLE, "dated", "is the date at which interest begins accruing.", "=TODAY()"),
-		Arg(XLL_UINT, "weeks", "is the bill maturity as date or in years.", 53),
+		Arg(XLL_UINT, "weeks", "is the bill maturity in weeks.", 53),
 		Arg(XLL_DOUBLE, "coupon", "is the bill coupon.", 0.05),
 		Arg(XLL_DOUBLE, "face", "is the face amount of the bill.", 100),
 		})
-		.Uncalced()
+	.Uncalced()
 	.Category(CATEGORY)
-	.FunctionHelp("Return a handle to a treasury bill.")
+	.FunctionHelp("Return a handle to a treasury bill security.")
+	.HelpTopic(TMX_LIB_URL "/security/tmx_treasury.h#:~:text=struct%20bill")
 );
 HANDLEX WINAPI xll_security_treasury_bill_(double dated, unsigned weeks, double coupon, double face)
 {
@@ -52,7 +53,7 @@ HANDLEX WINAPI xll_security_treasury_bill_(double dated, unsigned weeks, double 
 }
 
 AddIn xai_security_treasury_note_(
-	Function(XLL_HANDLEX, "xll_security_treasury_note_", "\\" CATEGORY ".SECURITY.TREASURY.NOTE")
+	Function(XLL_HANDLEX, "xll_security_treasury_note_", "\\" CATEGORY ".SECURITY.BOND.TREASURY.NOTE")
 	.Arguments({
 		Arg(XLL_DOUBLE, "dated", "is the date at which interest begins accruing.", "=TODAY()"),
 		Arg(XLL_DOUBLE, "maturity", "is the note maturity as date or in years.", 10),
@@ -61,7 +62,8 @@ AddIn xai_security_treasury_note_(
 		})
 		.Uncalced()
 	.Category(CATEGORY)
-	.FunctionHelp("Return a handle to a treasury note.")
+	.FunctionHelp("Return a handle to a treasury note security.")
+	.HelpTopic(TMX_LIB_URL "/security/tmx_treasury.h#:~:text=struct%20note")
 );
 HANDLEX WINAPI xll_security_treasury_note_(double dated, double maturity, double coupon, double face)
 {
@@ -104,7 +106,7 @@ HANDLEX WINAPI xll_security_treasury_note_(double dated, double maturity, double
 }
 
 AddIn xai_security_treasury_bond_(
-	Function(XLL_HANDLEX, "xll_security_treasury_bond_", "\\" CATEGORY ".SECURITY.TREASURY.BOND")
+	Function(XLL_HANDLEX, "xll_security_treasury_bond_", "\\" CATEGORY ".SECURITY.BOND.TREASURY.BOND")
 	.Arguments({
 		Arg(XLL_DOUBLE, "dated", "is the date at which interest begins accruing.", "=TODAY()"),
 		Arg(XLL_DOUBLE, "maturity", "is the bond maturity as date or in years.", 30),
@@ -113,7 +115,8 @@ AddIn xai_security_treasury_bond_(
 		})
 		.Uncalced()
 	.Category(CATEGORY)
-	.FunctionHelp("Return a handle to a treasury bond.")
+	.FunctionHelp("Return a handle to a treasury bond security.")
+	.HelpTopic(TMX_LIB_URL "/security/tmx_treasury.h#:~:text=struct%20bond")
 );
 HANDLEX WINAPI xll_security_treasury_bond_(double dated, double maturity, double coupon, double face)
 {

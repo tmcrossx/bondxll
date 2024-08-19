@@ -19,6 +19,7 @@ AddIn xai_tmx_bootstrap0_(
 		.Uncalced()
 	.Category(CATEGORY)
 	.FunctionHelp("Return the last instrument cash flow time and the constant forward rate repricing the instrument.")
+	.HelpTopic(TMX_LIB_URL "/curve/tmx_curve_bootstrap.h#:~:text=bootstrap0")
 );
 FP12* WINAPI xll_tmx_bootstrap0_(HANDLEX i, HANDLEX c, double t, double f, double p)
 {

@@ -13,6 +13,7 @@ AddIn xai_instrument_(
 	.Uncalced()
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to instrument times and cash flows.")
+	.HelpTopic(TMX_LIB_URL "/instrument/tmx_instrument.h")
 );
 HANDLEX WINAPI xll_instrument_(const FP12* pu, const FP12* pc)
 {

@@ -9,6 +9,8 @@
 #ifndef CATEGORY
 #define CATEGORY "TMX"
 #endif
+#define TMX_LIB_URL "https://github.com/tmcrossx/bondlib/blob/main/"
+#define TMX_XLL_URL "https://github.com/tmcrossx/bondxll/blob/main/"
 
 namespace xll {
 

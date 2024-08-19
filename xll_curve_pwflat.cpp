@@ -21,7 +21,7 @@ inline FPX pwflat(const tmx::curve::pwflat<>& c)
 AddIn xai_curve_constant_(
 	Function(XLL_HANDLEX, "xll_curve_constant_", "\\" CATEGORY ".CURVE.CONSTANT")
 	.Arguments({
-		Arg(XLL_DOUBLE, "f", "is the constant forward rate.", 0),
+		Arg(XLL_DOUBLE, "rate", "is the constant forward rate.", 0),
 		})
 	.Uncalced()
 	.Category(CATEGORY)
@@ -48,9 +48,9 @@ HANDLEX WINAPI xll_curve_constant_(double f)
 AddIn xai_curve_bump_(
 	Function(XLL_HANDLEX, "xll_curve_bump_", "\\" CATEGORY ".CURVE.BUMP")
 	.Arguments({
-		Arg(XLL_DOUBLE, "s", "is the amount to bump the forward rate.", 0),
-		Arg(XLL_DOUBLE, "t0", "is the time to start the bump.", 0),
-		Arg(XLL_DOUBLE, "t1", "is the time to end the bump.", 0)
+		Arg(XLL_DOUBLE, "bump", "is the amount to bump the forward rate.", 0),
+		Arg(XLL_DOUBLE, "begin", "is the time to start the bump.", 0),
+		Arg(XLL_DOUBLE, "end", "is the time to end the bump.", 0)
 		})
 	.Uncalced()
 	.Category(CATEGORY)
@@ -77,8 +77,8 @@ HANDLEX WINAPI xll_curve_bump_(double s, double t0, double t1)
 AddIn xai_curve_pwflat_(
 	Function(XLL_HANDLEX, "xll_curve_pwflat_", "\\" CATEGORY ".CURVE.PWFLAT")
 	.Arguments({
-		Arg(XLL_FP, "t", "is an array of positive increasing times.", "={1, 2, 3}"),
-		Arg(XLL_FP, "f", "is an array of corresponding rates.", "={.01, .02, .03}"),
+		Arg(XLL_FP, "time", "is an array of positive non-decreasing times.", "={1, 2, 3}"),
+		Arg(XLL_FP, "rate", "is an array of corresponding forward rates.", "={.01, .02, .03}"),
 		})
 	.Uncalced()
 	.Category(CATEGORY)
@@ -186,8 +186,8 @@ FP12* WINAPI xll_curve_pwflat(HANDLEX c)
 AddIn xai_curve_pwflat_value(
 	Function(XLL_FP, "xll_curve_pwflat_value", CATEGORY ".CURVE.FORWARD")
 	.Arguments({
-		Arg(XLL_HANDLEX, "c", "is a handle to a curve."),
-		Arg(XLL_FP, "t", "is the forward time."),
+		Arg(XLL_HANDLEX, "curve", "is a handle to a curve."),
+		Arg(XLL_FP, "time", "is the forward time."),
 		})
 	.Category(CATEGORY)
 	.FunctionHelp("Return the forward value of a piecewise flat curve.")
@@ -212,8 +212,8 @@ FP12* WINAPI xll_curve_pwflat_value(HANDLEX c, FP12* pt)
 AddIn xai_curve_pwflat_spot(
 	Function(XLL_FP, "xll_curve_pwflat_spot", CATEGORY ".CURVE.SPOT")
 	.Arguments({
-		Arg(XLL_HANDLEX, "c", "is a handle to a piecewise flat curve."),
-		Arg(XLL_FP, "t", "is the yield time."),
+		Arg(XLL_HANDLEX, "curve", "is a handle to a piecewise flat curve."),
+		Arg(XLL_FP, "time", "is the yield time."),
 		})
 	.Category(CATEGORY)
 	.FunctionHelp("Return the spot value of a piecewise flat curve.")
@@ -238,8 +238,8 @@ FP12* WINAPI xll_curve_pwflat_spot(HANDLEX c, FP12* pt)
 AddIn xai_curve_pwflat_discount(
 	Function(XLL_FP, "xll_curve_pwflat_discount", CATEGORY ".CURVE.DISCOUNT")
 	.Arguments({
-		Arg(XLL_HANDLEX, "c", "is a handle to a piecewise flat curve."),
-		Arg(XLL_FP, "t", "is the discount time."),
+		Arg(XLL_HANDLEX, "curve", "is a handle to a piecewise flat curve."),
+		Arg(XLL_FP, "time", "is the discount time."),
 		})
 	.Category(CATEGORY)
 	.FunctionHelp("Return the discount value of a piecewise flat curve.")

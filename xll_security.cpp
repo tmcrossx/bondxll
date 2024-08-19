@@ -10,7 +10,7 @@ using namespace xll;
 AddIn xai_instrument_security_(
 	Function(XLL_HANDLEX, "xll_instrument_security_", "\\" CATEGORY ".INSTRUMENT.SECURITY")
 	.Arguments({
-		Arg(XLL_HANDLEX, "bond", "is a handle to a bond."),
+		Arg(XLL_HANDLEX, "security", "is a handle to a bond security."),
 		Arg(XLL_DOUBLE, "pvdate", "is the calculation date of the bond."),
 		})
 		.Uncalced()

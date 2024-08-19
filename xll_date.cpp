@@ -70,6 +70,25 @@ OPER tmx_holiday_calendar_enum({
 
 XLL_CONST(LPOPER, TMX_ENUM_HOLIDAY_CALENDAR, &tmx_holiday_calendar_enum, "Holiday calendars.", CATEGORY " Enum", HOLIDAY_CALENDAR_URL)
 
+// Enum the enumerations
+AddIn xai_enum_enum(
+	Function(XLL_LPOPER, L"xll_enum_enum", L"TMX_ENUM")
+	.Category(CATEGORY " Enum")
+	.FunctionHelp(L"Return the enumeration of all TMX enumerations.")
+);
+LPOPER WINAPI xll_enum_enum()
+{
+#pragma XLLEXPORT
+	static OPER result({
+		OPER(L"TMX_ENUM_BUSINESS_DAY"),
+		OPER(L"TMX_ENUM_DAY_COUNT"),
+		OPER(L"TMX_ENUM_FREQUENCY"),
+		OPER(L"TMX_ENUM_HOLIDAY_CALENDAR")
+	});
+
+	return &result;
+}
+
 AddIn xai_date_holiday_calendar(
 	Function(XLL_LPOPER, "xll_date_holiday_calendar", CATEGORY ".DATE.HOLIDAY")
 	.Arguments({
