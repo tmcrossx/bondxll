@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bondlib", "..\bondlib\bondl
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xll", "xll24\xll.vcxproj", "{7D7375AF-E7E3-42D3-A00F-D8EE22C39924}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "setup", "setup\setup.vdproj", "{15A55124-BE76-420C-8643-023AA67DB386}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{7D7375AF-E7E3-42D3-A00F-D8EE22C39924}.Release|x64.Build.0 = Release|x64
 		{7D7375AF-E7E3-42D3-A00F-D8EE22C39924}.Release|x86.ActiveCfg = Release|x64
 		{7D7375AF-E7E3-42D3-A00F-D8EE22C39924}.Release|x86.Build.0 = Release|x64
+		{15A55124-BE76-420C-8643-023AA67DB386}.Debug|x64.ActiveCfg = Debug
+		{15A55124-BE76-420C-8643-023AA67DB386}.Debug|x64.Build.0 = Debug
+		{15A55124-BE76-420C-8643-023AA67DB386}.Debug|x86.ActiveCfg = Debug
+		{15A55124-BE76-420C-8643-023AA67DB386}.Debug|x86.Build.0 = Debug
+		{15A55124-BE76-420C-8643-023AA67DB386}.Release|x64.ActiveCfg = Release
+		{15A55124-BE76-420C-8643-023AA67DB386}.Release|x64.Build.0 = Release
+		{15A55124-BE76-420C-8643-023AA67DB386}.Release|x86.ActiveCfg = Release
+		{15A55124-BE76-420C-8643-023AA67DB386}.Release|x86.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

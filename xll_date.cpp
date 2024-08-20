@@ -164,19 +164,23 @@ FP12* WINAPI xll_date_periodic(date::frequency f, double d0, double d1)
 }
 
 AddIn xai_date_addyears(
-	Function(XLL_DOUBLE, "xll_date_addyears", CATEGORY ".DATE.ADDYEARS")
+	Function(XLL_FP, "xll_date_addyears", CATEGORY ".DATE.ADDYEARS")
 	.Arguments({
 		Arg(XLL_DOUBLE, "date", "is an Excel date.", "=TODAY()"),
-		Arg(XLL_DOUBLE, "years", "is the number of years to add.", 10),
+		Arg(XLL_FP, "years", "is the number of years to add.", 10),
 		})
 		.Category(CATEGORY)
 	.FunctionHelp("Add years to date. ADDYEARS(d0, DIFFYEARS(d1, d0)) = d1")
 );
-double WINAPI xll_date_addyears(double d, double y)
+FP12* WINAPI xll_date_addyears(double d, FP12* py)
 {
 #pragma XLLEXPORT
 
-	return d + y*date::seconds_per_year/86400;
+	for (int i = 0; i < size(*py); ++i) {
+		py->array[i] = d + py->array[i] * date::seconds_per_year / 86400;
+	}
+
+	return py;
 }
 
 AddIn xai_date_diffyears(
