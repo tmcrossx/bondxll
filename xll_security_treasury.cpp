@@ -190,11 +190,11 @@ HANDLEX WINAPI xll_tmx_curve_bootstrap_treasury_(FP12* ptf)
 			if (ti > 1) {
 				break;
 			}
-			const auto ii = instrument::zero_coupon_bond(index(*ptf, i, 1));
+			double fi = index(*ptf, i, 1);
+			const auto ii = instrument::zero_coupon_bond(ti);
 			if (pf->size() > 0) {
 				std::tie(_t, _f) = pf->back();
 			}
-			double fi = index(*ptf, i, 1);
 			pf->push_back(tmx::curve::bootstrap0(ii, *f, _t, _f, 1 - fi * ti));
 			++i;
 		}
