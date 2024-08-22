@@ -30,10 +30,10 @@ HANDLEX WINAPI xll_security_treasury_bill_(double dated, unsigned weeks, double 
 
 		date::ymd dat;
 		if (dated == 0) {
-			dat = to_days(Num(Excel(xlfToday)));
+			dat = to_ymd(Num(Excel(xlfToday)));
 		}
 		else {
-			dat = to_days(dated);
+			dat = to_ymd(dated);
 		}
 
 		if (face == 0) {
@@ -75,10 +75,10 @@ HANDLEX WINAPI xll_security_treasury_note_(double dated, double maturity, double
 
 		date::ymd dat;
 		if (dated == 0) {
-			dat = to_days(Num(Excel(xlfToday)));
+			dat = to_ymd(Num(Excel(xlfToday)));
 		}
 		else {
-			dat = to_days(dated);
+			dat = to_ymd(dated);
 		}
 
 		date::ymd mat;
@@ -86,7 +86,7 @@ HANDLEX WINAPI xll_security_treasury_note_(double dated, double maturity, double
 			mat = dat + years(static_cast<int>(maturity));
 		}
 		else {
-			mat = to_days(maturity);
+			mat = to_ymd(maturity);
 		}
 
 		if (face == 0) {
@@ -128,10 +128,10 @@ HANDLEX WINAPI xll_security_treasury_bond_(double dated, double maturity, double
 
 		date::ymd dat;
 		if (dated == 0) {
-			dat = to_days(Num(Excel(xlfToday)));
+			dat = to_ymd(Num(Excel(xlfToday)));
 		}
 		else {
-			dat = to_days(dated);
+			dat = to_ymd(dated);
 		}
 
 		date::ymd mat;
@@ -139,7 +139,7 @@ HANDLEX WINAPI xll_security_treasury_bond_(double dated, double maturity, double
 			mat = dat + years(static_cast<int>(maturity));
 		}
 		else {
-			mat = to_days(maturity);
+			mat = to_ymd(maturity);
 		}
 
 		if (face == 0) {
@@ -176,7 +176,7 @@ HANDLEX WINAPI xll_tmx_curve_bootstrap_treasury_(FP12* ptf)
 		using namespace std::chrono;
 		using namespace tmx::security::treasury;
 
-		const date::ymd dated = to_days(asNum(Excel(xlfToday)));
+		const date::ymd dated = to_ymd(asNum(Excel(xlfToday)));
 		handle<curve::interface<>> f(new curve::pwflat{});
 		curve::pwflat<>* pf = f.as<curve::pwflat<>>();
 		ensure(pf);
@@ -190,11 +190,11 @@ HANDLEX WINAPI xll_tmx_curve_bootstrap_treasury_(FP12* ptf)
 			if (ti > 1) {
 				break;
 			}
-			double fi = index(*ptf, i, 1);
 			const auto ii = instrument::zero_coupon_bond(ti);
 			if (pf->size() > 0) {
 				std::tie(_t, _f) = pf->back();
 			}
+			double fi = index(*ptf, i, 1);
 			pf->push_back(tmx::curve::bootstrap0(ii, *f, _t, _f, 1 - fi * ti));
 			++i;
 		}
