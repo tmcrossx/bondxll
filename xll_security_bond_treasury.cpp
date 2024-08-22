@@ -1,6 +1,6 @@
 // xll_security_teasury.cpp - Treasury bills, notes, and bonds
 #include "curve/tmx_curve_bootstrap.h"
-#include "security/tmx_treasury.h"
+#include "security/tmx_bond_treasury.h"
 #include "xll_instrument.h"
 
 //using namespace fms::iterable;
@@ -18,7 +18,7 @@ AddIn xai_security_treasury_bill_(
 	.Uncalced()
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to a treasury bill security.")
-	.HelpTopic(TMX_LIB_URL "/security/tmx_treasury.h#:~:text=struct%20bill")
+	.HelpTopic(TMX_LIB_URL "/security/tmx_bond_treasury.h#:~:text=struct%20bill")
 );
 HANDLEX WINAPI xll_security_treasury_bill_(double dated, unsigned weeks, double coupon, double face)
 {

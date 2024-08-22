@@ -21,7 +21,7 @@ inline FPX pwflat(const tmx::curve::pwflat<>& c)
 AddIn xai_curve_constant_(
 	Function(XLL_HANDLEX, "xll_curve_constant_", "\\" CATEGORY ".CURVE.CONSTANT")
 	.Arguments({
-		Arg(XLL_DOUBLE, "rate", "is the constant forward rate.", 0),
+		Arg(XLL_DOUBLE, "forward", "is the constant forward rate.", 0),
 		})
 	.Uncalced()
 	.Category(CATEGORY)
@@ -54,7 +54,7 @@ AddIn xai_curve_bump_(
 		})
 	.Uncalced()
 	.Category(CATEGORY)
-	.FunctionHelp("Return a handle to a bump forward curve.")
+	.FunctionHelp("Return a handle to a bumped forward curve.")
 );
 HANDLEX WINAPI xll_curve_bump_(double s, double t0, double t1)
 {
@@ -77,8 +77,8 @@ HANDLEX WINAPI xll_curve_bump_(double s, double t0, double t1)
 AddIn xai_curve_pwflat_(
 	Function(XLL_HANDLEX, "xll_curve_pwflat_", "\\" CATEGORY ".CURVE.PWFLAT")
 	.Arguments({
-		Arg(XLL_FP, "time", "is an array of positive non-decreasing times.", "={1, 2, 3}"),
-		Arg(XLL_FP, "rate", "is an array of corresponding forward rates.", "={.01, .02, .03}"),
+		Arg(XLL_FP, "times", "is an array of positive non-decreasing times.", "={1, 2, 3}"),
+		Arg(XLL_FP, "forwards", "is an array of corresponding forward rates.", "={.01, .02, .03}"),
 		})
 	.Uncalced()
 	.Category(CATEGORY)
@@ -197,16 +197,16 @@ FP12* WINAPI xll_curve_pwflat(HANDLEX c)
 	return result.get();
 }
 
-AddIn xai_curve_pwflat_value(
-	Function(XLL_FP, "xll_curve_pwflat_value", CATEGORY ".CURVE.FORWARD")
+AddIn xai_curve_pwflat_forward(
+	Function(XLL_FP, "xll_curve_pwflat_forward", CATEGORY ".CURVE.FORWARD")
 	.Arguments({
 		Arg(XLL_HANDLEX, "curve", "is a handle to a curve."),
-		Arg(XLL_FP, "time", "is the forward time."),
+		Arg(XLL_FP, "time", "is the time at which to evaluate the forward."),
 		})
 	.Category(CATEGORY)
-	.FunctionHelp("Return the forward value of a piecewise flat curve.")
+	.FunctionHelp("Return the continuously compounded forward rate of a piecewise flat curve.")
 );
-FP12* WINAPI xll_curve_pwflat_value(HANDLEX c, FP12* pt)
+FP12* WINAPI xll_curve_pwflat_forward(HANDLEX c, FP12* pt)
 {
 #pragma XLLEXPORT
 
@@ -214,7 +214,7 @@ FP12* WINAPI xll_curve_pwflat_value(HANDLEX c, FP12* pt)
 		handle<curve::interface<>> c_(c);
 		ensure(c_);
 
-		std::transform(begin(*pt), end(*pt), begin(*pt), [&c_](double t) { return c_->value(t); });
+		std::transform(begin(*pt), end(*pt), begin(*pt), [&c_](double t) { return c_->forward(t); });
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
@@ -230,7 +230,7 @@ AddIn xai_curve_pwflat_spot(
 		Arg(XLL_FP, "time", "is the yield time."),
 		})
 	.Category(CATEGORY)
-	.FunctionHelp("Return the spot value of a piecewise flat curve.")
+	.FunctionHelp("Return the continuously compounded spot rate of a piecewise flat curve.")
 );
 FP12* WINAPI xll_curve_pwflat_spot(HANDLEX c, FP12* pt)
 {
@@ -274,7 +274,6 @@ FP12* WINAPI xll_curve_pwflat_discount(HANDLEX c, FP12* pt)
 
 	return pt;
 }
-
 
 AddIn xai_curve_pwflat_spread_(
 	Function(XLL_HANDLEX, "xll_curve_pwflat_spread_", "\\" CATEGORY ".CURVE.SPREAD")

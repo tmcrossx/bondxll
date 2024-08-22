@@ -56,7 +56,10 @@
     <ClCompile Include="xll_security_bond.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="xll_security_treasury.cpp">
+    <ClCompile Include="xll_security_bond_treasury.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xll_security_bond_muni.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

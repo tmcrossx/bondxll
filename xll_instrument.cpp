@@ -12,7 +12,7 @@ AddIn xai_instrument_(
 		})
 	.Uncalced()
 	.Category(CATEGORY)
-	.FunctionHelp("Return a handle to instrument times and cash flows.")
+	.FunctionHelp("Return a handle to an instrument with cash flows at specified times.")
 	.HelpTopic(TMX_LIB_URL "/instrument/tmx_instrument.h")
 );
 HANDLEX WINAPI xll_instrument_(const FP12* pu, const FP12* pc)
@@ -44,7 +44,7 @@ AddIn xai_instrument(
 		Arg(XLL_HANDLEX, "instrument", "is a handle to an instrument."),
 		})
 	.Category(CATEGORY)
-	.FunctionHelp("Return two row array of instrument times and cash flows.")
+	.FunctionHelp("Return a two row array of instrument times and cash flows.")
 );
 const FP12* WINAPI xll_instrument(HANDLEX i)
 {
