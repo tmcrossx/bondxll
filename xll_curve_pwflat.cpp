@@ -83,6 +83,7 @@ AddIn xai_curve_pwflat_(
 	.Uncalced()
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to a piecewise flat forward curve.")
+	.HelpTopic(TMX_LIB_URL "curve/tmx_pwflat.h")
 );
 HANDLEX WINAPI xll_curve_pwflat_(const FP12* pt, const FP12* pf)
 {
@@ -94,6 +95,18 @@ HANDLEX WINAPI xll_curve_pwflat_(const FP12* pt, const FP12* pf)
 		if (size(*pt) == 1 and pt->array[0] == 0 and pf->array[0] == 0) {
 			handle<curve::interface<>> h_(new curve::pwflat{});
 			ensure(h_);
+			h = h_.get();
+		}
+		else if (columns(*pt) == 2 and rows(*pt) != 2) {
+			ensure(size(*pf) == 1 and pf->array[0] == 0);
+			int n = rows(*pt);
+			handle<curve::interface<>> h_(new curve::pwflat<>{});
+			ensure(h_);
+			curve::pwflat<>* ph = h_.as<curve::pwflat<>>();
+			ensure(ph);	
+			for (int i = 0; i < n; ++i) {
+				ph->push_back(index(*pt, 0, i), index(*pt, 1, i));
+			}
 			h = h_.get();
 		}
 		else if (rows(*pt) == 2) {
@@ -160,6 +173,7 @@ AddIn xai_curve_pwflat(
 		})
 	.Category(CATEGORY)
 	.FunctionHelp("Return a two row array of times and rates.")
+	.HelpTopic(TMX_LIB_URL "curve/tmx_pwflat.h")
 );
 FP12* WINAPI xll_curve_pwflat(HANDLEX c)
 {
