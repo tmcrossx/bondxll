@@ -1,0 +1,63 @@
+A fixed income instrument is a stream of cash flows.
+A cash flow is a time and cash flow amount.
+
+Control Shift A is a built-in Excel macro that supplies the argument text of a function.
+
+The function backslash T M X dot instrument creates an instrument.
+
+Hold down the control and shift key, then press A to see the argument text.
+
+Release the control and shift key then Press Enter to call the function with its arguments.
+
+Oh dear! Pound value indicates a problem with the function arguments.
+
+Let's go to the function wizard to get more information.
+
+All of the arguments are pound values. 
+Well of course they are!
+Excel thinks time and cash are defined names, but we haven't yet defined them!
+
+Help on this function unceremoniously deposits you into the C++ source code for the function being called from Excel,
+in lieu of proper documentation.
+
+Control Shift B is a rather shoddy macro that will supply default argument values.
+Enter equal backslash T M X dot instrument without the trailing left parentheses, then press enter.
+The number you see is the register id Excel uses to keep track of user defined functions.
+Hold down the control and shift key, then press B to see the default arguments.
+The peculiar red zero x followed by inscrutable digits is the pointer to the underlying C++ instrument object.
+
+Most Excel add-in libraries have string handles that map to the underlying C++ object.
+This require a big O of log N lookup. This library uses the 64 bits of the I treble E floating point
+number and casts them to a 64 bit pointer.  On operation that takes only a few machine instructions.
+
+If you know something about computers, you may be wary of using pointers.
+No need to worry your pretty little head. Only valid handles are permitted,
+so nothing can go wrong, go wrong, go wrong.
+
+<screech>
+
+Terribly sorry! Where were we?
+Oh, handles. By convention, functions returning a handle start with a backslash character.
+Often they have a corresponding function without the leading backslash that returns the
+content of the object.
+
+The function T M X dot instrument, no backslash, takes a handle and returns a two row array of times and cash flow amounts.
+
+We can use those to create a new instrument.
+
+The values in the new instrument are the same as that of the original instrument
+
+We can edit the default argument values and see them propagate to the new instrument.
+
+However, we can not edit the output values.
+
+The control shift C macros make it convenient to do this.
+Select a cell with the register id for backslash T M X dot instrument and press control shift C.
+
+This pastes the defaults into editable cells directly below the functions and provides references to them in the function arguments.
+We can inspect the contents of the object and see they are updated when modifying argument values.
+
+
+
+
+the lazy bleeder, be arsed, roustabout 
