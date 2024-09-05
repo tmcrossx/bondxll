@@ -77,51 +77,52 @@ HANDLEX WINAPI xll_curve_bump_(double s, double t0, double t1)
 AddIn xai_curve_pwflat_(
 	Function(XLL_HANDLEX, "xll_curve_pwflat_", "\\" CATEGORY ".CURVE.PWFLAT")
 	.Arguments({
-		Arg(XLL_FP, "times", "is an array of positive non-decreasing times.", "={1, 2, 3}"),
-		Arg(XLL_FP, "forwards", "is an array of corresponding forward rates.", "={.01, .02, .03}"),
+		Arg(XLL_LPOPER, "times", "is an array of positive non-decreasing times.", "={1, 2, 3}"),
+		Arg(XLL_LPOPER, "forwards", "is an array of corresponding forward rates.", "={.01, .02, .03}"),
 		})
 	.Uncalced()
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to a piecewise flat forward curve.")
 	.HelpTopic(TMX_LIB_URL "curve/tmx_pwflat.h")
 );
-HANDLEX WINAPI xll_curve_pwflat_(const FP12* pt, const FP12* pf)
+HANDLEX WINAPI xll_curve_pwflat_(const LPOPER pt, const LPOPER pf)
 {
 #pragma XLLEXPORT
 
 	HANDLEX h = INVALID_HANDLEX;
 
 	try {
-		if (size(*pt) == 1 and pt->array[0] == 0 and pf->array[0] == 0) {
-			handle<curve::interface<>> h_(new curve::pwflat{});
-			ensure(h_);
-			h = h_.get();
-		}
-		else if (columns(*pt) == 2 and rows(*pt) != 2) {
-			ensure(size(*pf) == 1 and pf->array[0] == 0);
-			int n = rows(*pt);
-			handle<curve::interface<>> h_(new curve::pwflat<>{});
-			ensure(h_);
-			curve::pwflat<>* ph = h_.as<curve::pwflat<>>();
-			ensure(ph);	
-			for (int i = 0; i < n; ++i) {
-				ph->push_back(index(*pt, 0, i), index(*pt, 1, i));
+		handle<curve::interface<>> h_(new curve::pwflat{});// default is empty curve
+		ensure(h_);
+		h = h_.get();
+		curve::pwflat<>* ph = h_.as<curve::pwflat<>>();
+		ensure(ph);
+		
+		if (isMissing(*pf)) {
+			if (isMulti(*pt)) {
+				if (columns(*pt) == 2) {
+					for (int i = 0; i < rows(*pt); ++i) {
+						ph->push_back(Num(index(*pt, i, 0)), Num(index(*pt, i, 1)));
+					}
+				}
+				else if (rows(*pt) == 2) {
+					for (int j = 0; j < columns(*pt); ++j) {
+						ph->push_back(Num(index(*pt, 0, j)), Num(index(*pt, 1, j)));
+					}
+				}
+				else {
+					ensure(!"times must be 2 rows or 2 columns");
+				}
 			}
-			h = h_.get();
-		}
-		else if (rows(*pt) == 2) {
-			ensure(size(*pf) == 1 and pf->array[0] == 0);
-			int n = columns(*pt);
-			handle<curve::interface<>> h_(new curve::pwflat(n, pt->array, pt->array + n));
-			ensure(h_);
-			h = h_.get();
+			else {
+				ensure(!"if rates are missing times must be 2 rows or 2 columns");
+			}
 		}
 		else {
-			ensure(size(*pt) == size(*pf) || !"times and rates must be the same size");
-
-			handle<curve::interface<>> h_(new curve::pwflat(size(*pt), pt->array, pf->array));
-			ensure(h_);
-			h = h_.get();
+			ensure(size(*pt) == size(*pf));
+			for (int i = 0; i < size(*pt); ++i) {
+				ph->push_back(Num((*pt)[i]), Num((*pf)[i]));
+			}
 		}
 	}
 	catch (const std::exception& ex) {
@@ -218,6 +219,8 @@ FP12* WINAPI xll_curve_pwflat_forward(HANDLEX c, FP12* pt)
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
+
+		return nullptr;
 	}
 
 	return pt;
@@ -244,6 +247,8 @@ FP12* WINAPI xll_curve_pwflat_spot(HANDLEX c, FP12* pt)
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
+
+		return nullptr;
 	}
 
 	return pt;
@@ -270,6 +275,8 @@ FP12* WINAPI xll_curve_pwflat_discount(HANDLEX c, FP12* pt)
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
+
+		return nullptr;
 	}
 
 	return pt;
@@ -300,6 +307,8 @@ HANDLEX WINAPI xll_curve_pwflat_spread_(HANDLEX c, double s)
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
+
+		return INVALID_HANDLEX;
 	}
 
 	return result; 
@@ -330,6 +339,8 @@ HANDLEX WINAPI xll_curve_translate_(HANDLEX c, double u)
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());
+
+		return INVALID_HANDLEX;
 	}
 
 	return result;
