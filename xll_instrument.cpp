@@ -45,6 +45,7 @@ AddIn xai_instrument(
 		})
 	.Category(CATEGORY)
 	.FunctionHelp("Return a two row array of instrument times and cash flows.")
+	.HelpTopic(TMX_LIB_URL "/instrument/tmx_instrument.h")
 );
 const FP12* WINAPI xll_instrument(HANDLEX i)
 {
