@@ -92,38 +92,12 @@ HANDLEX WINAPI xll_curve_pwflat_(const LPOPER pt, const LPOPER pf)
 	HANDLEX h = INVALID_HANDLEX;
 
 	try {
-		handle<curve::interface<>> h_(new curve::pwflat{});// default is empty curve
+		FPX tf = tofp(*pt, *pf);
+
+		handle<curve::interface<>> h_(new curve::pwflat(row(tf, 0), row(tf, 1)));// default is empty curve
 		ensure(h_);
+
 		h = h_.get();
-		curve::pwflat<>* ph = h_.as<curve::pwflat<>>();
-		ensure(ph);
-		
-		if (isMissing(*pf)) {
-			if (isMulti(*pt)) {
-				if (columns(*pt) == 2) {
-					for (int i = 0; i < rows(*pt); ++i) {
-						ph->push_back(Num(index(*pt, i, 0)), Num(index(*pt, i, 1)));
-					}
-				}
-				else if (rows(*pt) == 2) {
-					for (int j = 0; j < columns(*pt); ++j) {
-						ph->push_back(Num(index(*pt, 0, j)), Num(index(*pt, 1, j)));
-					}
-				}
-				else {
-					ensure(!"times must be 2 rows or 2 columns");
-				}
-			}
-			else {
-				ensure(!"if rates are missing times must be 2 rows or 2 columns");
-			}
-		}
-		else {
-			ensure(size(*pt) == size(*pf));
-			for (int i = 0; i < size(*pt); ++i) {
-				ph->push_back(Num((*pt)[i]), Num((*pf)[i]));
-			}
-		}
 	}
 	catch (const std::exception& ex) {
 		XLL_ERROR(ex.what());

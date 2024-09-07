@@ -1,4 +1,4 @@
-// xll_demo.cpp = Demonstrations
+// xll_demo.cpp - Demonstrations
 #include "bondxll.h"
 #include "xll24/include/macrofun.h"
 #include "xll24/include/type.h"
