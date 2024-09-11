@@ -65,6 +65,7 @@ HANDLEX WINAPI xll_security_bond_(double dated, double maturity, double coupon, 
 		// default to semiannual
 		auto freq = EnumVal(*pfreq, date::frequency::semiannually);
 		if (!freq) return INVALID_HANDLEX;
+		ensure(is_frequency(*freq));
 
 		// default to ISMA 30/360
 		const auto dcf = EnumPtr(*pdcb, date::day_count_isma30360);
