@@ -84,6 +84,11 @@ int WINAPI type_instrument()
 		sel.Offset(0, 1);
 		Type("=TMX.INSTRUMENT(R[0]C[-1])", pause, wait);
 		sel.Offset(0, -1);
+		Excel(xlcSendKeys, ON_ALT, true);
+		Excel(xlcSendKeys, L"H", true);
+		Excel(xlcSendKeys, L"J", true);
+
+Excel(xlcSendKeys, ON_ENTER, false);
 		//Excel(xlcSelectSpecial, 6, sel.selection); // current array
 		//Excel(xlcApplyStyle, L"Output");
 	}
