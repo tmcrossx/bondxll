@@ -52,6 +52,7 @@ AddIn xai_tmx_bootstrap_(
 	.Uncalced()
 	.Category(CATEGORY)
 	.FunctionHelp("Return a handle to a curve repricing instruments.")
+	.HelpTopic(TMX_LIB_URL "/curve/tmx_curve_bootstrap.h#:~:text=bootstrap")
 );
 HANDLEX WINAPI xll_tmx_bootstrap_(FP12* pi, FP12* pp)
 {

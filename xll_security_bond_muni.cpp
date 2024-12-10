@@ -87,11 +87,13 @@ HANDLEX WINAPI xll_tmx_curve_bootstrap_muni_(FP12* ptf)
 		ensure(pf);
 
 		double _t = 0;
-		double _f = index(*ptf, 0, 1); // first rate
+		int one = columns(*ptf) == 1 ? 0 : 1; // allow times to be omitted
+		double _f = index(*ptf, 0, one); // first rate
 		int i = 0;
 		while (i < rows(*ptf)) {
-			int ti = static_cast<int>(index(*ptf, i, 0));
-			double fi = index(*ptf, i, 1); // par coupon
+			// times are 1, 2, ... years to maturity
+			int ti = (one == 0 ? i + 1 : static_cast<int>(index(*ptf, i, 0)));
+			double fi = index(*ptf, i, one); // par coupon
 			const auto bi = security::muni{ dated, dated + years(ti) };
 			const auto ii = security::instrument(bi, dated);
 			const auto y = value::continuous_rate(fi, bi.frequency);
